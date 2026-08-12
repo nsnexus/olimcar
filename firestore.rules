@@ -27,6 +27,11 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmGeral();
     }
+
+    match /colaboradores/{colaborador=**} {
+      allow read: if true;
+      allow write: if isAdmGeral();
+    }
     
     match /jogos/{jogo} {
       allow read: if true; // Público acessa
