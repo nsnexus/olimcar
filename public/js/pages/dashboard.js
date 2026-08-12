@@ -37,6 +37,10 @@ export function renderDashboardPage() {
                     <span>Gerenciar Jogos e Resultados</span>
                     
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <input type="file" id="upload-inscricoes" accept=".xlsx, .xls, .csv" style="display: none;">
+                        <button id="btn-importar-inscricoes" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.3rem 0.6rem; color: var(--color-primary-600); border-color: var(--color-primary-600);">
+                            <i data-lucide="upload" style="width: 16px; height: 16px; vertical-align: middle;"></i> Importar Inscrições
+                        </button>
                         <select id="admin-filter-data" class="form-control" style="padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
                             <option value="">Todas Datas</option>
                         </select>
@@ -135,6 +139,76 @@ export async function loadDashboardJogos() {
                 }
             }
         };
+
+        // Botão de Importação de Inscrições
+        const btnUpload = document.getElementById('btn-importar-inscricoes');
+        const inputUpload = document.getElementById('upload-inscricoes');
+
+        if (btnUpload && inputUpload) {
+            btnUpload.addEventListener('click', () => inputUpload.click());
+
+            inputUpload.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                btnUpload.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Processando...';
+                
+                try {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const workbook = window.XLSX.read(arrayBuffer, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const json = window.XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    if (json.length > 1) {
+                        const { getCollection, addDocument } = await import('../services/db.js');
+                        
+                        let importedCount = 0;
+                        const headerLine = json[0];
+                        
+                        for (let i = 1; i < json.length; i++) {
+                            const row = json[i];
+                            if (!row || row.length < 5 || !row[1]) continue; // Se não tem nome, pula
+                            
+                            // Regex para normalizar nome da equipe
+                            let equipeLimpa = "Sem Equipe";
+                            const timeBruto = String(row[5] || "");
+                            if (timeBruto.toLowerCase().includes('azul')) equipeLimpa = "Equipe Azul";
+                            else if (timeBruto.toLowerCase().includes('amarela') || timeBruto.toLowerCase().includes('amarelo')) equipeLimpa = "Equipe Amarela";
+                            else if (timeBruto.toLowerCase().includes('verde')) equipeLimpa = "Equipe Verde";
+                            else if (timeBruto.toLowerCase().includes('vermelha') || timeBruto.toLowerCase().includes('vermelho')) equipeLimpa = "Equipe Vermelha";
+
+                            // Capturar todas as modalidades a partir da coluna 6
+                            let mods = [];
+                            for (let c = 6; c < row.length; c++) {
+                                if (row[c]) mods.push(headerLine[c]);
+                            }
+
+                            const colaborador = {
+                                nome: row[1],
+                                whatsapp: String(row[2] || ""),
+                                matricula: String(row[3] || ""),
+                                vinculo: row[4],
+                                equipe: equipeLimpa,
+                                modalidades: mods,
+                                status: 'Ativo'
+                            };
+
+                            await addDocument('colaboradores', null, colaborador);
+                            importedCount++;
+                        }
+                        alert(`Sucesso! ${importedCount} inscrições importadas e distribuídas para as equipes.`);
+                    }
+                } catch (error) {
+                    console.error("Erro ao importar planilha:", error);
+                    alert("Erro ao ler o arquivo Excel. Verifique se o formato está correto.");
+                } finally {
+                    inputUpload.value = ''; // reseta
+                    btnUpload.innerHTML = '<i data-lucide="upload"></i> Importar Inscrições';
+                    if (window.lucide) window.lucide.createIcons();
+                }
+            });
+        }
 
     } catch (e) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-danger);">Erro ao ler jogos.</td></tr>`;

@@ -67,5 +67,33 @@ async function loadLiderData() {
         });
     }
 
+    // Carregar Atletas da Equipe
+    const { getCollection } = await import('../services/db.js');
+    const todosColabs = await getCollection('colaboradores');
+    const meusAtletas = todosColabs.filter(c => c.equipe === equipeNome);
+    
+    const tbody = document.getElementById('lista-colaboradores');
+    if (meusAtletas.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--color-text-muted);">
+            Nenhum colaborador importado para a sua equipe no momento.
+        </td></tr>`;
+    } else {
+        tbody.innerHTML = '';
+        meusAtletas.forEach(a => {
+            const modsHTML = (a.modalidades || []).map(m => `<span class="badge" style="background: #e2e8f0; color: #475569; margin-right: 4px;">${m}</span>`).join('');
+            
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${a.matricula || '-'}</strong></td>
+                    <td>
+                        <div style="font-weight: 600;">${a.nome}</div>
+                        <div style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: 4px;">${modsHTML || 'Nenhuma'}</div>
+                    </td>
+                    <td><span class="badge badge-success">${a.status || 'Ativo'}</span></td>
+                </tr>
+            `;
+        });
+    }
+
     if (window.lucide) window.lucide.createIcons();
 }
