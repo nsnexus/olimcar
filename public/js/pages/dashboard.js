@@ -184,11 +184,10 @@ export async function loadDashboardJogos() {
                     
                     if (json.length > 1) {
                         const { getCollection, addDocument } = await import('../services/db.js');
-                        
+
                         let importedCount = 0;
                         const headerLine = json[0];
-                        const { getCollection, addDocument } = await import('../services/db.js');
-                        
+
                         // Buscar todos que já estão no banco para checar duplicados
                         const existentes = await getCollection('colaboradores');
                         const matriculasCobradas = new Set(existentes.map(c => String(c.matricula).trim()).filter(m => m.length > 0));
