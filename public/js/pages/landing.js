@@ -2,20 +2,17 @@
 
 export function renderLandingPage() {
     return `
-        <div class="hero-section">
-            <div class="hero-content">
-                <h1 class="hero-title">Bem-vindo à OLIMCAR 2026</h1>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container hero-content">
+                <img src="/assets/logo.png" alt="Olimcar Animais" class="hero-logo-img">
                 <p class="hero-subtitle">Acompanhe os resultados, veja o quadro de medalhas e vibre pela sua equipe na maior competição esportiva da empresa.</p>
-                <div class="hero-actions">
-                    <a href="#/agenda" class="btn btn-hero">
-                        <i data-lucide="calendar"></i> Ver Agenda
-                    </a>
-                    <a href="#/ranking" class="btn btn-outline" style="color: white; border-color: rgba(255,255,255,0.5);">
-                        <i data-lucide="medal"></i> Quadro de Medalhas
-                    </a>
+                
+                <div class="hero-buttons">
+                    <a href="#/agenda" class="btn btn-primary" style="font-size: 1.1rem; padding: 0.8rem 1.5rem;">Ver Agenda Completa</a>
                 </div>
             </div>
-        </div>
+        </section>
 
         <div class="container">
             <h2 class="section-title">Modalidades em Disputa</h2>

@@ -1,47 +1,44 @@
 :root {
-    /* Cores Primárias (Azul Vibrante) */
-    --color-primary-50: #eff6ff;
-    --color-primary-100: #dbeafe;
-    --color-primary-500: #3b82f6;
-    --color-primary-600: #2563eb;
-    --color-primary-700: #1d4ed8;
+    /* Cores Primárias (Teal Profundo Olimcar) */
+    --color-primary-50: #e0f2f1;
+    --color-primary-100: #b2dfdb;
+    --color-primary-500: #046A72;
+    --color-primary-600: #035b62;
+    --color-primary-700: #02474d;
 
-    /* Cores Neutras / Backgrounds */
-    --color-bg-body: #f8fafc;
-    --color-bg-card: #ffffff;
+    /* Cores Neutras / Backgrounds (SaaS Premium) */
+    --color-bg-body: #F7F9FA;
+    --color-bg-card: #FFFFFF;
     
-    /* Cores de Texto */
-    --color-text-main: #0f172a;
-    --color-text-muted: #64748b;
-    --color-text-light: #94a3b8;
+    /* Cores de Texto (Hierarchy) */
+    --color-text-main: #111827; /* Near black */
+    --color-text-muted: #4B5563; /* Secondary */
+    --color-text-light: #9CA3AF; /* Tertiary */
 
-    /* Semânticas */
-    --color-success: #10b981;
-    --color-warning: #f59e0b;
-    --color-danger: #ef4444;
+    /* Semânticas & Acentos */
+    --color-success: #059669;
+    --color-warning: #FFB703; /* Ouro da Onça/Logo */
+    --color-danger: #DC2626;
     
-    /* Medalhas */
-    --color-gold: #fbbf24;
-    --color-silver: #94a3b8;
-    --color-bronze: #b45309;
-
     /* Tipografia */
-    --font-sans: 'Inter', sans-serif;
-    --font-heading: 'Outfit', sans-serif;
+    --font-sans: 'Inter', -apple-system, sans-serif;
+    --font-heading: 'Outfit', -apple-system, sans-serif;
 
-    /* Bordas e Sombras */
-    --radius-sm: 0.375rem;
-    --radius-md: 0.5rem;
-    --radius-lg: 0.75rem;
+    /* Bordas e Elementos */
+    --color-border: rgba(0, 0, 0, 0.08); /* Clean, barely visible border */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
     --radius-full: 9999px;
     
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    /* Layered Shadows (Premium Feel) */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 0 0 1px rgba(0,0,0,0.03), 0 2px 4px rgba(0,0,0,0.04), 0 4px 8px rgba(0,0,0,0.02);
+    --shadow-lg: 0 0 0 1px rgba(0,0,0,0.03), 0 4px 8px rgba(0,0,0,0.04), 0 12px 24px rgba(0,0,0,0.04);
     
     /* Transições */
-    --transition-fast: 150ms ease;
-    --transition-normal: 250ms ease;
+    --transition-fast: 150ms cubic-bezier(0.23, 1, 0.32, 1);
+    --transition-normal: 250ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 /* Reset Básico */
