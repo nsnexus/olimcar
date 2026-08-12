@@ -7,6 +7,7 @@ import { renderEquipesPage } from './pages/admin/equipes.js';
 import { renderJogoEditorPage } from './pages/admin/jogo_editor.js';
 import { renderSumulaEditorPage } from './pages/admin/sumula_editor.js';
 import { renderLiderDashboardPage } from './pages/lider_dashboard.js';
+import { renderEquipesPublicPage } from './pages/equipes.js';
 import { loginUser, logoutUser, currentUser, authResolved } from './auth.js';
 import { seedInitialData } from './services/db.js';
 
@@ -26,6 +27,7 @@ const privateRoutes = ['/dashboard', '/lider'];
 const routes = {
     '/': renderLandingPage,
     '/agenda': renderAgendaPage,
+    '/equipes': renderEquipesPublicPage,
     '/resultados': () => '<div class="container" style="padding-top: 2rem;"><h2>Resultados</h2></div>',
     '/ranking': () => '<div class="container" style="padding-top: 2rem;"><h2>Quadro de Medalhas</h2></div>',
     '/login': renderLoginPage,
