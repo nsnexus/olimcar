@@ -223,6 +223,7 @@ export async function seedInitialData() {
             console.log("Jogos importados com sucesso!");
         } catch (e) {
             console.error("Falha ao importar jogos:", e);
+        }
     }
     
     console.log("Seed de Jogos e Equipes finalizado (ou já existia)!");
