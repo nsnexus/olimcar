@@ -35,8 +35,11 @@ const routes = {
 };
 
 function router() {
-    let hash = window.location.hash.slice(1) || '/';
-    if (hash === '') hash = '/';
+    let fullHash = window.location.hash.slice(1) || '/';
+    if (fullHash === '') fullHash = '/';
+    
+    // Ignora query params como ?id=123 na hora de procurar no objeto routes
+    let hash = fullHash.split('?')[0];
     
     mainNav.classList.remove('show');
     
