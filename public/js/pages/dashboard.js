@@ -36,9 +36,16 @@ export function renderDashboardPage() {
                 <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                     <span>Gerenciar Jogos e Resultados</span>
                     
-                    <div style="display: flex; gap: 0.5rem;">
-                        <select id="admin-filter-data" class="form-control" style="font-size: 0.85rem; padding: 0.3rem;"><option value="">Todas Datas</option></select>
-                        <select id="admin-filter-modalidade" class="form-control" style="font-size: 0.85rem; padding: 0.3rem;"><option value="">Todas Modalidades</option></select>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <select id="admin-filter-data" class="form-control" style="padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                            <option value="">Todas Datas</option>
+                        </select>
+                        <select id="admin-filter-modalidade" class="form-control" style="padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                            <option value="">Todas Modalidades</option>
+                        </select>
+                        <select id="admin-filter-equipe" class="form-control" style="padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                            <option value="">Todas as Equipes</option>
+                        </select>
                     </div>
 
                     <button id="btn-seed" class="btn btn-primary" style="font-size: 0.8rem; padding: 0.25rem 0.5rem; display: none;">
@@ -93,22 +100,32 @@ export async function loadDashboardJogos() {
         
         const datas = new Set();
         const modalidades = new Set();
-        todosJogosAdmin.forEach(j => { datas.add(j.data_jogo); modalidades.add(j.modalidade_texto); });
+        const equipes = new Set();
+        todosJogosAdmin.forEach(j => { 
+            datas.add(j.data_jogo); 
+            modalidades.add(j.modalidade_texto); 
+            if(j.equipe_a?.nome && j.equipe_a.nome !== 'A Definir') equipes.add(j.equipe_a.nome);
+            if(j.equipe_b?.nome && j.equipe_b.nome !== 'A Definir') equipes.add(j.equipe_b.nome);
+        });
         
         const selData = document.getElementById('admin-filter-data');
         const selMod = document.getElementById('admin-filter-modalidade');
+        const selEq = document.getElementById('admin-filter-equipe');
         
         Array.from(datas).sort().forEach(d => selData.add(new Option(d, d)));
         Array.from(modalidades).sort().forEach(m => selMod.add(new Option(m, m)));
+        Array.from(equipes).sort().forEach(e => selEq.add(new Option(e, e)));
         
         selData.addEventListener('change', renderAdminJogos);
         selMod.addEventListener('change', renderAdminJogos);
+        selEq.addEventListener('change', renderAdminJogos);
 
         renderAdminJogos();
 
         // Expõe a função de exclusão globalmente
         window.excluirJogo = async (id) => {
             if (confirm("Tem certeza que deseja excluir esta partida da agenda?")) {
+                const { deleteDocument } = await import('../services/db.js');
                 const sucesso = await deleteDocument('jogos', id);
                 if (sucesso) {
                     todosJogosAdmin = todosJogosAdmin.filter(j => j.id !== id);
@@ -128,9 +145,15 @@ function renderAdminJogos() {
     const tbody = document.getElementById('lista-jogos');
     const valData = document.getElementById('admin-filter-data').value;
     const valMod = document.getElementById('admin-filter-modalidade').value;
+    const valEq = document.getElementById('admin-filter-equipe').value;
 
-    const filtrados = todosJogosAdmin.filter(jogo => {
-        return (!valData || jogo.data_jogo === valData) && (!valMod || jogo.modalidade_texto === valMod);
+    const filtrados = todosJogosAdmin.filter(j => {
+        const matchData = !valData || j.data_jogo === valData;
+        const matchMod = !valMod || j.modalidade_texto === valMod;
+        const timeA = j.equipe_a?.nome || 'A Definir';
+        const timeB = j.equipe_b?.nome || 'A Definir';
+        const matchEq = !valEq || timeA === valEq || timeB === valEq;
+        return matchData && matchMod && matchEq;
     });
 
     if(filtrados.length === 0) {
