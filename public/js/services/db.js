@@ -235,7 +235,8 @@ setTimeout(async () => {
         const usuariosRef = collection(db, 'usuarios');
         const existingUsers = await getDocs(usuariosRef);
         
-        if (existingUsers.empty) {
+        // A coleção não está vazia porque você já tinha criado 1 usuário antes.
+        if (existingUsers.size < 5) {
             console.log("Auto-semeando Acessos de Líderes e Administradores...");
             const lideres = [
                 { id: 'time_azul@olimcar.com.br', role: 'lider', equipeId: 'Equipe Azul' },
