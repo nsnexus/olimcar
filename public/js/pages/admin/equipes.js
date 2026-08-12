@@ -1,6 +1,6 @@
 import { getCollection } from '../../services/db.js';
 
-export async function renderEquipesPage() {
+export function renderEquipesPage() {
     setTimeout(loadEquipesData, 100);
     return `
         <div class="container" style="padding-top: 2rem;">
