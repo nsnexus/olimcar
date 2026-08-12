@@ -1,5 +1,7 @@
 // public/js/pages/dashboard.js
 
+let todosJogosAdmin = [];
+
 export function renderDashboardPage() {
     return `
         <div class="container" style="padding-top: 2rem;">
@@ -11,37 +13,44 @@ export function renderDashboardPage() {
             </div>
             
             <div class="modalidades-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-                <div class="card" style="padding: 1.5rem; text-align: center; cursor: pointer;">
+                <div class="card" onclick="window.location.hash='/admin/equipes'" style="padding: 1.5rem; text-align: center; cursor: pointer; transition: transform 0.2s;">
                     <i data-lucide="users" style="width: 48px; height: 48px; color: var(--color-primary-500); margin-bottom: 1rem;"></i>
                     <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Gestão de Equipes</h3>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Administrar times e cores</p>
+                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Administrar times e inscritos</p>
                 </div>
                 
-                <div class="card" style="padding: 1.5rem; text-align: center; cursor: pointer;">
+                <div class="card" onclick="window.location.hash='/admin/modalidades'" style="padding: 1.5rem; text-align: center; cursor: pointer; transition: transform 0.2s;">
                     <i data-lucide="dribbble" style="width: 48px; height: 48px; color: var(--color-warning); margin-bottom: 1rem;"></i>
                     <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Modalidades</h3>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Adicionar ou editar esportes</p>
+                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Ver regras e pontos</p>
                 </div>
 
-                <div class="card" style="padding: 1.5rem; text-align: center; cursor: pointer;">
+                <div class="card" style="padding: 1.5rem; text-align: center; opacity: 0.5;">
                     <i data-lucide="swords" style="width: 48px; height: 48px; color: var(--color-success); margin-bottom: 1rem;"></i>
                     <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Agendar Jogos</h3>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Criar novas disputas</p>
+                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">(Via Importação CSV)</p>
                 </div>
             </div>
 
             <div class="card" style="margin-top: 2rem;">
-                <div class="card-header" style="display: flex; justify-content: space-between;">
-                    <span>Próximos Jogos Agendados</span>
-                    <button id="btn-seed" class="btn btn-primary" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;">
-                        <i data-lucide="database"></i> Inicializar Dados Base (Seed)
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <span>Gerenciar Jogos e Resultados</span>
+                    
+                    <div style="display: flex; gap: 0.5rem;">
+                        <select id="admin-filter-data" class="form-control" style="font-size: 0.85rem; padding: 0.3rem;"><option value="">Todas Datas</option></select>
+                        <select id="admin-filter-modalidade" class="form-control" style="font-size: 0.85rem; padding: 0.3rem;"><option value="">Todas Modalidades</option></select>
+                    </div>
+
+                    <button id="btn-seed" class="btn btn-primary" style="font-size: 0.8rem; padding: 0.25rem 0.5rem; display: none;">
+                        <i data-lucide="database"></i> Seed Base
                     </button>
                 </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
+                
+                <div class="table-container" style="max-height: 500px; overflow-y: auto;">
+                    <table style="width: 100%;">
+                        <thead style="position: sticky; top: 0; background: var(--color-surface); z-index: 10;">
                             <tr>
-                                <th>Data</th>
+                                <th>Data / Hora</th>
                                 <th>Modalidade</th>
                                 <th>Confronto</th>
                                 <th>Fase</th>
@@ -70,53 +79,75 @@ export async function loadDashboardJogos() {
         const { getCollection, sortByDateAndTime } = await import('../services/db.js');
         const jogosBrutos = await getCollection('jogos');
         
-        // Evita mostrar os cabeçalhos sujos lidos do CSV
-        const jogos = jogosBrutos.filter(j => 
+        todosJogosAdmin = jogosBrutos.filter(j => 
             j.modalidade_texto && j.modalidade_texto.toUpperCase() !== 'MODALIDADE' &&
             j.data_jogo && j.data_jogo.toUpperCase() !== 'DATA' && j.data_jogo.trim() !== ''
         );
 
-        if (jogos.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="5" style="text-align: center; padding: 2rem; color: var(--color-text-muted);">
-                        Nenhum jogo agendado ainda. Use o botão de inicializar Seed.
-                    </td>
-                </tr>
-            `;
+        if (todosJogosAdmin.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">Nenhum jogo. (Ative o botão Seed via código se precisar)</td></tr>';
             return;
         }
 
-        // Mostrar os 10 primeiros por enquanto
-        sortByDateAndTime(jogos);
-        const jogosVisiveis = jogos.slice(0, 10);
-        const totalRestante = jogos.length - 10;
-
-        let html = '';
-        jogosVisiveis.forEach(jogo => {
-            const timeA = jogo.equipe_a?.nome || 'A Definir';
-            const timeB = jogo.equipe_b?.nome || 'A Definir';
-            
-            html += `
-                <tr>
-                    <td>${jogo.data_jogo} <br> <small>${jogo.horario || '--:--'}</small></td>
-                    <td>${jogo.modalidade_texto}</td>
-                    <td><strong>${timeA}</strong> x <strong>${timeB}</strong></td>
-                    <td>${jogo.fase}</td>
-                    <td>
-                        <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
-                    </td>
-                </tr>
-            `;
-        });
+        sortByDateAndTime(todosJogosAdmin);
         
-        if (totalRestante > 0) {
-            html += `<tr><td colspan="5" style="text-align: center; color: var(--color-text-muted); font-size: 0.85rem;">+ ${totalRestante} jogos agendados... Ver página de Agenda completa.</td></tr>`;
-        }
+        const datas = new Set();
+        const modalidades = new Set();
+        todosJogosAdmin.forEach(j => { datas.add(j.data_jogo); modalidades.add(j.modalidade_texto); });
+        
+        const selData = document.getElementById('admin-filter-data');
+        const selMod = document.getElementById('admin-filter-modalidade');
+        
+        Array.from(datas).sort().forEach(d => selData.add(new Option(d, d)));
+        Array.from(modalidades).sort().forEach(m => selMod.add(new Option(m, m)));
+        
+        selData.addEventListener('change', renderAdminJogos);
+        selMod.addEventListener('change', renderAdminJogos);
 
-        tbody.innerHTML = html;
-        if (window.lucide) window.lucide.createIcons();
+        renderAdminJogos();
     } catch (e) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-danger);">Erro ao ler jogos.</td></tr>`;
     }
+}
+
+function renderAdminJogos() {
+    const tbody = document.getElementById('lista-jogos');
+    const valData = document.getElementById('admin-filter-data').value;
+    const valMod = document.getElementById('admin-filter-modalidade').value;
+
+    const filtrados = todosJogosAdmin.filter(jogo => {
+        return (!valData || jogo.data_jogo === valData) && (!valMod || jogo.modalidade_texto === valMod);
+    });
+
+    if(filtrados.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nenhum jogo atende aos filtros.</td></tr>';
+        return;
+    }
+
+    let html = '';
+    filtrados.forEach(jogo => {
+        const timeA = jogo.equipe_a?.nome || 'A Definir';
+        const timeB = jogo.equipe_b?.nome || 'A Definir';
+        const statusBadge = jogo.status === 'encerrado' ? '<span style="color:var(--color-success); font-size: 0.7rem; display:block;">ENCERRADO</span>' : '';
+        
+        html += `
+            <tr>
+                <td>${jogo.data_jogo} <br> <small>${jogo.horario || '--:--'}</small></td>
+                <td>${jogo.modalidade_texto}</td>
+                <td>
+                    <strong>${timeA}</strong> <span style="color:var(--color-text-muted);">x</span> <strong>${timeB}</strong>
+                    ${jogo.status === 'encerrado' ? `<br><small style="color:var(--color-primary-500); font-weight:bold;">${jogo.placar_a} x ${jogo.placar_b}</small>` : ''}
+                </td>
+                <td>${jogo.fase} ${statusBadge}</td>
+                <td>
+                    <button onclick="window.location.hash='/admin/jogo?id=${jogo.id}'" class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" title="Editar Jogo/Placar">
+                        <i data-lucide="edit-2" style="width: 14px; height: 14px;"></i> Editar
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    tbody.innerHTML = html;
+    if (window.lucide) window.lucide.createIcons();
 }

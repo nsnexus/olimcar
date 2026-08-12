@@ -3,6 +3,8 @@ import { renderLandingPage } from './pages/landing.js';
 import { renderLoginPage } from './pages/login.js';
 import { renderDashboardPage, loadDashboardJogos } from './pages/dashboard.js';
 import { renderAgendaPage } from './pages/agenda.js';
+import { renderEquipesPage } from './pages/admin/equipes.js';
+import { renderJogoEditorPage } from './pages/admin/jogo_editor.js';
 import { loginUser, logoutUser, currentUser } from './auth.js';
 import { seedInitialData } from './services/db.js';
 
@@ -26,6 +28,9 @@ const routes = {
     '/ranking': () => '<div class="container" style="padding-top: 2rem;"><h2>Quadro de Medalhas</h2></div>',
     '/login': renderLoginPage,
     '/dashboard': renderDashboardPage,
+    '/admin/equipes': renderEquipesPage,
+    '/admin/modalidades': () => '<div class="container" style="padding-top: 2rem;"><h2>Modalidades</h2><p>Em construção</p></div>',
+    '/admin/jogo': renderJogoEditorPage,
     '/privacidade': () => '<div class="container" style="padding-top: 2rem;"><h2>Política de Privacidade</h2></div>'
 };
 
