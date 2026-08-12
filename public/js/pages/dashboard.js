@@ -99,7 +99,7 @@ export function renderDashboardPage() {
                 </div>
             </div>
 
-        </main>
+        </div>
     `;
 }
 
