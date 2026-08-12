@@ -70,42 +70,55 @@
 
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2.5rem;
 }
 
 .feature-card {
     text-align: left;
-    padding: 2.5rem;
     background: #FFFFFF;
     border-radius: var(--radius-lg);
     border: 1px solid var(--color-border);
-    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
-    box-shadow: var(--shadow-sm);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .feature-card:hover {
     transform: translateY(-8px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
 }
 
-.feature-icon {
-    width: 56px;
-    height: 56px;
-    margin-bottom: 1.5rem;
-    background-color: var(--color-primary-50);
-    color: var(--color-primary-600);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.feature-img-wrapper {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    position: relative;
+    background: var(--color-primary-50);
+}
+
+.feature-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.feature-card:hover .feature-img {
+    transform: scale(1.05);
+}
+
+.feature-content {
+    padding: 2rem;
 }
 
 .feature-title {
     font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-    color: var(--color-text-main);
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: var(--color-primary-700);
 }
 
 .feature-desc {

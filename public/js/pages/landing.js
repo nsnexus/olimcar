@@ -22,26 +22,95 @@ export function renderLandingPage() {
                 </div>
                 
                 <div class="features-grid">
+                    
                     <div class="feature-card">
-                        <div class="feature-icon"><i data-lucide="globe"></i></div>
-                        <h3 class="feature-title">Futebol Society</h3>
-                        <p class="feature-desc">Masculino e Feminino</p>
+                        <div class="feature-img-wrapper"><img src="/assets/art/mod_futebol.png" class="feature-img" alt="Futebol"></div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">Futebol & Futsal</h3>
+                            <p class="feature-desc">Campo, Society e Salão. Times vibrando em campo.</p>
+                        </div>
                     </div>
+                    
                     <div class="feature-card">
-                        <div class="feature-icon"><i data-lucide="aperture"></i></div>
-                        <h3 class="feature-title">Voleibol</h3>
-                        <p class="feature-desc">Equipes Mistas</p>
+                        <div class="feature-img-wrapper"><img src="/assets/art/mod_volei.png" class="feature-img" alt="Voleibol"></div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">Voleibol & Areia</h3>
+                            <p class="feature-desc">Cortadas na quadra e futevôlei na areia.</p>
+                        </div>
                     </div>
+
                     <div class="feature-card">
-                        <div class="feature-icon"><i data-lucide="dribbble"></i></div>
-                        <h3 class="feature-title">Basquetebol</h3>
-                        <p class="feature-desc">Masculino e Feminino</p>
+                        <div class="feature-img-wrapper"><img src="/assets/art/mod_basquete.png" class="feature-img" alt="Basquete"></div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">Basquetebol</h3>
+                            <p class="feature-desc">As tradicionais disputas em trio na quadra externa.</p>
+                        </div>
                     </div>
+                    
                     <div class="feature-card">
-                        <div class="feature-icon"><i data-lucide="medal"></i></div>
-                        <h3 class="feature-title">Tênis de Mesa</h3>
-                        <p class="feature-desc">Torneio Individual</p>
+                        <div class="feature-img-wrapper"><img src="/assets/art/mod_atletismo.png" class="feature-img" alt="Atletismo"></div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">Atletismo</h3>
+                            <p class="feature-desc">Corridas de 100m, 400m e grandes revezamentos.</p>
+                        </div>
                     </div>
+
+                    <div class="feature-card">
+                        <div class="feature-img-wrapper"><img src="/assets/art/mod_natacao.png" class="feature-img" alt="Natação"></div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">Natação</h3>
+                            <p class="feature-desc">Baterias intensas na piscina, estilo livre e misto.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-img-wrapper"><img src="/assets/art/mod_tenis.png" class="feature-img" alt="Tênis"></div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">Tênis de Quadra</h3>
+                            <p class="feature-desc">Tênis tradicional e Beach Tênis masculino e feminino.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-img-wrapper"><img src="/assets/art/mod_handebol.png" class="feature-img" alt="Handebol"></div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">Handebol</h3>
+                            <p class="feature-desc">As disputas mais elétricas no ginásio esportivo.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-img-wrapper"><img src="/assets/art/mod_ciclismo.png" class="feature-img" alt="Ciclismo"></div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">Ciclismo M.T.B.</h3>
+                            <p class="feature-desc">Provas de resistência e velocidade no circuito de trilha.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-img-wrapper"><img src="/assets/art/mod_peteca.png" class="feature-img" alt="Peteca"></div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">Peteca</h3>
+                            <p class="feature-desc">O esporte raiz nas quadras externas da empresa.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-img-wrapper"><img src="/assets/art/mod_salao.png" class="feature-img" alt="Jogos de Salão"></div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">Jogos de Salão</h3>
+                            <p class="feature-desc">Sinuca, Truco, Dominó, Dama e Xadrez.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-img-wrapper"><img src="/assets/art/mod_esports.png" class="feature-img" alt="E-Sports"></div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">E-Sports</h3>
+                            <p class="feature-desc">Disputas acirradas nos videogames de última geração.</p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
