@@ -226,5 +226,23 @@ export async function seedInitialData() {
         }
     }
     
+    // 4. Semear os 4 Líderes (Controle de Acesso)
+    const usuariosRef = collection(db, 'usuarios');
+    const existingUsers = await getDocs(usuariosRef);
+    
+    if (existingUsers.empty) {
+        console.log("Semeando Acessos de Líderes...");
+        const lideres = [
+            { id: 'time_azul@olimcar.com.br', role: 'lider', equipeId: 'Equipe Azul' },
+            { id: 'time_amarelo@olimcar.com.br', role: 'lider', equipeId: 'Equipe Amarela' },
+            { id: 'time_verde@olimcar.com.br', role: 'lider', equipeId: 'Equipe Verde' },
+            { id: 'time_vermelho@olimcar.com.br', role: 'lider', equipeId: 'Equipe Vermelha' }
+        ];
+        
+        for (let u of lideres) {
+            await setDoc(doc(db, 'usuarios', u.id), u);
+        }
+    }
+
     console.log("Seed finalizado (ou já existia)!");
 }

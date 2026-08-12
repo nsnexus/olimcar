@@ -6,6 +6,7 @@ import { renderAgendaPage } from './pages/agenda.js';
 import { renderEquipesPage } from './pages/admin/equipes.js';
 import { renderJogoEditorPage } from './pages/admin/jogo_editor.js';
 import { renderSumulaEditorPage } from './pages/admin/sumula_editor.js';
+import { renderLiderDashboardPage } from './pages/lider_dashboard.js';
 import { loginUser, logoutUser, currentUser } from './auth.js';
 import { seedInitialData } from './services/db.js';
 
@@ -19,7 +20,7 @@ mobileMenuBtn.addEventListener('click', () => {
 });
 
 // Rotas Privadas
-const privateRoutes = ['/dashboard'];
+const privateRoutes = ['/dashboard', '/lider'];
 
 // Sistema de Roteamento Simples Baseado em Hash
 const routes = {
@@ -29,6 +30,7 @@ const routes = {
     '/ranking': () => '<div class="container" style="padding-top: 2rem;"><h2>Quadro de Medalhas</h2></div>',
     '/login': renderLoginPage,
     '/dashboard': renderDashboardPage,
+    '/lider': renderLiderDashboardPage,
     '/admin/equipes': renderEquipesPage,
     '/admin/modalidades': () => '<div class="container" style="padding-top: 2rem;"><h2>Modalidades</h2><p>Em construção</p></div>',
     '/admin/jogo': renderJogoEditorPage,
@@ -93,8 +95,12 @@ function router() {
                 btnSubmit.disabled = true;
                 
                 try {
-                    await loginUser(email, password);
-                    window.location.hash = '/dashboard';
+                    const authResult = await loginUser(email, password);
+                    if (authResult.role === 'lider') {
+                        window.location.hash = '/lider';
+                    } else {
+                        window.location.hash = '/dashboard';
+                    }
                 } catch (error) {
                     loginError.style.display = 'block';
                     btnSubmit.textContent = 'Entrar no Sistema';

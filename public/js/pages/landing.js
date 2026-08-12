@@ -118,45 +118,6 @@ export function renderLandingPage() {
         <div class="container">
             </div>
 
-            <h2 class="section-title">Resultados Recentes</h2>
-            
-            <div class="glass-panel">
-                <div class="table-container" style="box-shadow: none; border: none; background: transparent;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Modalidade</th>
-                                <th>Time A</th>
-                                <th style="text-align: center;">Placar</th>
-                                <th>Time B</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Hoje, 10:00</td>
-                                <td>Futebol Society</td>
-                                <td style="font-weight: 600;">Tigres do Vale</td>
-                                <td style="text-align: center; font-size: 1.25rem; font-weight: 800; color: var(--color-primary-600);">3 x 1</td>
-                                <td>Dragões de Fogo</td>
-                                <td><span class="badge badge-success">Encerrado</span></td>
-                            </tr>
-                            <tr>
-                                <td>Ontem, 16:30</td>
-                                <td>Voleibol</td>
-                                <td>Leões Dourados</td>
-                                <td style="text-align: center; font-size: 1.25rem; font-weight: 800; color: var(--color-primary-600);">2 x 3</td>
-                                <td style="font-weight: 600;">Águias Livres</td>
-                                <td><span class="badge badge-success">Encerrado</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div style="text-align: center; margin-top: 2rem;">
-                    <a href="#/resultados" class="btn btn-outline">Ver todos os resultados</a>
-                </div>
-            </div>
         </div>
     `;
 }
