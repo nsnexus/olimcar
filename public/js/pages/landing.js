@@ -2,42 +2,51 @@
 
 export function renderLandingPage() {
     return `
-        <!-- Hero Section -->
+        <!-- Hero Section Premium -->
         <section class="hero-section">
             <div class="container hero-content">
                 <img src="/assets/logo.png" alt="Olimcar Animais" class="hero-logo-img">
                 <p class="hero-subtitle">Acompanhe os resultados, veja o quadro de medalhas e vibre pela sua equipe na maior competição esportiva da empresa.</p>
                 
                 <div class="hero-buttons">
-                    <a href="#/agenda" class="btn btn-primary" style="font-size: 1.1rem; padding: 0.8rem 1.5rem;">Ver Agenda Completa</a>
+                    <a href="#/agenda" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem; border-radius: 50px;">Ver Agenda Completa</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="features-section">
+            <div class="container">
+                <div class="features-header">
+                    <h2>Modalidades em Disputa</h2>
+                    <p style="color: var(--color-text-muted); font-size: 1.1rem;">As categorias oficiais das nossas olimpíadas</p>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i data-lucide="globe"></i></div>
+                        <h3 class="feature-title">Futebol Society</h3>
+                        <p class="feature-desc">Masculino e Feminino</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i data-lucide="aperture"></i></div>
+                        <h3 class="feature-title">Voleibol</h3>
+                        <p class="feature-desc">Equipes Mistas</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i data-lucide="dribbble"></i></div>
+                        <h3 class="feature-title">Basquetebol</h3>
+                        <p class="feature-desc">Masculino e Feminino</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i data-lucide="medal"></i></div>
+                        <h3 class="feature-title">Tênis de Mesa</h3>
+                        <p class="feature-desc">Torneio Individual</p>
+                    </div>
                 </div>
             </div>
         </section>
 
         <div class="container">
-            <h2 class="section-title">Modalidades em Disputa</h2>
-            
-            <div class="modalidades-grid">
-                <div class="modalidade-card">
-                    <div class="mod-icon">⚽</div>
-                    <h3 class="mod-title">Futebol Society</h3>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Masculino e Feminino</p>
-                </div>
-                <div class="modalidade-card">
-                    <div class="mod-icon">🏐</div>
-                    <h3 class="mod-title">Voleibol</h3>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Equipes Mistas</p>
-                </div>
-                <div class="modalidade-card">
-                    <div class="mod-icon">🏀</div>
-                    <h3 class="mod-title">Basquetebol</h3>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Livre</p>
-                </div>
-                <div class="modalidade-card">
-                    <div class="mod-icon">🏊</div>
-                    <h3 class="mod-title">Natação</h3>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-top: 0.5rem;">100m Livre</p>
-                </div>
             </div>
 
             <h2 class="section-title">Resultados Recentes</h2>

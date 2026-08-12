@@ -4,33 +4,40 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    font-size: 0.95rem;
-    font-weight: 500;
+    padding: 0.75rem 1.5rem;
     border-radius: var(--radius-md);
+    font-weight: 600;
+    font-family: inherit;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: all var(--transition-fast);
-    border: 1px solid transparent;
-    font-family: var(--font-sans);
+    border: none;
+    text-decoration: none;
+    outline: none;
 }
 
 .btn-primary {
     background-color: var(--color-primary-600);
-    color: white;
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px 0 rgba(4, 106, 114, 0.39);
 }
+
 .btn-primary:hover {
     background-color: var(--color-primary-700);
-    box-shadow: var(--shadow-sm);
-    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(4, 106, 114, 0.23);
+    color: #FFFFFF;
 }
 
 .btn-outline {
     background-color: transparent;
-    border-color: var(--color-primary-600);
-    color: var(--color-primary-600);
+    color: var(--color-text-main);
+    border: 1px solid var(--color-border);
 }
+
 .btn-outline:hover {
-    background-color: var(--color-primary-50);
+    background-color: var(--color-bg-body);
+    border-color: #cbd5e1;
 }
 
 /* Cards */
