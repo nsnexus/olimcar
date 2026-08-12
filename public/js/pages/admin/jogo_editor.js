@@ -20,7 +20,7 @@ export function renderJogoEditorPage() {
                 <div class="card" style="margin-bottom: 2rem;">
                     <div class="card-header">Dados da Agenda e Local</div>
                     
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; padding: 1.5rem;">
                         <div class="form-group">
                             <label class="form-label">Modalidade</label>
                             <input type="text" id="input-modalidade" class="form-control" placeholder="Ex: Futebol Society">
@@ -47,23 +47,25 @@ export function renderJogoEditorPage() {
                 <div class="card">
                     <div class="card-header">Confronto (Equipes)</div>
                     
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                        <div class="form-group">
-                            <label class="form-label" style="color: var(--color-primary-600);">Equipe A</label>
-                            <input type="text" id="input-equipe-a" class="form-control" placeholder="Ex: Equipe Amarela">
+                    <div style="padding: 1.5rem;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div class="form-group">
+                                <label class="form-label" style="color: var(--color-primary-600);">Equipe A</label>
+                                <input type="text" id="input-equipe-a" class="form-control" placeholder="Ex: Equipe Amarela">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" style="color: var(--color-primary-600);">Equipe B</label>
+                                <input type="text" id="input-equipe-b" class="form-control" placeholder="Ex: Equipe Verde">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label" style="color: var(--color-primary-600);">Equipe B</label>
-                            <input type="text" id="input-equipe-b" class="form-control" placeholder="Ex: Equipe Verde">
-                        </div>
-                    </div>
 
-                    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 1.5rem;">
-                        <button class="btn btn-primary" id="btn-salvar-jogo">
-                            <i data-lucide="save"></i> Salvar Alterações
-                        </button>
+                        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 1.5rem;">
+                            <button class="btn btn-primary" id="btn-salvar-jogo">
+                                <i data-lucide="save"></i> Salvar Alterações
+                            </button>
+                        </div>
+                        <p id="msg-feedback" style="text-align: right; margin-top: 1rem; font-size: 0.95rem; font-weight: 500;"></p>
                     </div>
-                    <p id="msg-feedback" style="text-align: right; margin-top: 1rem; font-size: 0.95rem; font-weight: 500;"></p>
                 </div>
             </div>
         </div>
