@@ -140,9 +140,14 @@ function renderAdminJogos() {
                 </td>
                 <td>${jogo.fase} ${statusBadge}</td>
                 <td>
-                    <button onclick="window.location.hash='/admin/jogo?id=${jogo.id}'" class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" title="Editar Jogo/Placar">
-                        <i data-lucide="edit-2" style="width: 14px; height: 14px;"></i> Editar
-                    </button>
+                    <div style="display: flex; gap: 0.25rem;">
+                        <button onclick="window.location.hash='/admin/jogo?id=${jogo.id}'" class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" title="Editar Agenda/Local">
+                            <i data-lucide="edit-2" style="width: 14px; height: 14px;"></i> Agenda
+                        </button>
+                        <button onclick="window.location.hash='/admin/sumula?id=${jogo.id}'" class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; background-color: var(--color-primary-600); border: none;" title="Preencher Súmula e Placar">
+                            <i data-lucide="file-text" style="width: 14px; height: 14px;"></i> Súmula
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;

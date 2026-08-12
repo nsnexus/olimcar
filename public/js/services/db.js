@@ -1,6 +1,7 @@
 // public/js/services/db.js
-import { db } from './firebase.js';
+import { db, storage } from './firebase.js';
 import { collection, doc, setDoc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
 // Estrutura oficial de pontuação (Regulamento OLIMCAR)
 export const TABELA_PONTUACAO = {
@@ -69,6 +70,24 @@ export async function updateDocument(collectionName, id, data) {
     } catch (e) {
         console.error(`Erro atualizar doc ${id}:`, e);
         return false;
+    }
+}
+
+// Upload de arquivo para Storage
+export async function uploadEvidencia(file, jogoId) {
+    if (!file) return null;
+    
+    try {
+        // Nome único para evitar cache e sobrescritas
+        const uniqueName = `${Date.now()}_${file.name}`;
+        const storageRef = ref(storage, `evidencias/${jogoId}/${uniqueName}`);
+        
+        const snapshot = await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        return downloadURL;
+    } catch (e) {
+        console.error('Erro no upload de evidência:', e);
+        return null;
     }
 }
 
