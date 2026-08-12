@@ -113,7 +113,7 @@ async function loadEquipesData() {
         
     } catch (e) {
         console.error(e);
-        tbody.innerHTML = \`<tr><td colspan="4" style="text-align: center; color: var(--color-danger);">Erro ao ler banco de dados.</td></tr>\`;
-        statsContainer.innerHTML = \`<div class="card" style="padding: 2rem; text-align: center; color: var(--color-danger);">Falha de Comunicação</div>\`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--color-danger);">Erro ao ler banco de dados.</td></tr>`;
+        statsContainer.innerHTML = `<div class="card" style="padding: 2rem; text-align: center; color: var(--color-danger);">Falha de Comunicação</div>`;
     }
 }
