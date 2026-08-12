@@ -223,26 +223,33 @@ export async function seedInitialData() {
             console.log("Jogos importados com sucesso!");
         } catch (e) {
             console.error("Falha ao importar jogos:", e);
-        }
     }
     
-    // 4. Semear os 4 Líderes (Controle de Acesso)
-    const usuariosRef = collection(db, 'usuarios');
-    const existingUsers = await getDocs(usuariosRef);
-    
-    if (existingUsers.empty) {
-        console.log("Semeando Acessos de Líderes...");
-        const lideres = [
-            { id: 'time_azul@olimcar.com.br', role: 'lider', equipeId: 'Equipe Azul' },
-            { id: 'time_amarelo@olimcar.com.br', role: 'lider', equipeId: 'Equipe Amarela' },
-            { id: 'time_verde@olimcar.com.br', role: 'lider', equipeId: 'Equipe Verde' },
-            { id: 'time_vermelho@olimcar.com.br', role: 'lider', equipeId: 'Equipe Vermelha' }
-        ];
-        
-        for (let u of lideres) {
-            await setDoc(doc(db, 'usuarios', u.id), u);
-        }
-    }
-
-    console.log("Seed finalizado (ou já existia)!");
+    console.log("Seed de Jogos e Equipes finalizado (ou já existia)!");
 }
+
+// Inicializador Automático de Usuários (Roda sem precisar clicar em nada)
+setTimeout(async () => {
+    try {
+        const usuariosRef = collection(db, 'usuarios');
+        const existingUsers = await getDocs(usuariosRef);
+        
+        if (existingUsers.empty) {
+            console.log("Auto-semeando Acessos de Líderes e Administradores...");
+            const lideres = [
+                { id: 'time_azul@olimcar.com.br', role: 'lider', equipeId: 'Equipe Azul' },
+                { id: 'time_amarelo@olimcar.com.br', role: 'lider', equipeId: 'Equipe Amarela' },
+                { id: 'time_verde@olimcar.com.br', role: 'lider', equipeId: 'Equipe Verde' },
+                { id: 'time_vermelho@olimcar.com.br', role: 'lider', equipeId: 'Equipe Vermelha' },
+                { id: '01P8mEIXC0Xw24aQJs7wSEybXom1', role: 'admin', equipeId: 'Admin Master' } // ID Exigido pelo Usuário
+            ];
+            
+            for (let u of lideres) {
+                await setDoc(doc(db, 'usuarios', u.id), u);
+            }
+            console.log("Acessos configurados com sucesso no banco!");
+        }
+    } catch (error) {
+        console.error("Erro no auto-seed de usuários:", error);
+    }
+}, 1500);

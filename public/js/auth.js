@@ -11,7 +11,10 @@ export let currentUserData = null;
 onAuthStateChanged(auth, async (user) => {
     currentUser = user;
     if (user) {
-        currentUserData = await getDocument('usuarios', user.email) || { role: 'admin' };
+        let dbRole = await getDocument('usuarios', user.email);
+        if (!dbRole) dbRole = await getDocument('usuarios', user.uid);
+        
+        currentUserData = dbRole || { role: 'admin' };
     } else {
         currentUserData = null;
     }
@@ -39,7 +42,9 @@ export async function loginUser(email, password) {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        const docSnap = await getDocument('usuarios', user.email);
+        let docSnap = await getDocument('usuarios', user.email);
+        if (!docSnap) docSnap = await getDocument('usuarios', user.uid);
+        
         const role = docSnap ? docSnap.role : 'admin';
         return { user, role };
     } catch (error) {
