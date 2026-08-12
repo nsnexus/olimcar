@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLIMCAR - Competição Esportiva</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages.css">
+    
+    <!-- Lucide Icons (CDN) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Navbar / Header -->
+    <header class="topbar">
+        <div class="container topbar-content">
+            <a href="#/" class="logo">
+                <i data-lucide="medal" class="logo-icon"></i>
+                <span>OLIMCAR</span>
+            </a>
+            
+            <button class="menu-toggle" id="mobile-menu-btn">
+                <i data-lucide="menu"></i>
+            </button>
+            
+            <nav class="main-nav" id="main-nav">
+                <a href="#/" class="nav-link">Início</a>
+                <a href="#/agenda" class="nav-link">Agenda</a>
+                <a href="#/resultados" class="nav-link">Resultados</a>
+                <a href="#/ranking" class="nav-link">Ranking</a>
+                <a href="#/login" class="btn btn-outline nav-btn"><i data-lucide="log-in"></i> Entrar</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="app-root" class="app-main">
+        <div class="loading-state">Carregando...</div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <div class="logo">
+                    <i data-lucide="medal" class="logo-icon"></i>
+                    <span>OLIMCAR</span>
+                </div>
+                <p>Gestão e acompanhamento de competições esportivas.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#/privacidade">Política de Privacidade</a>
+                <a href="#/">Contato</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 OLIMCAR. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/js/app.js" type="module"></script>
+    <script>
+        // Inicializar ícones após o carregamento
+        lucide.createIcons();
+    </script>
+</body>
+</html>

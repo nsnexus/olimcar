@@ -1,0 +1,13 @@
+{
+  "name": "projeto_olimcar_firebase",
+  "version": "1.0.0",
+  "description": "Sistema OLIMCAR para gestão de competição esportiva via Firebase",
+  "scripts": {
+    "dev": "live-server public",
+    "deploy": "firebase deploy"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "firebase-tools": "^13.0.0"
+  }
+}
