@@ -46,21 +46,95 @@ export async function seedInitialData() {
         }
     }
     
-    // 2. Criar Equipes
+    // 2. Criar Equipes baseadas nas Cores do Excel
     const equipesRef = collection(db, 'equipes');
     const existingEquipes = await getDocs(equipesRef);
     
     if (existingEquipes.empty) {
         console.log("Semeando Equipes...");
         const equipes = [
-            { nome: 'Tigres do Vale', sigla: 'TIG', cor_primaria: '#f59e0b', cor_secundaria: '#000' },
-            { nome: 'Leões Dourados', sigla: 'LEO', cor_primaria: '#eab308', cor_secundaria: '#fff' },
-            { nome: 'Dragões de Fogo', sigla: 'DRA', cor_primaria: '#ef4444', cor_secundaria: '#1f2937' },
-            { nome: 'Águias Livres', sigla: 'AGU', cor_primaria: '#3b82f6', cor_secundaria: '#fff' }
+            { nome: 'Equipe Azul', sigla: 'AZU', cor_primaria: '#3b82f6', cor_secundaria: '#fff' },
+            { nome: 'Equipe Amarela', sigla: 'AMA', cor_primaria: '#eab308', cor_secundaria: '#000' },
+            { nome: 'Equipe Verde', sigla: 'VER', cor_primaria: '#10b981', cor_secundaria: '#fff' },
+            { nome: 'Equipe Vermelha', sigla: 'VRM', cor_primaria: '#ef4444', cor_secundaria: '#fff' }
         ];
         
         for (let eq of equipes) {
             await addDoc(equipesRef, eq);
+        }
+    }
+
+    // 3. Importar Tabela de Jogos do CSV gerado
+    const jogosRef = collection(db, 'jogos');
+    const existingJogos = await getDocs(jogosRef);
+
+    if (existingJogos.empty) {
+        console.log("Baixando tabela de jogos (CSV)...");
+        try {
+            const response = await fetch('/assets/jogos.csv');
+            const csvText = await response.text();
+            
+            // Mapas para resolver IDs
+            const equipesSnap = await getDocs(equipesRef);
+            const mapEquipes = {};
+            equipesSnap.forEach(doc => {
+                let nomeCor = doc.data().nome.split(' ')[1].toUpperCase();
+                mapEquipes[nomeCor] = { id: doc.id, nome: doc.data().nome };
+            }); // Ex: mapEquipes['AZUL'] = { id: '...', nome: 'Equipe Azul' }
+            
+            // Mapeamento "AZUL" -> "AZUL", "AMARELO" -> "AMARELA", "VERMELHO" -> "VERMELHA"
+            // (Para coincidir com o nomeCor salvo acima ou simplificar as strings do Excel)
+            const resolverEquipe = (corText) => {
+                if(!corText) return null;
+                const c = corText.trim().toUpperCase();
+                if(c === 'AZUL') return mapEquipes['AZUL'];
+                if(c === 'AMARELO') return mapEquipes['AMARELA'];
+                if(c === 'VERDE') return mapEquipes['VERDE'];
+                if(c === 'VERMELHO') return mapEquipes['VERMELHA'];
+                return null;
+            };
+
+            const linhas = csvText.split('\n');
+            let dataAtual = "Data Não Definida";
+            
+            for (let i = 0; i < linhas.length; i++) {
+                const colunas = linhas[i].split(';');
+                if (colunas.length < 5) continue; // Linha inválida ou muito curta
+                
+                // Tratar a data herdada
+                if (colunas[0] && colunas[0].trim() !== '') {
+                    dataAtual = colunas[0].trim();
+                }
+                
+                const horario = colunas[1] ? colunas[1].trim() : '';
+                const modalidade = colunas[2] ? colunas[2].trim() : '';
+                const local = colunas[3] ? colunas[3].trim() : '';
+                const fase = colunas[4] ? colunas[4].trim() : '';
+                const timeA_nome = colunas[5] ? colunas[5].trim() : '';
+                const timeB_nome = colunas[7] ? colunas[7].trim() : ''; // col 6 é o 'X'
+                
+                if (!modalidade) continue;
+
+                // Salvar o Jogo
+                const jogoDoc = {
+                    data_jogo: dataAtual,
+                    horario: horario,
+                    modalidade_texto: modalidade, // Como as modalidades no CSV são específicas demais (ex: NATAÇÃO 25 m RASOS FEMININO), usaremos texto livre e criaremos Modalidade_ID mais tarde ou associamos.
+                    local: local,
+                    fase: fase,
+                    equipe_a: resolverEquipe(timeA_nome) || { nome: timeA_nome },
+                    equipe_b: resolverEquipe(timeB_nome) || { nome: timeB_nome },
+                    placar_a: 0,
+                    placar_b: 0,
+                    status: 'agendado',
+                    criado_em: new Date().toISOString()
+                };
+                
+                await addDoc(jogosRef, jogoDoc);
+            }
+            console.log("Jogos importados com sucesso!");
+        } catch (e) {
+            console.error("Falha ao importar jogos:", e);
         }
     }
     
