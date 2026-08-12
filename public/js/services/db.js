@@ -52,6 +52,26 @@ export async function getCollection(collectionName) {
     }
 }
 
+export async function getDocument(collectionName, id) {
+    try {
+        const docSnap = await getDoc(doc(db, collectionName, id));
+        return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
+    } catch (e) {
+        console.error(`Erro buscar doc ${id}:`, e);
+        return null;
+    }
+}
+
+export async function updateDocument(collectionName, id, data) {
+    try {
+        await updateDoc(doc(db, collectionName, id), data);
+        return true;
+    } catch (e) {
+        console.error(`Erro atualizar doc ${id}:`, e);
+        return false;
+    }
+}
+
 // Função para popular dados básicos (Seed) caso o banco esteja vazio
 export async function seedInitialData() {
     // 1. Criar Modalidades
