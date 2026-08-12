@@ -81,7 +81,8 @@ export function renderDashboardPage() {
                         </tbody>
                     </table>
                 </div>
-            </div> <!-- fecha aba jogos -->
+            </div>
+        </div> <!-- fecha aba jogos -->
 
             <!-- CONTEÚDO: ABA INSCRIÇÕES -->
             <div id="tab-content-inscricoes" style="display: none; margin-top: 1.5rem;">
