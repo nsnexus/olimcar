@@ -67,8 +67,14 @@ export async function loadDashboardJogos() {
     if (!tbody) return;
 
     try {
-        const { getCollection } = await import('../services/db.js');
-        const jogos = await getCollection('jogos');
+        const { getCollection, sortByDateAndTime } = await import('../services/db.js');
+        const jogosBrutos = await getCollection('jogos');
+        
+        // Evita mostrar os cabeçalhos sujos lidos do CSV
+        const jogos = jogosBrutos.filter(j => 
+            j.modalidade_texto && j.modalidade_texto.toUpperCase() !== 'MODALIDADE' &&
+            j.data_jogo && j.data_jogo.toUpperCase() !== 'DATA' && j.data_jogo.trim() !== ''
+        );
 
         if (jogos.length === 0) {
             tbody.innerHTML = `
@@ -82,7 +88,7 @@ export async function loadDashboardJogos() {
         }
 
         // Mostrar os 10 primeiros por enquanto
-        jogos.sort((a, b) => a.data_jogo.localeCompare(b.data_jogo));
+        sortByDateAndTime(jogos);
         const jogosVisiveis = jogos.slice(0, 10);
         const totalRestante = jogos.length - 10;
 

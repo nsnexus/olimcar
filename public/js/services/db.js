@@ -12,6 +12,35 @@ export const TABELA_PONTUACAO = {
     'corrida':       { 1: 80, 2: 60, 3: 40, conclusao: 1 } // +1 p/ cada conclusão
 };
 
+export function sortByDateAndTime(jogos) {
+    const meses = { "janeiro":1, "fevereiro":2, "março":3, "abril":4, "maio":5, "junho":6, "julho":7, "agosto":8, "setembro":9, "outubro":10, "novembro":11, "dezembro":12 };
+    
+    function parseToTime(dataStr, horaStr) {
+        if (!dataStr) return 0;
+        const strLower = dataStr.toLowerCase();
+        const p = strLower.split(' de ');
+        if (p.length < 3) {
+            // Tentativa fallback alfabético caso formato mude
+            return dataStr.charCodeAt(0) * 1000000000;
+        }
+        
+        const diaStr = p[0].includes(',') ? p[0].split(',')[1].trim() : p[0].trim();
+        const dia = parseInt(diaStr) || 1;
+        const mes = meses[p[1].trim()] || 1;
+        const ano = parseInt(p[2].trim()) || 2026;
+        
+        let hora = 0, min = 0;
+        if (horaStr && horaStr.includes(':')) {
+            const hp = horaStr.split(':');
+            hora = parseInt(hp[0]) || 0;
+            min = parseInt(hp[1]) || 0;
+        }
+        return new Date(ano, mes-1, dia, hora, min).getTime();
+    }
+
+    return jogos.sort((a, b) => parseToTime(a.data_jogo, a.horario) - parseToTime(b.data_jogo, b.horario));
+}
+
 // Função genérica para pegar todos os documentos de uma coleção
 export async function getCollection(collectionName) {
     try {
