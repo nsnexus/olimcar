@@ -7,7 +7,7 @@ import { renderEquipesPage } from './pages/admin/equipes.js';
 import { renderJogoEditorPage } from './pages/admin/jogo_editor.js';
 import { renderSumulaEditorPage } from './pages/admin/sumula_editor.js';
 import { renderLiderDashboardPage } from './pages/lider_dashboard.js';
-import { loginUser, logoutUser, currentUser } from './auth.js';
+import { loginUser, logoutUser, currentUser, authResolved } from './auth.js';
 import { seedInitialData } from './services/db.js';
 
 const appRoot = document.getElementById('app-root');
@@ -65,11 +65,18 @@ function router() {
     mainNav.classList.remove('show');
     
     // Proteção de rota
-    if (privateRoutes.includes(hash) && !currentUser) {
-        window.location.hash = '/login';
-        return;
+    if (privateRoutes.includes(hash)) {
+        if (!authResolved) {
+            // Se o Firebase ainda não resolveu, mostra tela de loading e ABORTA a expulsão!
+            appRoot.innerHTML = '<div style="text-align: center; padding: 10rem 2rem;"><i data-lucide="loader-2" class="spin" style="width: 48px; height: 48px; color: var(--color-primary-500); margin-bottom: 1rem;"></i><p style="color: var(--color-text-muted);">Verificando credenciais...</p></div>';
+            if (window.lucide) window.lucide.createIcons();
+            return;
+        }
+        if (!currentUser) {
+            window.location.hash = '/login';
+            return;
+        }
     }
-    
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
         if(link.getAttribute('href') === `#${hash}`) link.classList.add('active');

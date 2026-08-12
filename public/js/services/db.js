@@ -73,6 +73,16 @@ export async function addDocument(collectionName, data) {
     }
 }
 
+export async function setDocument(collectionName, id, data) {
+    try {
+        await setDoc(doc(db, collectionName, id), data);
+        return true;
+    } catch (e) {
+        console.error(`Erro ao setar doc ${id}:`, e);
+        return false;
+    }
+}
+
 export async function updateDocument(collectionName, id, data) {
     try {
         await updateDoc(doc(db, collectionName, id), data);

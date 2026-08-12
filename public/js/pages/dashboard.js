@@ -187,6 +187,7 @@ export async function loadDashboardJogos() {
                         
                         let importedCount = 0;
                         const headerLine = json[0];
+                        const { setDocument } = await import('../services/db.js');
                         
                         for (let i = 1; i < json.length; i++) {
                             const row = json[i];
@@ -210,13 +211,19 @@ export async function loadDashboardJogos() {
                                 nome: row[1],
                                 whatsapp: String(row[2] || ""),
                                 matricula: String(row[3] || ""),
-                                vinculo: row[4],
+                                vinculo: row[4] || "Colaborador",
                                 equipe: equipeLimpa,
                                 modalidades: mods,
                                 status: 'Ativo'
                             };
 
-                            await addDocument('colaboradores', null, colaborador);
+                            // Chave única para evitar duplicados: Usa matrícula. Se não tiver, junta nome e equipe tirando espaços.
+                            const matriculaClean = String(colaborador.matricula).trim();
+                            const uniqueId = matriculaClean.length > 0 
+                                ? matriculaClean 
+                                : colaborador.nome.replace(/\s+/g, '').toLowerCase() + '_' + equipeLimpa.replace(/\s+/g, '').toLowerCase();
+
+                            await setDocument('colaboradores', uniqueId, colaborador);
                             importedCount++;
                         }
                         alert(`Sucesso! ${importedCount} inscrições importadas e distribuídas para as equipes.`);

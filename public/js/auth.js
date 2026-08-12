@@ -6,6 +6,7 @@ import { getDocument } from './services/db.js';
 // Estado global do usuário atual
 export let currentUser = null;
 export let currentUserData = null;
+export let authResolved = false;
 
 // Escutar mudanças de estado na autenticação
 onAuthStateChanged(auth, async (user) => {
@@ -20,12 +21,11 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     const hash = window.location.hash;
-    const btnLogin = document.getElementById('btn-login-nav');
     
     if (user) {
-        if (btnLogin) btnLogin.innerHTML = '<i data-lucide="log-out" style="width: 16px; height: 16px; vertical-align: middle;"></i> Sair';
+        updateUIAfterLogin(currentUserData.role);
     } else {
-        if (btnLogin) btnLogin.innerHTML = '<i data-lucide="user" style="width: 16px; height: 16px; vertical-align: middle;"></i> Login';
+        updateUIAfterLogout();
     }
     if (window.lucide) window.lucide.createIcons();
 
@@ -35,6 +35,12 @@ onAuthStateChanged(auth, async (user) => {
         } else if (hash.startsWith('#/admin') && currentUserData.role === 'lider') {
             window.location.hash = '/lider';
         }
+    }
+
+    const wasNotResolved = !authResolved;
+    authResolved = true;
+    if (wasNotResolved) {
+        window.dispatchEvent(new Event('hashchange')); // Acorda o app.js para ele renderizar a tela bloqueada pelo loading inicial
     }
 });
 
@@ -64,11 +70,11 @@ export async function logoutUser() {
 }
 
 // Atualizar botões/menus na interface se estiver logado
-function updateUIAfterLogin() {
+function updateUIAfterLogin(role = 'admin') {
     const navAuth = document.querySelector('.nav-btn');
     if (navAuth) {
         navAuth.innerHTML = '<i data-lucide="layout-dashboard"></i> Painel';
-        navAuth.setAttribute('href', '#/dashboard');
+        navAuth.setAttribute('href', role === 'lider' ? '#/lider' : '#/dashboard');
         navAuth.classList.remove('btn-outline');
         navAuth.classList.add('btn-primary');
     }
