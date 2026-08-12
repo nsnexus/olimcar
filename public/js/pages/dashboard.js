@@ -189,6 +189,8 @@ export async function loadDashboardJogos() {
                         const headerLine = json[0];
                         const { setDocument } = await import('../services/db.js');
                         
+                        const promessasInscricoes = [];
+
                         for (let i = 1; i < json.length; i++) {
                             const row = json[i];
                             if (!row || row.length < 5 || !row[1]) continue; // Se não tem nome, pula
@@ -223,10 +225,11 @@ export async function loadDashboardJogos() {
                                 ? matriculaClean 
                                 : colaborador.nome.replace(/\s+/g, '').toLowerCase() + '_' + equipeLimpa.replace(/\s+/g, '').toLowerCase();
 
-                            await setDocument('colaboradores', uniqueId, colaborador);
-                            importedCount++;
+                            promessasInscricoes.push(setDocument('colaboradores', uniqueId, colaborador));
                         }
-                        alert(`Sucesso! ${importedCount} inscrições importadas e distribuídas para as equipes.`);
+                        
+                        await Promise.all(promessasInscricoes);
+                        alert(`Sucesso! ${promessasInscricoes.length} inscrições importadas e distribuídas para as equipes.`);
                     }
                 } catch (error) {
                     console.error("Erro ao importar planilha:", error);
