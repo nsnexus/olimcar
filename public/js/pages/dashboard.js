@@ -187,8 +187,11 @@ export async function loadDashboardJogos() {
                         
                         let importedCount = 0;
                         const headerLine = json[0];
-                        const { setDocument } = await import('../services/db.js');
+                        const { getCollection, addDocument } = await import('../services/db.js');
                         
+                        // Buscar todos que já estão no banco para checar duplicados
+                        const existentes = await getCollection('colaboradores');
+                        const matriculasCobradas = new Set(existentes.map(c => String(c.matricula).trim()).filter(m => m.length > 0));
                         const promessasInscricoes = [];
 
                         for (let i = 1; i < json.length; i++) {
@@ -209,27 +212,30 @@ export async function loadDashboardJogos() {
                                 if (row[c]) mods.push(headerLine[c]);
                             }
 
+                            const matriculaClean = String(row[3] || "").trim();
+                            
+                            // IGNORAR SE JÁ EXISTE NO BANCO (Tratamento de duplicatas via sistema sem usar SetDoc)
+                            if (matriculaClean && matriculasCobradas.has(matriculaClean)) {
+                                continue;
+                            }
+
                             const colaborador = {
                                 nome: row[1],
                                 whatsapp: String(row[2] || ""),
-                                matricula: String(row[3] || ""),
+                                matricula: matriculaClean,
                                 vinculo: row[4] || "Colaborador",
                                 equipe: equipeLimpa,
                                 modalidades: mods,
                                 status: 'Ativo'
                             };
 
-                            // Chave única para evitar duplicados: Usa matrícula. Se não tiver, junta nome e equipe tirando espaços.
-                            const matriculaClean = String(colaborador.matricula).trim();
-                            const uniqueId = matriculaClean.length > 0 
-                                ? matriculaClean 
-                                : colaborador.nome.replace(/\s+/g, '').toLowerCase() + '_' + equipeLimpa.replace(/\s+/g, '').toLowerCase();
-
-                            promessasInscricoes.push(setDocument('colaboradores', uniqueId, colaborador));
+                            // Adicionar à fila e também ao Set local para não duplicar no próprio arquivo
+                            if (matriculaClean) matriculasCobradas.add(matriculaClean);
+                            promessasInscricoes.push(addDocument('colaboradores', colaborador));
                         }
                         
                         await Promise.all(promessasInscricoes);
-                        alert(`Sucesso! ${promessasInscricoes.length} inscrições importadas e distribuídas para as equipes.`);
+                        alert(`Sucesso! ${promessasInscricoes.length} NOVAS inscrições importadas.`);
                     }
                 } catch (error) {
                     console.error("Erro ao importar planilha:", error);
