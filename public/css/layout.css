@@ -38,10 +38,10 @@ html, body {
     text-decoration: none;
 }
 
-.logo-icon {
-    width: 28px;
-    height: 28px;
-    color: var(--color-primary-500);
+.logo-img {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
 }
 
 .logo:hover {

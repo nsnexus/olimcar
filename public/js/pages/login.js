@@ -5,8 +5,7 @@ export function renderLoginPage() {
             <div class="card" style="width: 100%; max-width: 400px; padding: 2rem;">
                 <div style="text-align: center; margin-bottom: 2rem;">
                     <div class="logo" style="justify-content: center; margin-bottom: 1rem;">
-                        <i data-lucide="medal" class="logo-icon"></i>
-                        <span>OLIMCAR</span>
+                        <img src="/assets/logo.png" alt="OLIMCAR Logo" class="logo-img" style="height: 60px;">
                     </div>
                     <h2 style="font-size: 1.5rem; color: var(--color-text-main);">Acesse sua conta</h2>
                     <p style="color: var(--color-text-muted); font-size: 0.9rem;">Painel Administrativo e Arbitragem</p>

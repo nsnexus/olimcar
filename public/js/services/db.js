@@ -2,6 +2,16 @@
 import { db } from './firebase.js';
 import { collection, doc, setDoc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
+// Estrutura oficial de pontuação (Regulamento OLIMCAR)
+export const TABELA_PONTUACAO = {
+    'coletivo_plus': { 1: 50, 2: 35, 3: 20 }, // Acima de 4 atletas
+    'coletivo':      { 1: 35, 2: 25, 3: 15 }, // Até 4 participantes
+    'individual':    { 1: 25, 2: 15, 3: 10 },
+    'recreativa':    { 1: 80, 2: 60, 3: 40, 4: 20 },
+    'doacao':        { 1: 100, 2: 75, 3: 50, 4: 25 },
+    'corrida':       { 1: 80, 2: 60, 3: 40, conclusao: 1 } // +1 p/ cada conclusão
+};
+
 // Função genérica para pegar todos os documentos de uma coleção
 export async function getCollection(collectionName) {
     try {
@@ -22,9 +32,13 @@ export async function seedInitialData() {
     if (existingMods.empty) {
         console.log("Semeando Modalidades...");
         const modalidades = [
-            { nome: 'Futebol Society', icone: '⚽', tipo: 'coletivo', min_jogadores: 7, max_jogadores: 12 },
-            { nome: 'Voleibol', icone: '🏐', tipo: 'coletivo', min_jogadores: 6, max_jogadores: 12 },
-            { nome: 'Basquetebol', icone: '🏀', tipo: 'coletivo', min_jogadores: 5, max_jogadores: 10 }
+            { nome: 'Futebol Society', icone: '⚽', categoria_pontuacao: 'coletivo_plus', min_jogadores: 7, max_jogadores: 12 },
+            { nome: 'Voleibol', icone: '🏐', categoria_pontuacao: 'coletivo_plus', min_jogadores: 6, max_jogadores: 12 },
+            { nome: 'Tênis de Dupla', icone: '🎾', categoria_pontuacao: 'coletivo', min_jogadores: 2, max_jogadores: 4 },
+            { nome: 'Natação', icone: '🏊', categoria_pontuacao: 'individual', min_jogadores: 1, max_jogadores: 1 },
+            { nome: 'Jogos de Abertura', icone: '🎉', categoria_pontuacao: 'recreativa', min_jogadores: 1, max_jogadores: 99 },
+            { nome: 'Arrecadação', icone: '🥫', categoria_pontuacao: 'doacao', min_jogadores: 1, max_jogadores: 99 },
+            { nome: 'Corrida Rústica', icone: '🏃', categoria_pontuacao: 'corrida', min_jogadores: 1, max_jogadores: 99 }
         ];
         
         for (let mod of modalidades) {
