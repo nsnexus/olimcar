@@ -63,12 +63,32 @@ export async function getDocument(collectionName, id) {
     }
 }
 
+export async function addDocument(collectionName, data) {
+    try {
+        const docRef = await addDoc(collection(db, collectionName), data);
+        return docRef.id;
+    } catch (e) {
+        console.error(`Erro adicionar doc em ${collectionName}:`, e);
+        return null;
+    }
+}
+
 export async function updateDocument(collectionName, id, data) {
     try {
         await updateDoc(doc(db, collectionName, id), data);
         return true;
     } catch (e) {
         console.error(`Erro atualizar doc ${id}:`, e);
+        return false;
+    }
+}
+
+export async function deleteDocument(collectionName, id) {
+    try {
+        await deleteDoc(doc(db, collectionName, id));
+        return true;
+    } catch (e) {
+        console.error(`Erro ao deletar doc ${id}:`, e);
         return false;
     }
 }

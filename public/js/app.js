@@ -33,7 +33,24 @@ const routes = {
     '/admin/modalidades': () => '<div class="container" style="padding-top: 2rem;"><h2>Modalidades</h2><p>Em construção</p></div>',
     '/admin/jogo': renderJogoEditorPage,
     '/admin/sumula': renderSumulaEditorPage,
-    '/privacidade': () => '<div class="container" style="padding-top: 2rem;"><h2>Política de Privacidade</h2></div>'
+    '/privacidade': () => `
+        <div class="container" style="padding-top: 2rem; max-width: 800px; padding-bottom: 4rem;">
+            <h2 style="margin-bottom: 1.5rem; color: var(--color-primary-800);">Política de Privacidade e Uso de Imagem</h2>
+            <div class="card" style="padding: 2.5rem; line-height: 1.6; color: var(--color-text-main); font-size: 1.05rem;">
+                <h3 style="color: var(--color-primary-600); margin-bottom: 0.5rem; font-size: 1.25rem;">1. Coleta de Dados</h3>
+                <p style="margin-bottom: 1.5rem;">O sistema Olimcar coleta apenas dados funcionais para a gestão das competições esportivas organizadas, como nomes das equipes, pontuações, infrações e evidências fotográficas das súmulas.</p>
+                
+                <h3 style="color: var(--color-primary-600); margin-bottom: 0.5rem; font-size: 1.25rem;">2. Uso de Imagens (Evidências)</h3>
+                <p style="margin-bottom: 1.5rem;">As imagens enviadas no recurso de Súmula Oficial têm como único propósito validar os placares registrados pelos mesários e árbitros em quadra. O uso dessas imagens em campanhas externas sem o consentimento prévio dos colaboradores envolvidos é terminantemente proibido.</p>
+
+                <h3 style="color: var(--color-primary-600); margin-bottom: 0.5rem; font-size: 1.25rem;">3. Acesso Restrito</h3>
+                <p style="margin-bottom: 1.5rem;">O painel administrativo é de acesso estrito aos gestores do evento. Apenas usuários autenticados via plataforma de segurança (Firebase Auth) têm permissão para criar, alterar e encerrar partidas.</p>
+                
+                <h3 style="color: var(--color-primary-600); margin-bottom: 0.5rem; font-size: 1.25rem;">4. Limpeza e Exclusão</h3>
+                <p style="margin-bottom: 0;">Todos os dados esportivos armazenados no banco de dados poderão ser reinicializados pelos administradores após o término do circuito olímpico corporativo, garantindo a limpeza e privacidade das bases a cada nova edição.</p>
+            </div>
+        </div>
+    `
 };
 
 function router() {

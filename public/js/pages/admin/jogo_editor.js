@@ -1,5 +1,4 @@
-// public/js/pages/admin/jogo_editor.js
-import { getDocument, updateDocument } from '../../services/db.js';
+import { getDocument, updateDocument, addDocument } from '../../services/db.js';
 
 let jogoAtual = null;
 
@@ -9,12 +8,12 @@ export function renderJogoEditorPage() {
     return `
         <div class="container" style="padding-top: 2rem; max-width: 800px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                <h2>Editar Informações do Jogo</h2>
+                <h2 id="titulo-pagina">Editar Informações do Jogo</h2>
                 <button class="btn btn-outline" onclick="window.history.back()"><i data-lucide="arrow-left"></i> Voltar</button>
             </div>
             
             <div id="editor-loading" style="text-align: center; padding: 4rem;">
-                <i data-lucide="loader-2" class="spin"></i> Buscando partida...
+                <i data-lucide="loader-2" class="spin"></i> Carregando formulário...
             </div>
             
             <div id="editor-content" style="display: none;">
@@ -61,7 +60,7 @@ export function renderJogoEditorPage() {
 
                     <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 1.5rem;">
                         <button class="btn btn-primary" id="btn-salvar-jogo">
-                            <i data-lucide="save"></i> Salvar Alterações da Agenda
+                            <i data-lucide="save"></i> Salvar Alterações
                         </button>
                     </div>
                     <p id="msg-feedback" style="text-align: right; margin-top: 1rem; font-size: 0.95rem; font-weight: 500;"></p>
@@ -72,31 +71,33 @@ export function renderJogoEditorPage() {
 }
 
 async function loadJogoData() {
-    const hashParams = window.location.hash.split('?')[1];
+    const hashParams = window.location.hash.split('?')[1] || '';
     const params = new URLSearchParams(hashParams);
     const jogoId = params.get('id');
 
-    if (!jogoId) {
-        document.getElementById('editor-loading').innerHTML = "ID da partida não informado.";
-        return;
-    }
+    if (jogoId) {
+        // MODO EDIÇÃO
+        jogoAtual = await getDocument('jogos', jogoId);
+        
+        if (!jogoAtual) {
+            document.getElementById('editor-loading').innerHTML = "Partida não encontrada.";
+            return;
+        }
 
-    jogoAtual = await getDocument('jogos', jogoId);
-    
-    if (!jogoAtual) {
-        document.getElementById('editor-loading').innerHTML = "Partida não encontrada.";
-        return;
+        document.getElementById('input-modalidade').value = jogoAtual.modalidade_texto || '';
+        document.getElementById('input-data').value = jogoAtual.data_jogo || '';
+        document.getElementById('input-horario').value = jogoAtual.horario || '';
+        document.getElementById('input-local').value = jogoAtual.local || '';
+        document.getElementById('input-fase').value = jogoAtual.fase || '';
+        document.getElementById('input-equipe-a').value = jogoAtual.equipe_a?.nome || '';
+        document.getElementById('input-equipe-b').value = jogoAtual.equipe_b?.nome || '';
+        document.getElementById('btn-salvar-jogo').innerHTML = '<i data-lucide="save"></i> Salvar Alterações';
+    } else {
+        // MODO CRIAÇÃO
+        jogoAtual = null;
+        document.getElementById('titulo-pagina').innerText = "Cadastrar Nova Partida";
+        document.getElementById('btn-salvar-jogo').innerHTML = '<i data-lucide="plus-circle"></i> Cadastrar na Agenda';
     }
-
-    // Preencher Inputs de Edição
-    document.getElementById('input-modalidade').value = jogoAtual.modalidade_texto || '';
-    document.getElementById('input-data').value = jogoAtual.data_jogo || '';
-    document.getElementById('input-horario').value = jogoAtual.horario || '';
-    document.getElementById('input-local').value = jogoAtual.local || '';
-    document.getElementById('input-fase').value = jogoAtual.fase || '';
-    
-    document.getElementById('input-equipe-a').value = jogoAtual.equipe_a?.nome || '';
-    document.getElementById('input-equipe-b').value = jogoAtual.equipe_b?.nome || '';
 
     document.getElementById('editor-loading').style.display = 'none';
     document.getElementById('editor-content').style.display = 'block';
@@ -108,32 +109,44 @@ async function loadJogoData() {
 async function salvarJogoInfo() {
     const btn = document.getElementById('btn-salvar-jogo');
     const msg = document.getElementById('msg-feedback');
+    const labelAntiga = btn.innerHTML;
     
     btn.disabled = true;
     btn.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Salvando Agenda...';
     if (window.lucide) window.lucide.createIcons();
 
-    const atualizacoes = {
+    const dados = {
         modalidade_texto: document.getElementById('input-modalidade').value,
         data_jogo: document.getElementById('input-data').value,
         horario: document.getElementById('input-horario').value,
         local: document.getElementById('input-local').value,
         fase: document.getElementById('input-fase').value,
-        equipe_a: { nome: document.getElementById('input-equipe-a').value },
-        equipe_b: { nome: document.getElementById('input-equipe-b').value }
+        equipe_a: { nome: document.getElementById('input-equipe-a').value || 'A Definir' },
+        equipe_b: { nome: document.getElementById('input-equipe-b').value || 'A Definir' }
     };
 
-    const sucesso = await updateDocument('jogos', jogoAtual.id, atualizacoes);
+    let sucesso = false;
+    
+    if (jogoAtual && jogoAtual.id) {
+        sucesso = await updateDocument('jogos', jogoAtual.id, dados);
+    } else {
+        dados.status = 'agendado';
+        dados.placar_a = 0;
+        dados.placar_b = 0;
+        dados.criado_em = new Date().toISOString();
+        const novoId = await addDocument('jogos', dados);
+        sucesso = !!novoId;
+    }
 
     if (sucesso) {
         msg.style.color = 'var(--color-success)';
-        msg.innerText = "Informações atualizadas com sucesso!";
+        msg.innerText = jogoAtual ? "Informações atualizadas!" : "Jogo cadastrado com sucesso!";
         setTimeout(() => { window.history.back(); }, 1500);
     } else {
         msg.style.color = 'var(--color-danger)';
-        msg.innerText = "Erro ao atualizar. Verifique sua permissão.";
+        msg.innerText = "Erro. Verifique sua permissão.";
         btn.disabled = false;
-        btn.innerHTML = '<i data-lucide="save"></i> Salvar Alterações da Agenda';
+        btn.innerHTML = labelAntiga;
         if (window.lucide) window.lucide.createIcons();
     }
 }

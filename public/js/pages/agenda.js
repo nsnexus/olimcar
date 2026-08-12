@@ -8,17 +8,26 @@ export function renderAgendaPage() {
 
     return `
         <div class="container" style="padding-top: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h2>Agenda de Jogos</h2>
-                
-                <div class="filtros-container" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                    <select id="filter-data" class="form-control" style="padding: 0.5rem; border-radius: 4px; border: 1px solid var(--color-border); font-size: 0.9rem;">
+            </div>
+            
+            <div class="card" style="margin-bottom: 2rem; padding: 1.5rem; background: #FFFFFF; border-radius: var(--radius-m); display: flex; gap: 1.5rem; flex-wrap: wrap; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--color-border);">
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: var(--color-text-muted); display: block; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;"><i data-lucide="calendar" style="width: 14px; height: 14px; vertical-align: text-bottom;"></i> Filtrar por Data</label>
+                    <select id="filter-data" class="form-control" style="width: 100%; border: none; background: var(--color-bg-body); border-radius: 8px;">
                         <option value="">Todas as Datas</option>
                     </select>
-                    <select id="filter-modalidade" class="form-control" style="padding: 0.5rem; border-radius: 4px; border: 1px solid var(--color-border); font-size: 0.9rem;">
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: var(--color-text-muted); display: block; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;"><i data-lucide="dribbble" style="width: 14px; height: 14px; vertical-align: text-bottom;"></i> Filtrar por Modalidade</label>
+                    <select id="filter-modalidade" class="form-control" style="width: 100%; border: none; background: var(--color-bg-body); border-radius: 8px;">
                         <option value="">Todas as Modalidades</option>
                     </select>
-                    <select id="filter-equipe" class="form-control" style="padding: 0.5rem; border-radius: 4px; border: 1px solid var(--color-border); font-size: 0.9rem;">
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: var(--color-text-muted); display: block; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;"><i data-lucide="users" style="width: 14px; height: 14px; vertical-align: text-bottom;"></i> Filtrar por Equipe</label>
+                    <select id="filter-equipe" class="form-control" style="width: 100%; border: none; background: var(--color-bg-body); border-radius: 8px;">
                         <option value="">Todas as Equipes</option>
                     </select>
                 </div>

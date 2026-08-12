@@ -25,10 +25,10 @@ export function renderDashboardPage() {
                     <p style="font-size: 0.85rem; color: var(--color-text-muted);">Ver regras e pontos</p>
                 </div>
 
-                <div class="card" style="padding: 1.5rem; text-align: center; opacity: 0.5;">
-                    <i data-lucide="swords" style="width: 48px; height: 48px; color: var(--color-success); margin-bottom: 1rem;"></i>
-                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Agendar Jogos</h3>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">(Via Importação CSV)</p>
+                <div class="card" onclick="window.location.hash='/admin/jogo'" style="padding: 1.5rem; text-align: center; cursor: pointer; transition: transform 0.2s;">
+                    <i data-lucide="calendar-plus" style="width: 48px; height: 48px; color: var(--color-success); margin-bottom: 1rem;"></i>
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Agendar Jogo</h3>
+                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Cadastrar partida manual</p>
                 </div>
             </div>
 
@@ -76,7 +76,7 @@ export async function loadDashboardJogos() {
     if (!tbody) return;
 
     try {
-        const { getCollection, sortByDateAndTime } = await import('../services/db.js');
+        const { getCollection, sortByDateAndTime, deleteDocument } = await import('../services/db.js');
         const jogosBrutos = await getCollection('jogos');
         
         todosJogosAdmin = jogosBrutos.filter(j => 
@@ -105,6 +105,20 @@ export async function loadDashboardJogos() {
         selMod.addEventListener('change', renderAdminJogos);
 
         renderAdminJogos();
+
+        // Expõe a função de exclusão globalmente
+        window.excluirJogo = async (id) => {
+            if (confirm("Tem certeza que deseja excluir esta partida da agenda?")) {
+                const sucesso = await deleteDocument('jogos', id);
+                if (sucesso) {
+                    todosJogosAdmin = todosJogosAdmin.filter(j => j.id !== id);
+                    renderAdminJogos();
+                } else {
+                    alert("Erro ao excluir jogo. Verifique suas permissões.");
+                }
+            }
+        };
+
     } catch (e) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-danger);">Erro ao ler jogos.</td></tr>`;
     }
@@ -146,6 +160,9 @@ function renderAdminJogos() {
                         </button>
                         <button onclick="window.location.hash='/admin/sumula?id=${jogo.id}'" class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; background-color: var(--color-primary-600); border: none;" title="Preencher Súmula e Placar">
                             <i data-lucide="file-text" style="width: 14px; height: 14px;"></i> Súmula
+                        </button>
+                        <button onclick="excluirJogo('${jogo.id}')" class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; color: var(--color-danger); border-color: var(--color-danger);" title="Excluir Jogo">
+                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
                         </button>
                     </div>
                 </td>
