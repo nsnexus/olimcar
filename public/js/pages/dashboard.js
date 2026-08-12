@@ -32,25 +32,29 @@ export function renderDashboardPage() {
                 </div>
             </div>
 
-            <div class="card" style="margin-top: 2rem;">
-                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                    <span>Gerenciar Jogos e Resultados</span>
-                    
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        <input type="file" id="upload-inscricoes" accept=".xlsx, .xls, .csv" style="display: none;">
-                        <button id="btn-importar-inscricoes" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.3rem 0.6rem; color: var(--color-primary-600); border-color: var(--color-primary-600);">
-                            <i data-lucide="upload" style="width: 16px; height: 16px; vertical-align: middle;"></i> Importar Inscrições
-                        </button>
-                        <select id="admin-filter-data" class="form-control" style="padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
-                            <option value="">Todas Datas</option>
-                        </select>
-                        <select id="admin-filter-modalidade" class="form-control" style="padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
-                            <option value="">Todas Modalidades</option>
-                        </select>
-                        <select id="admin-filter-equipe" class="form-control" style="padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
-                            <option value="">Todas as Equipes</option>
-                        </select>
-                    </div>
+            <!-- NAVEGAÇÃO POR ABAS -->
+            <div style="margin-top: 2rem; border-bottom: 1px solid var(--color-border); display: flex; gap: 1rem;">
+                <button id="tab-btn-jogos" style="padding: 0.5rem 1rem; border: none; background: transparent; border-bottom: 3px solid var(--color-primary-600); color: var(--color-primary-700); font-weight: bold; cursor: pointer; font-size: 1rem;">Jogos e Resultados</button>
+                <button id="tab-btn-inscricoes" style="padding: 0.5rem 1rem; border: none; background: transparent; border-bottom: 3px solid transparent; color: var(--color-text-muted); font-weight: 500; cursor: pointer; font-size: 1rem;">Base de Inscrições</button>
+            </div>
+
+            <!-- CONTEÚDO: ABA JOGOS -->
+            <div id="tab-content-jogos">
+                <div class="card" style="margin-top: 1.5rem;">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <span>Gerenciar Jogos e Resultados</span>
+                        
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <select id="admin-filter-data" class="form-control" style="padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                                <option value="">Todas Datas</option>
+                            </select>
+                            <select id="admin-filter-modalidade" class="form-control" style="padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                                <option value="">Todas Modalidades</option>
+                            </select>
+                            <select id="admin-filter-equipe" class="form-control" style="padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                                <option value="">Todas as Equipes</option>
+                            </select>
+                        </div>
 
                     <button id="btn-seed" class="btn btn-primary" style="font-size: 0.8rem; padding: 0.25rem 0.5rem; display: none;">
                         <i data-lucide="database"></i> Seed Base
@@ -77,8 +81,25 @@ export function renderDashboardPage() {
                         </tbody>
                     </table>
                 </div>
+            </div> <!-- fecha aba jogos -->
+
+            <!-- CONTEÚDO: ABA INSCRIÇÕES -->
+            <div id="tab-content-inscricoes" style="display: none; margin-top: 1.5rem;">
+                <div class="card" style="padding: 3rem 2rem; text-align: center; border: 2px dashed var(--color-primary-400); background: var(--color-surface);">
+                    <i data-lucide="users" style="width: 48px; height: 48px; color: var(--color-primary-600); margin-bottom: 1rem;"></i>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--color-primary-800);">Importar Base de Inscrições</h3>
+                    <p style="color: var(--color-text-muted); margin-bottom: 2rem; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                        Carregue a planilha oficial (.xlsx) de inscrições gerada pelo Forms para criar o banco de dados dos atletas e preencher o Painel dos Líderes de Equipe.
+                    </p>
+                    
+                    <input type="file" id="upload-inscricoes" accept=".xlsx, .xls, .csv" style="display: none;">
+                    <button id="btn-importar-inscricoes" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem; border-radius: 50px;">
+                        <i data-lucide="upload" style="margin-right: 8px;"></i> Selecionar e Importar Planilha
+                    </button>
+                </div>
             </div>
-        </div>
+
+        </main>
     `;
 }
 
@@ -207,6 +228,34 @@ export async function loadDashboardJogos() {
                     btnUpload.innerHTML = '<i data-lucide="upload"></i> Importar Inscrições';
                     if (window.lucide) window.lucide.createIcons();
                 }
+            });
+        }
+
+        const btnTabJogos = document.getElementById('tab-btn-jogos');
+        const btnTabInscricoes = document.getElementById('tab-btn-inscricoes');
+        const contentJogos = document.getElementById('tab-content-jogos');
+        const contentInscricoes = document.getElementById('tab-content-inscricoes');
+
+        if (btnTabJogos && btnTabInscricoes) {
+            btnTabJogos.addEventListener('click', () => {
+                contentJogos.style.display = 'block';
+                contentInscricoes.style.display = 'none';
+                btnTabJogos.style.borderBottomColor = 'var(--color-primary-600)';
+                btnTabJogos.style.color = 'var(--color-primary-700)';
+                btnTabJogos.style.fontWeight = 'bold';
+                btnTabInscricoes.style.borderBottomColor = 'transparent';
+                btnTabInscricoes.style.color = 'var(--color-text-muted)';
+                btnTabInscricoes.style.fontWeight = '500';
+            });
+            btnTabInscricoes.addEventListener('click', () => {
+                contentJogos.style.display = 'none';
+                contentInscricoes.style.display = 'block';
+                btnTabInscricoes.style.borderBottomColor = 'var(--color-primary-600)';
+                btnTabInscricoes.style.color = 'var(--color-primary-700)';
+                btnTabInscricoes.style.fontWeight = 'bold';
+                btnTabJogos.style.borderBottomColor = 'transparent';
+                btnTabJogos.style.color = 'var(--color-text-muted)';
+                btnTabJogos.style.fontWeight = '500';
             });
         }
 
