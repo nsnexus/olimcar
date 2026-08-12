@@ -51,7 +51,7 @@ export function renderDashboardPage() {
                         <tbody id="lista-jogos">
                             <tr>
                                 <td colspan="5" style="text-align: center; padding: 2rem; color: var(--color-text-muted);">
-                                    Nenhum jogo agendado ainda. Clique no botão de Agendar Jogos acima.
+                                    <i data-lucide="loader-2" class="spin"></i> Carregando jogos...
                                 </td>
                             </tr>
                         </tbody>
@@ -60,4 +60,57 @@ export function renderDashboardPage() {
             </div>
         </div>
     `;
+}
+
+export async function loadDashboardJogos() {
+    const tbody = document.getElementById('lista-jogos');
+    if (!tbody) return;
+
+    try {
+        const { getCollection } = await import('../services/db.js');
+        const jogos = await getCollection('jogos');
+
+        if (jogos.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 2rem; color: var(--color-text-muted);">
+                        Nenhum jogo agendado ainda. Use o botão de inicializar Seed.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        // Mostrar os 10 primeiros por enquanto
+        jogos.sort((a, b) => a.data_jogo.localeCompare(b.data_jogo));
+        const jogosVisiveis = jogos.slice(0, 10);
+        const totalRestante = jogos.length - 10;
+
+        let html = '';
+        jogosVisiveis.forEach(jogo => {
+            const timeA = jogo.equipe_a?.nome || 'A Definir';
+            const timeB = jogo.equipe_b?.nome || 'A Definir';
+            
+            html += `
+                <tr>
+                    <td>${jogo.data_jogo} <br> <small>${jogo.horario || '--:--'}</small></td>
+                    <td>${jogo.modalidade_texto}</td>
+                    <td><strong>${timeA}</strong> x <strong>${timeB}</strong></td>
+                    <td>${jogo.fase}</td>
+                    <td>
+                        <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        if (totalRestante > 0) {
+            html += `<tr><td colspan="5" style="text-align: center; color: var(--color-text-muted); font-size: 0.85rem;">+ ${totalRestante} jogos agendados... Ver página de Agenda completa.</td></tr>`;
+        }
+
+        tbody.innerHTML = html;
+        if (window.lucide) window.lucide.createIcons();
+    } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-danger);">Erro ao ler jogos.</td></tr>`;
+    }
 }

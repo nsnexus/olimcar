@@ -1,7 +1,8 @@
 // public/js/app.js
 import { renderLandingPage } from './pages/landing.js';
 import { renderLoginPage } from './pages/login.js';
-import { renderDashboardPage } from './pages/dashboard.js';
+import { renderDashboardPage, loadDashboardJogos } from './pages/dashboard.js';
+import { renderAgendaPage } from './pages/agenda.js';
 import { loginUser, logoutUser, currentUser } from './auth.js';
 import { seedInitialData } from './services/db.js';
 
@@ -20,7 +21,7 @@ const privateRoutes = ['/dashboard'];
 // Sistema de Roteamento Simples Baseado em Hash
 const routes = {
     '/': renderLandingPage,
-    '/agenda': () => '<div class="container" style="padding-top: 2rem;"><h2>Agenda de Jogos</h2></div>',
+    '/agenda': renderAgendaPage,
     '/resultados': () => '<div class="container" style="padding-top: 2rem;"><h2>Resultados</h2></div>',
     '/ranking': () => '<div class="container" style="padding-top: 2rem;"><h2>Quadro de Medalhas</h2></div>',
     '/login': renderLoginPage,
@@ -79,6 +80,9 @@ function router() {
     if (hash === '/dashboard') {
         const btnLogout = document.getElementById('btn-logout');
         const btnSeed = document.getElementById('btn-seed');
+        
+        loadDashboardJogos();
+
         
         if (btnLogout) {
             btnLogout.addEventListener('click', async () => {

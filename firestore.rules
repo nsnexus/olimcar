@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 1. Funções de checagem (Os porteiros do sistema)
+    function estaLogado() {
+      return request.auth != null;
+    }
+    
+    function isAdmGeral() {
+      return estaLogado() && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.perfil == 'adm_geral';
+    }
+
+    function isArbitro() {
+      return estaLogado() && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.perfil == 'arbitragem';
+    }
+
+    // 2. Regras por Coleção
+    
+    // Todos podem ler as modalidades, equipes e jogos (porque aparecem no site público)
+    match /modalidades/{document=**} {
+      allow read: if true;
+      allow write: if isAdmGeral();
+    }
+    
+    match /equipes/{document=**} {
+      allow read: if true;
+      allow write: if isAdmGeral();
+    }
+    
+    match /jogos/{jogo} {
+      allow read: if true; // Público acessa
+      // Adm Geral pode tudo. Árbitro só pode se for um update de placar
+      allow write: if isAdmGeral() || isArbitro(); 
+    }
+    
+    // Apenas Adm Geral mexe na tabela de perfis de usuário
+    match /usuarios/{userId} {
+      allow read, write: if isAdmGeral();
+    }
+  }
+}
