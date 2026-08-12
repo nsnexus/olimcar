@@ -1,4 +1,4 @@
-import { getDocument, updateDocument, addDocument } from '../../services/db.js';
+import { getDocument, updateDocument, addDocument, getCollection } from '../../services/db.js';
 
 let jogoAtual = null;
 
@@ -51,11 +51,15 @@ export function renderJogoEditorPage() {
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                             <div class="form-group">
                                 <label class="form-label" style="color: var(--color-primary-600);">Equipe A</label>
-                                <input type="text" id="input-equipe-a" class="form-control" placeholder="Ex: Equipe Amarela">
+                                <select id="input-equipe-a" class="form-control">
+                                    <!-- Injetado via JS -->
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label class="form-label" style="color: var(--color-primary-600);">Equipe B</label>
-                                <input type="text" id="input-equipe-b" class="form-control" placeholder="Ex: Equipe Verde">
+                                <select id="input-equipe-b" class="form-control">
+                                    <!-- Injetado via JS -->
+                                </select>
                             </div>
                         </div>
 
@@ -72,10 +76,20 @@ export function renderJogoEditorPage() {
     `;
 }
 
+async function carregarDropdownEquipes() {
+    const equipesDB = await getCollection('equipes');
+    let options = '<option value="A Definir">A Definir</option><option value="TODAS AS EQUIPES">TODAS AS EQUIPES</option>';
+    equipesDB.forEach(eq => { options += `<option value="${eq.nome}">${eq.nome}</option>`; });
+    document.getElementById('input-equipe-a').innerHTML = options;
+    document.getElementById('input-equipe-b').innerHTML = options;
+}
+
 async function loadJogoData() {
     const hashParams = window.location.hash.split('?')[1] || '';
     const params = new URLSearchParams(hashParams);
     const jogoId = params.get('id');
+
+    await carregarDropdownEquipes();
 
     if (jogoId) {
         // MODO EDIÇÃO
