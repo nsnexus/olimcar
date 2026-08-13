@@ -4,6 +4,7 @@ import { renderLoginPage } from './pages/login.js';
 import { renderDashboardPage, loadDashboardJogos } from './pages/dashboard.js';
 import { renderAgendaPage } from './pages/agenda.js';
 import { renderEquipesPage } from './pages/admin/equipes.js';
+import { renderModalidadesPage } from './pages/admin/modalidades.js';
 import { renderJogoEditorPage } from './pages/admin/jogo_editor.js';
 import { renderSumulaEditorPage } from './pages/admin/sumula_editor.js';
 import { renderLiderDashboardPage } from './pages/lider_dashboard.js';
@@ -34,7 +35,7 @@ const routes = {
     '/dashboard': renderDashboardPage,
     '/lider': renderLiderDashboardPage,
     '/admin/equipes': renderEquipesPage,
-    '/admin/modalidades': () => '<div class="container" style="padding-top: 2rem;"><h2>Modalidades</h2><p>Em construção</p></div>',
+    '/admin/modalidades': renderModalidadesPage,
     '/admin/jogo': renderJogoEditorPage,
     '/admin/sumula': renderSumulaEditorPage,
     '/privacidade': () => `
