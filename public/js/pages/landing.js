@@ -4,7 +4,7 @@ export function renderLandingPage() {
     return `
         <!-- Hero Section Premium -->
         <section class="hero-section">
-            <video id="hero-video" class="hero-video-bg" playsinline preload="auto" disablepictureinpicture disableremoteplayback controlslist="nodownload noremoteplayback nofullscreen">
+            <video id="hero-video" class="hero-video-bg" autoplay muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback controlslist="nodownload noremoteplayback nofullscreen">
                 <source src="/assets/video/hero.mp4" type="video/mp4">
             </video>
         </section>
