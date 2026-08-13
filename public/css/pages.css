@@ -316,3 +316,118 @@
     vertical-align: middle;
     margin-right: 0.2rem;
 }
+
+/* --- LED Neon Divider --- */
+.led-divider-wrapper {
+    width: 100%;
+    background: #000;
+    padding: 1px 0;
+    position: relative;
+    z-index: 10;
+}
+
+.led-divider {
+    height: 4px;
+    width: 100%;
+    background: linear-gradient(90deg, #00e5ff, #0066ff, #00e5ff);
+    background-size: 200% auto;
+    box-shadow: 0 0 15px #00e5ff, 0 0 30px #00e5ff, 0 0 45px #0066ff;
+    animation: led-pulse 3s infinite, gradient-shift 5s linear infinite;
+}
+
+@keyframes led-pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 15px #00e5ff, 0 0 30px #00e5ff, 0 0 45px #0066ff; }
+    50% { opacity: 0.5; box-shadow: 0 0 5px #00e5ff, 0 0 10px #00e5ff, 0 0 20px #0066ff; }
+}
+@keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+/* --- Carrossel de Modalidades --- */
+.carousel-wrapper {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    padding: 1rem 0 3rem;
+    /* Efeito de fade nas bordas para não cortar seco */
+    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.carousel-track {
+    display: flex;
+    gap: 1.5rem;
+    width: max-content;
+    animation: scroll-carousel 40s linear infinite;
+}
+
+.carousel-wrapper:hover .carousel-track {
+    animation-play-state: paused;
+}
+
+@keyframes scroll-carousel {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-50% - 0.75rem)); }
+}
+
+/* Garantir que os cards dentro do track tenham uma largura fixa */
+.carousel-track .feature-card {
+    width: 260px;
+    flex-shrink: 0;
+}
+
+/* --- Seção Motivacional (CTA) --- */
+.cta-section {
+    background: linear-gradient(135deg, var(--color-primary-900), #050a12);
+    padding: 6rem 1rem;
+    color: #fff;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cta-section h2 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin-bottom: 1.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.cta-section h2 span {
+    color: #00e5ff;
+    text-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+}
+
+.cta-text {
+    font-size: 1.2rem;
+    color: #e2e8f0;
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+}
+
+.cta-highlight {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2.5rem;
+}
+
+.cta-button {
+    font-size: 1.2rem;
+    padding: 1rem 2.5rem;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    border: 2px solid #00e5ff;
+    background: transparent;
+    color: #00e5ff;
+    transition: all 0.3s ease;
+    display: inline-block;
+    border-radius: var(--radius-md);
+}
+
+.cta-button:hover {
+    background: #00e5ff;
+    color: #000;
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.6);
+}
