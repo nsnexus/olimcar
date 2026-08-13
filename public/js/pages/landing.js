@@ -4,7 +4,7 @@ export function renderLandingPage() {
     return `
         <!-- Hero Section Premium -->
         <section class="hero-section">
-            <video id="hero-video" class="hero-video-bg" autoplay muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback controlslist="nodownload noremoteplayback nofullscreen">
+            <video id="hero-video" class="hero-video-bg" autoplay muted playsinline preload="auto" disablepictureinpicture disableremoteplayback controlslist="nodownload noremoteplayback nofullscreen" style="cursor: pointer;" title="Clique para reproduzir novamente">
                 <source src="/assets/video/hero.mp4" type="video/mp4">
             </video>
         </section>
@@ -64,7 +64,7 @@ export function renderLandingPage() {
                 <p class="cta-highlight">
                    Sua equipe conta com você. Vista a camisa. Entre em campo.
                 </p>
-                <a href="#/agenda" class="btn btn-primary btn-neon cta-button">Ver Agenda e Participar</a>
+                <a href="#/agenda" class="btn btn-primary" style="font-size: 1.1rem; padding: 0.85rem 2rem; border-radius: var(--radius-md);">Ver Agenda e Participar</a>
             </div>
         </section>
     `;
