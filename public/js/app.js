@@ -115,6 +115,41 @@ function router() {
                 }
             });
         }
+        
+        // Lógica do Countdown
+        const countdownElement = document.getElementById('hero-countdown');
+        if (countdownElement) {
+            const targetDate = new Date('2026-09-19T08:00:00').getTime();
+            
+            const updateCountdown = () => {
+                if (!document.getElementById('hero-countdown')) return;
+                
+                const now = new Date().getTime();
+                const distance = targetDate - now;
+                
+                if (distance < 0) {
+                    document.getElementById('cd-days').innerText = '00';
+                    document.getElementById('cd-hours').innerText = '00';
+                    document.getElementById('cd-minutes').innerText = '00';
+                    document.getElementById('cd-seconds').innerText = '00';
+                    return;
+                }
+                
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                document.getElementById('cd-days').innerText = String(days).padStart(2, '0');
+                document.getElementById('cd-hours').innerText = String(hours).padStart(2, '0');
+                document.getElementById('cd-minutes').innerText = String(minutes).padStart(2, '0');
+                document.getElementById('cd-seconds').innerText = String(seconds).padStart(2, '0');
+                
+                setTimeout(updateCountdown, 1000);
+            };
+            
+            updateCountdown();
+        }
     }
 
     // Anexar eventos dinâmicos baseados na rota atual

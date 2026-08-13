@@ -4,9 +4,30 @@ export function renderLandingPage() {
     return `
         <!-- Hero Section Premium -->
         <section class="hero-section">
-            <video id="hero-video" class="hero-video-bg" autoplay muted playsinline preload="auto" disablepictureinpicture disableremoteplayback controlslist="nodownload noremoteplayback nofullscreen" style="cursor: pointer;" title="Clique para reproduzir novamente">
-                <source src="/assets/video/hero.mp4" type="video/mp4">
+            <video id="hero-video" class="hero-video-bg" autoplay muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback controlslist="nodownload noremoteplayback nofullscreen" style="cursor: pointer;" title="Olimcar">
+                <source src="/assets/video/new_hero.mp4" type="video/mp4">
             </video>
+            
+            <div class="hero-overlay">
+                <div class="hero-content container">
+                    <div class="hero-logo-wrapper">
+                        <img src="/assets/logo-transparent.png" alt="Olimcar Logo" class="hero-logo">
+                    </div>
+                    <div class="hero-countdown-wrapper">
+                        <p class="hero-countdown-label">Os jogos começam em:</p>
+                        <div class="hero-countdown" id="hero-countdown">
+                            <div class="countdown-item"><span id="cd-days">00</span><small>Dias</small></div>
+                            <div class="countdown-separator">:</div>
+                            <div class="countdown-item"><span id="cd-hours">00</span><small>Horas</small></div>
+                            <div class="countdown-separator">:</div>
+                            <div class="countdown-item"><span id="cd-minutes">00</span><small>Min</small></div>
+                            <div class="countdown-separator">:</div>
+                            <div class="countdown-item"><span id="cd-seconds">00</span><small>Seg</small></div>
+                        </div>
+                        <p class="hero-countdown-date">19 de Setembro de 2026 às 08:00</p>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <div class="led-divider-wrapper">

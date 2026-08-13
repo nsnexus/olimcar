@@ -127,24 +127,33 @@ async function loadRanking() {
                 const cor = CORES_EQUIPE[equipe] || 'var(--color-text-light)';
                 const medalhas = medalhasPorEquipe[equipe];
                 const largura = (pontos / maxPontos) * 100;
+                const position = i + 1;
+                const rankClass = position <= 3 ? `rank-${position}` : '';
+                
                 return `
-                <div class="card" style="padding: 1.5rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; gap: 1rem; flex-wrap: wrap;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                            <span style="font-size: 1.3rem; font-weight: 800; color: var(--color-text-light); width: 2rem;">${i + 1}º</span>
-                            <span style="width: 14px; height: 14px; border-radius: 50%; background: ${cor}; display: inline-block; flex-shrink: 0;"></span>
-                            <span style="font-weight: 700; font-size: 1.1rem;">${equipe.replace(/^Equipe\s+/i, '')}</span>
+                <div class="ranking-card ${rankClass}" style="animation-delay: ${i * 0.1}s">
+                    <div class="ranking-header">
+                        <div class="ranking-team-info">
+                            <div class="rank-badge">${position}º</div>
+                            <span class="team-color-dot" style="background: ${cor};"></span>
+                            <span class="team-name">${equipe.replace(/^Equipe\s+/i, '')}</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <span style="font-size: 0.85rem; color: var(--color-text-muted);">🥇 ${medalhas[1]} &nbsp; 🥈 ${medalhas[2]} &nbsp; 🥉 ${medalhas[3]}</span>
-                            <span style="font-size: 1.4rem; font-weight: 800; color: var(--color-primary-700);">${pontos} pts</span>
+                        
+                        <div class="ranking-stats">
+                            <div class="medals-container">
+                                <div class="medal-badge medal-gold"><i data-lucide="medal"></i> ${medalhas[1]}</div>
+                                <div class="medal-badge medal-silver"><i data-lucide="medal"></i> ${medalhas[2]}</div>
+                                <div class="medal-badge medal-bronze"><i data-lucide="medal"></i> ${medalhas[3]}</div>
+                            </div>
+                            <div class="ranking-points">${pontos} <span style="font-size: 0.9rem; font-weight:600; color:var(--color-text-muted)">pts</span></div>
                         </div>
                     </div>
-                    <div style="background: var(--color-primary-50); border-radius: var(--radius-full); height: 10px; overflow: hidden;">
-                        <div style="width: ${largura}%; height: 100%; background: ${cor}; border-radius: var(--radius-full); transition: width 0.8s ease;"></div>
+                    
+                    <div class="ranking-progress-bg">
+                        <div class="ranking-progress-fill" style="width: ${largura}%; background: ${cor};"></div>
                     </div>
                 </div>
-            `;
+                `;
             }).join('');
         }
 
