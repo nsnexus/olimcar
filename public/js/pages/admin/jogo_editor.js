@@ -1,4 +1,4 @@
-import { getDocument, updateDocument, addDocument, getCollection } from '../../services/db.js';
+import { getDocument, updateDocument, addDocument, getCollection, CATEGORIAS_PONTUACAO } from '../../services/db.js';
 
 let jogoAtual = null;
 
@@ -40,6 +40,12 @@ export function renderJogoEditorPage() {
                         <div class="form-group" style="grid-column: span 2;">
                             <label class="form-label">Fase (Opcional)</label>
                             <input type="text" id="input-fase" class="form-control" placeholder="Ex: Semifinal, JOGO 01">
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label class="form-label">Categoria de Pontuação</label>
+                            <select id="input-categoria" class="form-control">
+                                <!-- Injetado via JS -->
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -84,17 +90,25 @@ async function carregarDropdownEquipes() {
     document.getElementById('input-equipe-b').innerHTML = options;
 }
 
+function carregarDropdownCategorias() {
+    const options = Object.entries(CATEGORIAS_PONTUACAO)
+        .map(([valor, label]) => `<option value="${valor}">${label}</option>`)
+        .join('');
+    document.getElementById('input-categoria').innerHTML = options;
+}
+
 async function loadJogoData() {
     const hashParams = window.location.hash.split('?')[1] || '';
     const params = new URLSearchParams(hashParams);
     const jogoId = params.get('id');
 
     await carregarDropdownEquipes();
+    carregarDropdownCategorias();
 
     if (jogoId) {
         // MODO EDIÇÃO
         jogoAtual = await getDocument('jogos', jogoId);
-        
+
         if (!jogoAtual) {
             document.getElementById('editor-loading').innerHTML = "Partida não encontrada.";
             return;
@@ -105,6 +119,7 @@ async function loadJogoData() {
         document.getElementById('input-horario').value = jogoAtual.horario || '';
         document.getElementById('input-local').value = jogoAtual.local || '';
         document.getElementById('input-fase').value = jogoAtual.fase || '';
+        document.getElementById('input-categoria').value = jogoAtual.categoria || 'coletivo';
         document.getElementById('input-equipe-a').value = jogoAtual.equipe_a?.nome || '';
         document.getElementById('input-equipe-b').value = jogoAtual.equipe_b?.nome || '';
         document.getElementById('btn-salvar-jogo').innerHTML = '<i data-lucide="save"></i> Salvar Alterações';
@@ -137,6 +152,7 @@ async function salvarJogoInfo() {
         horario: document.getElementById('input-horario').value,
         local: document.getElementById('input-local').value,
         fase: document.getElementById('input-fase').value,
+        categoria: document.getElementById('input-categoria').value,
         equipe_a: { nome: document.getElementById('input-equipe-a').value || 'A Definir' },
         equipe_b: { nome: document.getElementById('input-equipe-b').value || 'A Definir' }
     };

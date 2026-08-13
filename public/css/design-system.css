@@ -9,7 +9,9 @@
     /* Cores Neutras / Backgrounds (SaaS Premium) */
     --color-bg-body: #F7F9FA;
     --color-bg-card: #FFFFFF;
-    
+    --color-surface: #FFFFFF;
+    --color-surface-hover: #F1F5F9;
+
     /* Cores de Texto (Hierarchy) */
     --color-text-main: #111827; /* Near black */
     --color-text-muted: #4B5563; /* Secondary */
@@ -19,6 +21,7 @@
     --color-success: #059669;
     --color-warning: #FFB703; /* Ouro da Onça/Logo */
     --color-danger: #DC2626;
+    --color-info: #2563EB;
     
     /* Tipografia */
     --font-sans: 'Inter', -apple-system, sans-serif;

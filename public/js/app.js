@@ -9,12 +9,15 @@ import { renderJogoEditorPage } from './pages/admin/jogo_editor.js';
 import { renderSumulaEditorPage } from './pages/admin/sumula_editor.js';
 import { renderLiderDashboardPage } from './pages/lider_dashboard.js';
 import { renderEquipesPublicPage } from './pages/equipes.js';
+import { renderResultadosPage } from './pages/resultados.js';
+import { renderRankingPage } from './pages/ranking.js';
 import { loginUser, logoutUser, currentUser, authResolved } from './auth.js';
 import { seedInitialData } from './services/db.js';
 
 const appRoot = document.getElementById('app-root');
 const mainNav = document.getElementById('main-nav');
 const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+const mainFooter = document.querySelector('.main-footer');
 
 // Lógica de menu mobile
 mobileMenuBtn.addEventListener('click', () => {
@@ -29,8 +32,8 @@ const routes = {
     '/': renderLandingPage,
     '/agenda': renderAgendaPage,
     '/equipes': renderEquipesPublicPage,
-    '/resultados': () => '<div class="container" style="padding-top: 2rem;"><h2>Resultados</h2></div>',
-    '/ranking': () => '<div class="container" style="padding-top: 2rem;"><h2>Quadro de Medalhas</h2></div>',
+    '/resultados': renderResultadosPage,
+    '/ranking': renderRankingPage,
     '/login': renderLoginPage,
     '/dashboard': renderDashboardPage,
     '/lider': renderLiderDashboardPage,
@@ -87,7 +90,11 @@ function router() {
 
     const routeFunction = routes[hash] || (() => '<div class="container" style="padding-top: 2rem;"><h2>404 - Página não encontrada</h2></div>');
     appRoot.innerHTML = routeFunction();
-    
+
+    if (mainFooter) {
+        mainFooter.style.display = hash === '/' ? '' : 'none';
+    }
+
     // Anexar eventos dinâmicos baseados na rota atual
     if (hash === '/login') {
         const loginForm = document.getElementById('login-form');

@@ -15,22 +15,29 @@ export function renderEquipesPage() {
             </div>
 
             <div class="card">
-                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                     <span>Lista Geral de Atletas</span>
-                    <input type="text" id="filtro-atletas" placeholder="Buscar por nome ou equipe..." class="form-control" style="max-width: 300px; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <select id="filtro-modalidade-atletas" class="form-control" style="width: auto; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                            <option value="">Todas as Modalidades</option>
+                        </select>
+                        <input type="text" id="filtro-atletas" placeholder="Buscar por nome, matrícula ou equipe..." class="form-control" style="max-width: 300px; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                    </div>
                 </div>
                 <div class="table-container" style="max-height: 500px; overflow-y: auto;">
                     <table style="width: 100%;">
                         <thead style="position: sticky; top: 0; background: var(--color-surface); z-index: 10;">
                             <tr>
                                 <th>Nome do Atleta</th>
+                                <th>Matrícula</th>
+                                <th>Contato</th>
                                 <th>Equipe</th>
                                 <th>Vínculo</th>
                                 <th>Nº de Modalidades</th>
                             </tr>
                         </thead>
                         <tbody id="lista-atletas">
-                            <tr><td colspan="4" style="text-align: center; padding: 2rem;"><i data-lucide="loader-2" class="spin"></i> Carregando banco de dados...</td></tr>
+                            <tr><td colspan="6" style="text-align: center; padding: 2rem;"><i data-lucide="loader-2" class="spin"></i> Carregando banco de dados...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -43,7 +50,8 @@ async function loadEquipesData() {
     const tbody = document.getElementById('lista-atletas');
     const statsContainer = document.getElementById('stats-equipes');
     const inputFiltro = document.getElementById('filtro-atletas');
-    
+    const selectModalidade = document.getElementById('filtro-modalidade-atletas');
+
     if (!tbody || !statsContainer) return;
 
     try {
@@ -82,15 +90,24 @@ async function loadEquipesData() {
         
         statsContainer.innerHTML = htmlStats;
 
+        // Popular filtro de modalidades (ignorando lixo de importação tipo "Coluna 53")
+        const modalidadesUnicas = new Set();
+        atletas.forEach(a => (a.modalidades || []).forEach(m => {
+            if (m && !/^Coluna\s*\d+$/i.test(m)) modalidadesUnicas.add(m);
+        }));
+        Array.from(modalidadesUnicas).sort().forEach(m => selectModalidade.add(new Option(m, m)));
+
         // Função de Renderizar a Tabela
         const renderTabela = (lista) => {
             if (lista.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem;">Nenhum atleta encontrado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">Nenhum atleta encontrado.</td></tr>';
                 return;
             }
             tbody.innerHTML = lista.map(a => `
                 <tr>
                     <td style="font-weight: 500;">${a.nome || 'N/A'}</td>
+                    <td style="color: var(--color-text-muted);">${a.matricula || '-'}</td>
+                    <td style="color: var(--color-text-muted);">${a.whatsapp || '-'}</td>
                     <td><span class="badge" style="background-color: ${cores[a.equipe] || 'var(--color-border)'}; color: white;">${a.equipe || 'N/A'}</span></td>
                     <td style="color: var(--color-text-muted);">${a.vinculo || '-'}</td>
                     <td>${a.modalidades ? a.modalidades.length : 0} mod.</td>
@@ -98,22 +115,30 @@ async function loadEquipesData() {
             `).join('');
         };
 
-        // Filtro em tempo real
-        inputFiltro.addEventListener('input', (e) => {
-            const termo = e.target.value.toLowerCase();
-            const filtrados = atletas.filter(a => 
-                (a.nome && a.nome.toLowerCase().includes(termo)) || 
-                (a.equipe && a.equipe.toLowerCase().includes(termo))
-            );
+        // Filtro em tempo real (texto + modalidade)
+        const aplicarFiltros = () => {
+            const termo = inputFiltro.value.toLowerCase();
+            const modalidadeSelecionada = selectModalidade.value;
+            const filtrados = atletas.filter(a => {
+                const matchTermo = !termo ||
+                    (a.nome && a.nome.toLowerCase().includes(termo)) ||
+                    (a.equipe && a.equipe.toLowerCase().includes(termo)) ||
+                    (a.matricula && String(a.matricula).toLowerCase().includes(termo));
+                const matchModalidade = !modalidadeSelecionada || (a.modalidades || []).includes(modalidadeSelecionada);
+                return matchTermo && matchModalidade;
+            });
             renderTabela(filtrados);
-        });
+        };
+
+        inputFiltro.addEventListener('input', aplicarFiltros);
+        selectModalidade.addEventListener('change', aplicarFiltros);
 
         renderTabela(atletas);
         if (window.lucide) window.lucide.createIcons();
         
     } catch (e) {
         console.error(e);
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--color-danger);">Erro ao ler banco de dados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--color-danger);">Erro ao ler banco de dados.</td></tr>`;
         statsContainer.innerHTML = `<div class="card" style="padding: 2rem; text-align: center; color: var(--color-danger);">Falha de Comunicação</div>`;
     }
 }

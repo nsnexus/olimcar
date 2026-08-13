@@ -39,9 +39,11 @@ service cloud.firestore {
       allow write: if isAdmGeral() || isArbitro(); 
     }
     
-    // Apenas Adm Geral mexe na tabela de perfis de usuário
+    // Cada usuário pode ler o próprio documento (pra descobrir sua role no login).
+    // Só Adm Geral pode ler a lista toda ou escrever.
     match /usuarios/{userId} {
-      allow read, write: if isAdmGeral();
+      allow read: if estaLogado() && (isAdmGeral() || request.auth.uid == userId || request.auth.token.email == userId);
+      allow write: if isAdmGeral();
     }
   }
 }

@@ -29,10 +29,10 @@ onAuthStateChanged(auth, async (user) => {
     }
     if (window.lucide) window.lucide.createIcons();
 
-    if (hash.startsWith('#/admin') || hash.startsWith('#/lider')) {
+    if (hash.startsWith('#/admin') || hash.startsWith('#/lider') || hash.startsWith('#/dashboard')) {
         if (!user) {
             window.location.hash = '/login';
-        } else if (hash.startsWith('#/admin') && currentUserData.role === 'lider') {
+        } else if ((hash.startsWith('#/admin') || hash.startsWith('#/dashboard')) && currentUserData.role === 'lider') {
             window.location.hash = '/lider';
         }
     }
