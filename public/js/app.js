@@ -11,6 +11,8 @@ import { renderLiderDashboardPage } from './pages/lider_dashboard.js';
 import { renderEquipesPublicPage } from './pages/equipes.js';
 import { renderResultadosPage } from './pages/resultados.js';
 import { renderRankingPage } from './pages/ranking.js';
+import { renderSobrePage } from './pages/sobre.js';
+import { renderTermosPage } from './pages/termos.js';
 import { loginUser, logoutUser, currentUser, authResolved } from './auth.js';
 import { seedInitialData } from './services/db.js';
 
@@ -41,6 +43,8 @@ const routes = {
     '/admin/modalidades': renderModalidadesPage,
     '/admin/jogo': renderJogoEditorPage,
     '/admin/sumula': renderSumulaEditorPage,
+    '/sobre': renderSobrePage,
+    '/termos': renderTermosPage,
     '/privacidade': () => `
         <div class="container" style="padding-top: 2rem; max-width: 800px; padding-bottom: 4rem;">
             <h2 style="margin-bottom: 1.5rem; color: var(--color-primary-800);">Política de Privacidade e Uso de Imagem</h2>
@@ -93,6 +97,24 @@ function router() {
 
     if (mainFooter) {
         mainFooter.style.display = hash === '/' ? '' : 'none';
+    }
+
+    // Comportamento do Vídeo da Home (Tocar uma vez e pausar, clicar para tocar de novo)
+    if (hash === '/') {
+        const heroVideo = document.getElementById('hero-video');
+        if (heroVideo) {
+            heroVideo.addEventListener('ended', () => {
+                heroVideo.pause();
+            });
+            heroVideo.addEventListener('click', () => {
+                if (heroVideo.paused || heroVideo.ended) {
+                    heroVideo.currentTime = 0;
+                    heroVideo.play();
+                } else {
+                    heroVideo.pause();
+                }
+            });
+        }
     }
 
     // Anexar eventos dinâmicos baseados na rota atual
