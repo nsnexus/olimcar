@@ -361,6 +361,201 @@
     width: max-content;
     animation: scroll-carousel 40s linear infinite;
 }
+.feature-card:hover .feature-img {
+    transform: scale(1.12);
+    filter: saturate(1.1) brightness(0.75);
+}
+
+.feature-card:hover::after {
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0.05) 75%);
+}
+
+.feature-card:hover .feature-content {
+    transform: translateY(0);
+}
+
+.feature-card:hover .feature-title::after {
+    width: 2.5rem;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Agenda: cards mobile / tabela desktop --- */
+.jogos-cards-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .jogos-tabela-desktop {
+        display: none;
+    }
+
+    .jogos-cards-mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+.jogo-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.jogo-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.jogo-card-date {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.jogo-card-date-num {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--color-primary-800);
+}
+
+.jogo-card-weekday {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+    background: var(--color-primary-500);
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+}
+
+.jogo-card-time {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.jogo-card-time i {
+    width: 14px;
+    height: 14px;
+}
+
+.jogo-card-modalidade {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--color-primary-600);
+    background: var(--color-primary-50);
+    padding: 0.3rem 0.6rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+}
+
+.jogo-card-matchup {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 0.75rem;
+}
+
+.jogo-card-team {
+    flex: 1;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--color-text-main);
+}
+
+.jogo-card-team:last-child {
+    text-align: right;
+}
+
+.jogo-card-team:last-child span {
+    flex-direction: row-reverse;
+}
+
+.jogo-card-vs {
+    color: var(--color-text-light);
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.jogo-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+.jogo-card-footer i {
+    width: 12px;
+    height: 12px;
+    vertical-align: middle;
+    margin-right: 0.2rem;
+}
+
+/* --- LED Neon Divider --- */
+.led-divider-wrapper {
+    width: 100%;
+    background: #000;
+    padding: 1px 0;
+    position: relative;
+    z-index: 10;
+}
+
+.led-divider {
+    height: 4px;
+    width: 100%;
+    background: linear-gradient(90deg, #00e5ff, #0066ff, #00e5ff);
+    background-size: 200% auto;
+    box-shadow: 0 0 15px #00e5ff, 0 0 30px #00e5ff, 0 0 45px #0066ff;
+    animation: led-pulse 3s infinite, gradient-shift 5s linear infinite;
+}
+
+@keyframes led-pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 15px #00e5ff, 0 0 30px #00e5ff, 0 0 45px #0066ff; }
+    50% { opacity: 0.5; box-shadow: 0 0 5px #00e5ff, 0 0 10px #00e5ff, 0 0 20px #0066ff; }
+}
+@keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+/* --- Carrossel de Modalidades --- */
+.carousel-wrapper {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    padding: 1rem 0 3rem;
+    /* Efeito de fade nas bordas para não cortar seco */
+    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.carousel-track {
+    display: flex;
+    gap: 1.5rem;
+    width: max-content;
+    animation: scroll-carousel 40s linear infinite;
+}
 
 .carousel-wrapper:hover .carousel-track {
     animation-play-state: paused;
@@ -379,7 +574,7 @@
 
 /* --- Seção Motivacional (CTA) --- */
 .cta-section {
-    background: linear-gradient(135deg, var(--color-primary-900), #050a12);
+    background: linear-gradient(135deg, var(--color-primary-700), #0a101d);
     padding: 6rem 1rem;
     color: #fff;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
