@@ -2,33 +2,127 @@
 
 export function renderLandingPage() {
     return `
-        <!-- Hero Section Premium -->
-        <section class="hero-section">
-            <video id="hero-video" class="hero-video-bg" autoplay muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback controlslist="nodownload noremoteplayback nofullscreen" style="cursor: pointer;" title="Olimcar">
+        <!-- ===================== HERO ===================== -->
+        <section class="hero">
+            <!-- camadas de fundo -->
+            <video id="hero-video" class="hero__bg" autoplay muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback controlslist="nodownload noremoteplayback nofullscreen" style="cursor: pointer; object-fit: cover;" title="Olimcar">
                 <source src="/assets/video/new_hero.mp4" type="video/mp4">
             </video>
-            
-            <div class="hero-overlay">
-                <div class="hero-content container">
-                    <div class="hero-logo-wrapper">
-                        <img src="/assets/logo-transparent.png" alt="Olimcar Logo" class="hero-logo">
-                    </div>
-                    <div class="hero-countdown-wrapper">
-                        <p class="hero-countdown-label">Os jogos começam em:</p>
-                        <div class="hero-countdown" id="hero-countdown">
-                            <div class="countdown-item"><span id="cd-days">00</span><small>Dias</small></div>
-                            <div class="countdown-separator">:</div>
-                            <div class="countdown-item"><span id="cd-hours">00</span><small>Horas</small></div>
-                            <div class="countdown-separator">:</div>
-                            <div class="countdown-item"><span id="cd-minutes">00</span><small>Min</small></div>
-                            <div class="countdown-separator">:</div>
-                            <div class="countdown-item"><span id="cd-seconds">00</span><small>Seg</small></div>
-                        </div>
-                        <p class="hero-countdown-date">19 de Setembro de 2026 às 08:00</p>
-                    </div>
+            <div class="hero__overlay"></div>
+            <div class="hero__aurora"></div>
+            <div class="hero__grid"></div>
+            <!-- folhas flutuantes -->
+            <div class="leaves" id="leaves"></div>
+
+            <div class="hero__content">
+            <!-- COLUNA ESQUERDA -->
+            <div class="hero__left">
+                <span class="hero__badge">
+                <span class="hero__badge-dot"></span>
+                EDIÇÃO OFICIAL · CARAJÁS
+                </span>
+
+                <h1 class="hero__title">
+                <span class="hero__title-main">OLIMCAR</span>
+                <span class="hero__title-year">2026</span>
+                </h1>
+
+                <div class="hero__rings">
+                <span class="ring ring--blue"></span>
+                <span class="ring ring--yellow"></span>
+                <span class="ring ring--black"></span>
+                <span class="ring ring--green"></span>
+                <span class="ring ring--red"></span>
+                </div>
+
+                <p class="hero__subtitle">
+                A grande olimpíada corporativa da floresta. Força, união e superação
+                no coração da Amazônia. <strong>Sua equipe está pronta?</strong>
+                </p>
+
+                <div class="hero__actions">
+                <a href="#/agenda" class="btn btn--primary">
+                    Ver Agenda
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+                <button type="button" class="btn btn--ghost" id="btn-teaser">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+                    Assistir teaser
+                </button>
+                </div>
+
+                <div class="hero__stats">
+                <div class="stat"><span class="stat__num">12</span><span class="stat__label">Equipes</span></div>
+                <div class="stat__divider"></div>
+                <div class="stat"><span class="stat__num">28</span><span class="stat__label">Modalidades</span></div>
+                <div class="stat__divider"></div>
+                <div class="stat"><span class="stat__num">+500</span><span class="stat__label">Atletas</span></div>
                 </div>
             </div>
+
+            <!-- COLUNA DIREITA - COUNTDOWN -->
+            <div class="hero__right">
+                <div class="countdown-card">
+                <div class="countdown-card__glow"></div>
+                <div class="countdown-card__header">
+                    <span class="live-tag"><span class="live-tag__pulse"></span>EM CONTAGEM</span>
+                    <h2 class="countdown-card__title">Os jogos começam em</h2>
+                </div>
+
+                <div class="countdown" id="countdown">
+                    <div class="cd-unit">
+                    <div class="cd-unit__box"><span id="cd-days">00</span></div>
+                    <span class="cd-unit__label">Dias</span>
+                    </div>
+                    <span class="cd-sep">:</span>
+                    <div class="cd-unit">
+                    <div class="cd-unit__box"><span id="cd-hours">00</span></div>
+                    <span class="cd-unit__label">Horas</span>
+                    </div>
+                    <span class="cd-sep">:</span>
+                    <div class="cd-unit">
+                    <div class="cd-unit__box"><span id="cd-mins">00</span></div>
+                    <span class="cd-unit__label">Min</span>
+                    </div>
+                    <span class="cd-sep">:</span>
+                    <div class="cd-unit">
+                    <div class="cd-unit__box"><span id="cd-secs">00</span></div>
+                    <span class="cd-unit__label">Seg</span>
+                    </div>
+                </div>
+
+                <div class="countdown-card__footer">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                    <span>19 de Setembro de 2026 · 08:00</span>
+                </div>
+
+                <div class="progress">
+                    <div class="progress__bar" id="progressBar"></div>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- indicador de scroll -->
+            <div class="scroll-cue">
+            <span>Explore</span>
+            <div class="scroll-cue__mouse"><span></span></div>
+            </div>
         </section>
+
+        <!-- MODAL TEASER -->
+        <div class="teaser-modal" id="teaser-modal">
+            <div class="teaser-modal__content">
+                <button type="button" class="teaser-modal__close" id="teaser-close">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    Fechar
+                </button>
+                <video id="teaser-video" width="100%" height="100%" controls style="object-fit: cover;">
+                    <source src="/assets/video/hero.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+
 
         <div class="led-divider-wrapper">
             <div class="led-divider"></div>

@@ -99,56 +99,130 @@ function router() {
         mainFooter.style.display = hash === '/' ? '' : 'none';
     }
 
-    // Comportamento do Vídeo da Home (Tocar uma vez e pausar, clicar para tocar de novo)
+    // Comportamento do Vídeo da Home e Hero Features
     if (hash === '/') {
-        const heroVideo = document.getElementById('hero-video');
-        if (heroVideo) {
-            heroVideo.addEventListener('ended', () => {
-                heroVideo.pause();
+        // Modal Teaser
+        const btnTeaser = document.getElementById('btn-teaser');
+        const modalTeaser = document.getElementById('teaser-modal');
+        const btnCloseTeaser = document.getElementById('teaser-close');
+        const teaserVideo = document.getElementById('teaser-video');
+
+        if (btnTeaser && modalTeaser) {
+            btnTeaser.addEventListener('click', () => {
+                modalTeaser.classList.add('show');
+                if (teaserVideo) teaserVideo.play();
             });
-            heroVideo.addEventListener('click', () => {
-                if (heroVideo.paused || heroVideo.ended) {
-                    heroVideo.currentTime = 0;
-                    heroVideo.play();
-                } else {
-                    heroVideo.pause();
-                }
+            
+            const closeModal = () => {
+                modalTeaser.classList.remove('show');
+                if (teaserVideo) teaserVideo.pause();
+            };
+
+            btnCloseTeaser.addEventListener('click', closeModal);
+            modalTeaser.addEventListener('click', (e) => {
+                if (e.target === modalTeaser) closeModal();
             });
         }
-        
-        // Lógica do Countdown
-        const countdownElement = document.getElementById('hero-countdown');
+
+        // Lógica do Countdown e Progress Bar
+        const countdownElement = document.getElementById('countdown');
         if (countdownElement) {
-            const targetDate = new Date('2026-09-19T08:00:00').getTime();
-            
-            const updateCountdown = () => {
-                if (!document.getElementById('hero-countdown')) return;
-                
-                const now = new Date().getTime();
-                const distance = targetDate - now;
-                
-                if (distance < 0) {
-                    document.getElementById('cd-days').innerText = '00';
-                    document.getElementById('cd-hours').innerText = '00';
-                    document.getElementById('cd-minutes').innerText = '00';
-                    document.getElementById('cd-seconds').innerText = '00';
+            const TARGET = new Date('2026-09-19T08:00:00-03:00').getTime();
+            const START = new Date('2026-06-01T00:00:00-03:00').getTime();
+
+            const els = {
+                days: document.getElementById("cd-days"),
+                hours: document.getElementById("cd-hours"),
+                mins: document.getElementById("cd-mins"),
+                secs: document.getElementById("cd-secs"),
+                bar: document.getElementById("progressBar")
+            };
+
+            const pad = (n) => n < 10 ? "0" + n : "" + n;
+
+            const setUnit = (el, value) => {
+                const txt = pad(value);
+                if (el.textContent !== txt) {
+                    el.textContent = txt;
+                    const box = el.parentElement;
+                    box.classList.remove("flip");
+                    void box.offsetWidth;
+                    box.classList.add("flip");
+                }
+            };
+
+            const tick = () => {
+                if (!document.getElementById('countdown')) return; // se saiu da página
+
+                const now = Date.now();
+                const diff = TARGET - now;
+
+                if (diff <= 0) {
+                    setUnit(els.days, 0); setUnit(els.hours, 0);
+                    setUnit(els.mins, 0); setUnit(els.secs, 0);
+                    if (els.bar) els.bar.style.width = "100%";
                     return;
                 }
+
+                const d = Math.floor(diff / 86400000);
+                const h = Math.floor((diff % 86400000) / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+
+                setUnit(els.days, d);
+                setUnit(els.hours, h);
+                setUnit(els.mins, m);
+                setUnit(els.secs, s);
+
+                if (els.bar) {
+                    const total = TARGET - START;
+                    const done = now - START;
+                    const pct = Math.max(0, Math.min(100, (done / total) * 100));
+                    els.bar.style.width = pct.toFixed(1) + "%";
+                }
                 
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                
-                document.getElementById('cd-days').innerText = String(days).padStart(2, '0');
-                document.getElementById('cd-hours').innerText = String(hours).padStart(2, '0');
-                document.getElementById('cd-minutes').innerText = String(minutes).padStart(2, '0');
-                document.getElementById('cd-seconds').innerText = String(seconds).padStart(2, '0');
-                
-                setTimeout(updateCountdown, 1000);
+                setTimeout(tick, 1000);
             };
-            
-            updateCountdown();
+
+            tick();
+        }
+
+        // Folhas flutuantes
+        const leavesContainer = document.getElementById("leaves");
+        const glyphs = ["🍃", "🍂", "🌿"];
+        const LEAF_COUNT = 14;
+
+        if (leavesContainer && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            for (let i = 0; i < LEAF_COUNT; i++) {
+                const leaf = document.createElement("span");
+                leaf.className = "leaf";
+                leaf.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+                leaf.style.left = Math.random() * 100 + "%";
+                leaf.style.fontSize = (16 + Math.random() * 16) + "px";
+                const dur = 9 + Math.random() * 9;
+                leaf.style.animationDuration = dur + "s";
+                leaf.style.animationDelay = (-Math.random() * dur) + "s";
+                leaf.style.opacity = (0.35 + Math.random() * 0.35).toFixed(2);
+                leavesContainer.appendChild(leaf);
+            }
+        }
+
+        // Parallax suave
+        const bg = document.querySelector(".hero__bg");
+        const aurora = document.querySelector(".hero__aurora");
+        if (bg && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            const handleMouseMove = (e) => {
+                if (!document.querySelector(".hero__bg")) {
+                    window.removeEventListener("mousemove", handleMouseMove);
+                    return;
+                }
+                const x = (e.clientX / window.innerWidth - 0.5);
+                const y = (e.clientY / window.innerHeight - 0.5);
+                // The video shouldn't move too much, maybe just a little scale
+                bg.style.transform = "translate(" + (x * -14) + "px," + (y * -14) + "px)";
+                if (aurora) aurora.style.transform = "translate(" + (x * 24) + "px," + (y * 24) + "px)";
+            };
+            window.addEventListener("mousemove", handleMouseMove);
         }
     }
 
