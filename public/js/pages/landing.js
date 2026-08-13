@@ -123,6 +123,102 @@ export function renderLandingPage() {
             </div>
         </div>
 
+        <!-- ===================== AGENDA HOME SECTION ===================== -->
+        <section class="agenda-home-section">
+            <div class="container">
+                <div class="agenda-home-header">
+                    <div class="agenda-home-title-area">
+                        <span class="hero__badge" style="margin-bottom: 16px;">
+                            <span class="hero__badge-dot"></span>
+                            PROGRAMAÇÃO
+                        </span>
+                        <h2 class="agenda-home-title">Agenda dos Jogos</h2>
+                    </div>
+                    <a href="#/agenda" class="hero__btn hero__btn--ghost" style="border-radius: 12px; padding: 12px 24px;">
+                        Ver agenda completa 
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="margin-left: 8px;"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                </div>
+
+                <div class="agenda-home-grid">
+                    <!-- 19 SET -->
+                    <div class="agenda-day-card">
+                        <div class="agenda-day-header">
+                            <div>
+                                <div class="agenda-day-date"><span class="agenda-day-num">19</span> SET</div>
+                                <div class="agenda-day-weekday">Sexta-feira</div>
+                            </div>
+                            <span class="agenda-day-badge" style="color: var(--yellow); border-color: rgba(236, 177, 31, 0.3);">ABERTURA</span>
+                        </div>
+                        <div class="agenda-day-divider"></div>
+                        <ul class="agenda-event-list">
+                            <li><span class="agenda-time">08h</span> <span class="agenda-event">Abertura oficial</span></li>
+                            <li><span class="agenda-time">10:30</span> <span class="agenda-event">Início dos jogos</span></li>
+                            <li><span class="agenda-time highlight">13h</span> <span class="agenda-event highlight"><i data-lucide="music" style="width: 16px; height: 16px;"></i> Felipe de Lucaa</span></li>
+                            <li><span class="agenda-time">21h</span> <span class="agenda-event">Encerramento</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- 20 SET -->
+                    <div class="agenda-day-card">
+                        <div class="agenda-day-header">
+                            <div>
+                                <div class="agenda-day-date"><span class="agenda-day-num">20</span> SET</div>
+                                <div class="agenda-day-weekday">Sábado</div>
+                            </div>
+                            <span class="agenda-day-badge" style="color: var(--yellow); border-color: rgba(236, 177, 31, 0.3);">DIA 2</span>
+                        </div>
+                        <div class="agenda-day-divider"></div>
+                        <ul class="agenda-event-list">
+                            <li><span class="agenda-time">08h</span> <span class="agenda-event">Abertura</span></li>
+                            <li><span class="agenda-time highlight">13h</span> <span class="agenda-event highlight"><i data-lucide="music" style="width: 16px; height: 16px;"></i> Voz e Violão</span></li>
+                            <li><span class="agenda-time">20h</span> <span class="agenda-event">Encerramento</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- 26 SET -->
+                    <div class="agenda-day-card">
+                        <div class="agenda-day-header">
+                            <div>
+                                <div class="agenda-day-date"><span class="agenda-day-num">26</span> SET</div>
+                                <div class="agenda-day-weekday">Sexta-feira</div>
+                            </div>
+                            <span class="agenda-day-badge" style="color: var(--yellow); border-color: rgba(236, 177, 31, 0.3);">DIA 3</span>
+                        </div>
+                        <div class="agenda-day-divider"></div>
+                        <ul class="agenda-event-list">
+                            <li><span class="agenda-time">08h</span> <span class="agenda-event">Abertura</span></li>
+                            <li><span class="agenda-time highlight">13h</span> <span class="agenda-event highlight"><i data-lucide="music" style="width: 16px; height: 16px;"></i> Nilde Campelo</span></li>
+                            <li><span class="agenda-time">21h</span> <span class="agenda-event">Encerramento</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- 27 SET -->
+                    <div class="agenda-day-card">
+                        <div class="agenda-day-header">
+                            <div>
+                                <div class="agenda-day-date"><span class="agenda-day-num">27</span> SET</div>
+                                <div class="agenda-day-weekday">Sábado</div>
+                            </div>
+                            <span class="agenda-day-badge" style="color: var(--yellow); border-color: rgba(236, 177, 31, 0.3);">FINAL</span>
+                        </div>
+                        <div class="agenda-day-divider"></div>
+                        <ul class="agenda-event-list">
+                            <li><span class="agenda-time">08h</span> <span class="agenda-event">Abertura</span></li>
+                            <li><span class="agenda-time highlight">12h</span> <span class="agenda-event highlight"><i data-lucide="music" style="width: 16px; height: 16px;"></i> Fabi Almeida</span></li>
+                            <li><span class="agenda-time highlight">14:30</span> <span class="agenda-event highlight"><i data-lucide="trophy" style="width: 16px; height: 16px;"></i> Premiação</span></li>
+                            <li><span class="agenda-time highlight">16h</span> <span class="agenda-event highlight"><i data-lucide="party-popper" style="width: 16px; height: 16px;"></i> Samba Haw</span></li>
+                            <li><span class="agenda-time">19h</span> <span class="agenda-event">Encerramento</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="agenda-home-footer">
+                    <span style="color: #e5484d;">📍</span> Praça de Alimentação · <strong style="color: var(--green-light);">Shows no palco secundário</strong>
+                </div>
+            </div>
+        </section>
+
 
         <div class="led-divider-wrapper">
             <div class="led-divider"></div>
