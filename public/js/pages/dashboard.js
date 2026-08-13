@@ -45,13 +45,13 @@ export function renderDashboardPage() {
                         <span>Gerenciar Jogos e Resultados</span>
                         
                         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                            <select id="admin-filter-data" class="form-control" style="padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                            <select id="admin-filter-data" class="form-control" style="width: auto; padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
                                 <option value="">Todas Datas</option>
                             </select>
-                            <select id="admin-filter-modalidade" class="form-control" style="padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                            <select id="admin-filter-modalidade" class="form-control" style="width: auto; padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
                                 <option value="">Todas Modalidades</option>
                             </select>
-                            <select id="admin-filter-equipe" class="form-control" style="padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                            <select id="admin-filter-equipe" class="form-control" style="width: auto; padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
                                 <option value="">Todas as Equipes</option>
                             </select>
                         </div>

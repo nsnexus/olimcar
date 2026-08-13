@@ -88,6 +88,42 @@ function router() {
     appRoot.innerHTML = routeFunction();
     
     // Anexar eventos dinâmicos baseados na rota atual
+    if (hash === '/') {
+        const heroVideo = document.getElementById('hero-video');
+        const heroSection = document.querySelector('.hero-section');
+
+        if (heroVideo && heroSection) {
+            heroVideo.loop = true;
+            let started = false;
+
+            const startHeroVideo = () => {
+                if (started) return;
+                started = true;
+                heroVideo.muted = false;
+                heroVideo.play().catch(() => {
+                    heroVideo.muted = true;
+                    heroVideo.play();
+                });
+                window.removeEventListener('scroll', startHeroVideo);
+            };
+            window.addEventListener('scroll', startHeroVideo, { passive: true });
+
+            if ('IntersectionObserver' in window) {
+                const heroObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (!started) return;
+                        if (entry.isIntersecting) {
+                            heroVideo.play().catch(() => {});
+                        } else {
+                            heroVideo.pause();
+                        }
+                    });
+                }, { threshold: 0.15 });
+                heroObserver.observe(heroSection);
+            }
+        }
+    }
+
     if (hash === '/login') {
         const loginForm = document.getElementById('login-form');
         const loginError = document.getElementById('login-error');
