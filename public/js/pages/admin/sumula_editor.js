@@ -25,7 +25,7 @@ export function renderSumulaEditorPage() {
                 <div class="card" style="margin-bottom: 2rem; background: var(--color-bg-body);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <span style="font-weight: 600; color: var(--color-primary-600); font-size: 1.1rem;" id="lbl-modalidade">-</span>
-                        <span id="badge-status" style="font-size: 0.85rem; padding: 0.35rem 0.75rem; background: #FFFFFF; border: 1px solid var(--color-border); border-radius: 6px; font-weight: 600;"></span>
+                        <span id="badge-status" style="font-size: 0.85rem; padding: 0.35rem 0.75rem; background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: 6px; font-weight: 600;"></span>
                     </div>
                     <div style="color: var(--color-text-muted); font-size: 0.95rem;">
                         <span id="lbl-fase"></span> &bull; <span id="lbl-data"></span> &bull; <span id="lbl-local"></span>
@@ -168,7 +168,7 @@ async function popularColocacoes(colocacoesExistentes) {
     const container = document.getElementById('lista-colocacoes');
 
     container.innerHTML = equipesDB.map(eq => `
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #FFFFFF; padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: var(--color-bg-card); padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
             <span style="font-weight: 600;">${eq.nome}</span>
             <select class="form-control input-colocacao" data-equipe="${eq.nome}" style="width: auto; padding: 0.4rem 0.75rem;">
                 <option value="">-</option>
@@ -193,7 +193,7 @@ async function popularConclusoes(conclusoesExistentes) {
     const container = document.getElementById('lista-conclusoes');
 
     container.innerHTML = equipesDB.map(eq => `
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #FFFFFF; padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: var(--color-bg-card); padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
             <span style="font-weight: 600;">${eq.nome}</span>
             <input type="number" min="0" class="form-control input-conclusao" data-equipe="${eq.nome}" style="width: 90px; padding: 0.4rem 0.75rem;" placeholder="0">
         </div>

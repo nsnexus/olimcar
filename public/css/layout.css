@@ -14,9 +14,11 @@ html, body {
 /* layout.css - Estrutura Principal */
 
 .topbar {
-    background-color: #FFFFFF;
+    background-color: rgba(5, 32, 31, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     color: var(--color-text-main);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -107,11 +109,11 @@ html, body {
 
 /* Footer Premium Dark (NSNexus Style) */
 .main-footer {
-    background-color: #0b1120; /* Dark SaaS background */
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: var(--color-surface); /* Dark SaaS background */
+    border-top: 1px solid var(--color-border);
     padding: 5rem 0 2rem;
     margin-top: 4rem;
-    color: #94a3b8; /* Tailwind slate-400 */
+    color: var(--color-text-muted);
 }
 
 .footer-content {
@@ -243,7 +245,10 @@ html, body {
         top: 100%;
         left: 0;
         right: 0;
-        background-color: var(--color-bg-card);
+        background-color: rgba(5, 32, 31, 0.95);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--color-border);
         flex-direction: column;
         padding: 1.5rem;
         box-shadow: var(--shadow-md);

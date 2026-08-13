@@ -1,4 +1,4 @@
-﻿/* pages.css - Estilos especÃ­ficos das pÃ¡ginas */
+/* pages.css - Estilos especÃ­ficos das pÃ¡ginas */
 
 /* --- Agenda: filtros colapsÃ¡veis no mobile --- */
 .btn-toggle-filtros {
@@ -43,7 +43,7 @@
 
 .features-section {
     padding: 8rem 0;
-    background-color: #F7F9FA;
+    background-color: var(--color-bg-body);
     border-top: 1px solid var(--color-border);
 }
 

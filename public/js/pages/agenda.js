@@ -49,7 +49,7 @@ export function renderAgendaPage() {
                 <i data-lucide="sliders-horizontal"></i> Filtros
             </button>
 
-            <div id="filtros-panel" class="card filtros-panel" style="margin-bottom: 2rem; padding: 1.5rem; background: #FFFFFF; border-radius: var(--radius-m); gap: 1.5rem; flex-wrap: wrap; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--color-border);">
+            <div id="filtros-panel" class="card filtros-panel" style="margin-bottom: 2rem; padding: 1.5rem; background: var(--color-bg-card); border-radius: var(--radius-m); gap: 1.5rem; flex-wrap: wrap; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--color-border);">
                 <div style="flex: 1; min-width: 200px;">
                     <label style="font-size: 0.8rem; font-weight: 700; color: var(--color-text-muted); display: block; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;"><i data-lucide="calendar" style="width: 14px; height: 14px; vertical-align: text-bottom;"></i> Filtrar por Data</label>
                     <select id="filter-data" class="form-control" style="width: 100%; border: none; background: var(--color-bg-body); border-radius: 8px;">
