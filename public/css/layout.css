@@ -28,6 +28,7 @@ html, body {
     justify-content: space-between;
     align-items: center;
     height: 5rem;
+    padding: 0 5%; /* Increased padding for full-width header */
 }
 
 .logo {
