@@ -23,8 +23,14 @@ export function renderLiderDashboardPage() {
             </div>
 
             <div class="card">
-                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                     <span>Colaboradores Cadastrados</span>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <select id="filtro-modalidade-lider" class="form-control" style="width: auto; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                            <option value="">Todas as Modalidades</option>
+                        </select>
+                        <input type="text" id="filtro-nome-lider" placeholder="Buscar por nome ou matrícula..." class="form-control" style="max-width: 260px; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                    </div>
                 </div>
                 <div class="table-container">
                     <table style="width: 100%;">
@@ -32,11 +38,12 @@ export function renderLiderDashboardPage() {
                             <tr>
                                 <th>Matrícula</th>
                                 <th>Nome do Colaborador</th>
+                                <th>Contato</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody id="lista-colaboradores">
-                            <tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--color-text-muted);">
+                            <tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--color-text-muted);">
                                 A lista automática de colaboradores será sincronizada em breve (importação futura).
                             </td></tr>
                         </tbody>
@@ -71,29 +78,58 @@ async function loadLiderData() {
     const { getCollection } = await import('../services/db.js');
     const todosColabs = await getCollection('colaboradores');
     const meusAtletas = todosColabs.filter(c => c.equipe === equipeNome);
-    
+
     const tbody = document.getElementById('lista-colaboradores');
-    if (meusAtletas.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--color-text-muted);">
-            Nenhum colaborador importado para a sua equipe no momento.
-        </td></tr>`;
-    } else {
-        tbody.innerHTML = '';
-        meusAtletas.forEach(a => {
-            const modsHTML = (a.modalidades || []).map(m => `<span class="badge" style="background: #e2e8f0; color: #475569; margin-right: 4px;">${m}</span>`).join('');
-            
-            tbody.innerHTML += `
+    const inputNome = document.getElementById('filtro-nome-lider');
+    const selectModalidade = document.getElementById('filtro-modalidade-lider');
+
+    const modalidadesLimpas = a => (a.modalidades || []).filter(m => m && !/^Coluna\s*\d+$/i.test(m));
+
+    // Popular filtro de modalidades
+    const modalidadesUnicas = new Set();
+    meusAtletas.forEach(a => modalidadesLimpas(a).forEach(m => modalidadesUnicas.add(m)));
+    Array.from(modalidadesUnicas).sort().forEach(m => selectModalidade.add(new Option(m, m)));
+
+    const renderTabela = (lista) => {
+        if (lista.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--color-text-muted);">
+                Nenhum colaborador encontrado.
+            </td></tr>`;
+            return;
+        }
+        tbody.innerHTML = lista.map(a => {
+            const modsHTML = modalidadesLimpas(a).map(m => `<span class="badge" style="background: #e2e8f0; color: #475569; margin-right: 4px;">${m}</span>`).join('');
+            return `
                 <tr>
                     <td><strong>${a.matricula || '-'}</strong></td>
                     <td>
                         <div style="font-weight: 600;">${a.nome}</div>
                         <div style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: 4px;">${modsHTML || 'Nenhuma'}</div>
                     </td>
+                    <td style="color: var(--color-text-muted);">${a.whatsapp || '-'}</td>
                     <td><span class="badge badge-success">${a.status || 'Ativo'}</span></td>
                 </tr>
             `;
-        });
-    }
+        }).join('');
+        if (window.lucide) window.lucide.createIcons();
+    };
 
+    const aplicarFiltros = () => {
+        const termo = inputNome.value.toLowerCase();
+        const modalidadeSelecionada = selectModalidade.value;
+        const filtrados = meusAtletas.filter(a => {
+            const matchTermo = !termo ||
+                (a.nome && a.nome.toLowerCase().includes(termo)) ||
+                (a.matricula && String(a.matricula).toLowerCase().includes(termo));
+            const matchModalidade = !modalidadeSelecionada || modalidadesLimpas(a).includes(modalidadeSelecionada);
+            return matchTermo && matchModalidade;
+        });
+        renderTabela(filtrados);
+    };
+
+    inputNome.addEventListener('input', aplicarFiltros);
+    selectModalidade.addEventListener('change', aplicarFiltros);
+
+    renderTabela(meusAtletas);
     if (window.lucide) window.lucide.createIcons();
 }

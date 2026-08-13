@@ -1,7 +1,11 @@
 // public/js/pages/admin/sumula_editor.js
-import { getDocument, updateDocument, uploadEvidencia } from '../../services/db.js';
+import { getDocument, updateDocument, uploadEvidencia, getCollection } from '../../services/db.js';
 
 let jogoAtual = null;
+
+function ehFaseProva(fase) {
+    return (fase || '').trim().toUpperCase() === 'PROVA';
+}
 
 export function renderSumulaEditorPage() {
     setTimeout(loadSumulaData, 50);
@@ -30,18 +34,33 @@ export function renderSumulaEditorPage() {
 
                 <div class="card">
                     <div class="card-header">Súmula Oficial</div>
-                    
-                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 2.5rem; background: var(--color-bg-body); padding: 2rem; border-radius: var(--radius-md);">
+
+                    <div id="bloco-confronto" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 2.5rem; background: var(--color-bg-body); padding: 2rem; border-radius: var(--radius-md);">
                         <div style="flex: 1; text-align: right;">
                             <h3 id="lbl-equipe-a" style="margin-bottom: 0.75rem; font-size: 1.25rem;">Equipe A</h3>
                             <input type="number" id="input-placar-a" class="form-control" style="width: 100px; text-align: center; font-size: 2rem; font-weight: 800; margin-left: auto; height: 60px;" min="0">
                         </div>
-                        
+
                         <div style="font-size: 1.5rem; color: var(--color-text-muted); font-weight: 800; padding: 0 1rem;">X</div>
-                        
+
                         <div style="flex: 1;">
                             <h3 id="lbl-equipe-b" style="margin-bottom: 0.75rem; font-size: 1.25rem;">Equipe B</h3>
                             <input type="number" id="input-placar-b" class="form-control" style="width: 100px; text-align: center; font-size: 2rem; font-weight: 800; height: 60px;" min="0">
+                        </div>
+                    </div>
+
+                    <div id="bloco-prova" style="display: none; margin-bottom: 2.5rem; background: var(--color-bg-body); padding: 2rem; border-radius: var(--radius-md);">
+                        <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Prova disputada por todas as equipes ao mesmo tempo. Defina a colocação final de cada uma:</p>
+                        <div id="lista-colocacoes" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <!-- Injetado via JS -->
+                        </div>
+                        <p id="msg-colocacoes" style="color: var(--color-danger); font-size: 0.85rem; margin-top: 1rem; display: none;">Cada equipe precisa de uma colocação diferente (1º a 4º).</p>
+
+                        <div id="bloco-conclusoes" style="display: none; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border);">
+                            <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Quantos atletas de cada equipe concluíram a corrida (+1 ponto cada):</p>
+                            <div id="lista-conclusoes" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <!-- Injetado via JS -->
+                            </div>
                         </div>
                     </div>
 
@@ -109,7 +128,25 @@ async function loadSumulaData() {
     document.getElementById('input-placar-a').value = jogoAtual.placar_a || 0;
     document.getElementById('input-placar-b').value = jogoAtual.placar_b || 0;
     document.getElementById('input-status').value = jogoAtual.status || 'agendado';
-    
+
+    const isCorrida = jogoAtual.categoria === 'corrida';
+    const isMultiEquipe = ehFaseProva(jogoAtual.fase) || isCorrida;
+
+    if (isMultiEquipe) {
+        document.getElementById('bloco-confronto').style.display = 'none';
+        document.getElementById('bloco-prova').style.display = 'block';
+        await popularColocacoes(jogoAtual.colocacoes || {});
+
+        document.getElementById('bloco-conclusoes').style.display = isCorrida ? 'block' : 'none';
+        if (isCorrida) {
+            await popularConclusoes(jogoAtual.conclusoes || {});
+        }
+    } else {
+        document.getElementById('bloco-confronto').style.display = 'flex';
+        document.getElementById('bloco-prova').style.display = 'none';
+    }
+
+
     // Mostra link da evidência se existir
     if (jogoAtual.evidencia_url) {
         document.getElementById('evidencia-preview-container').style.display = 'block';
@@ -126,14 +163,104 @@ async function loadSumulaData() {
     if (window.lucide) window.lucide.createIcons();
 }
 
+async function popularColocacoes(colocacoesExistentes) {
+    const equipesDB = await getCollection('equipes');
+    const container = document.getElementById('lista-colocacoes');
+
+    container.innerHTML = equipesDB.map(eq => `
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #FFFFFF; padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
+            <span style="font-weight: 600;">${eq.nome}</span>
+            <select class="form-control input-colocacao" data-equipe="${eq.nome}" style="width: auto; padding: 0.4rem 0.75rem;">
+                <option value="">-</option>
+                <option value="1">1º lugar</option>
+                <option value="2">2º lugar</option>
+                <option value="3">3º lugar</option>
+                <option value="4">4º lugar</option>
+            </select>
+        </div>
+    `).join('');
+
+    container.querySelectorAll('.input-colocacao').forEach(select => {
+        const equipe = select.dataset.equipe;
+        if (colocacoesExistentes[equipe]) {
+            select.value = colocacoesExistentes[equipe];
+        }
+    });
+}
+
+async function popularConclusoes(conclusoesExistentes) {
+    const equipesDB = await getCollection('equipes');
+    const container = document.getElementById('lista-conclusoes');
+
+    container.innerHTML = equipesDB.map(eq => `
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #FFFFFF; padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
+            <span style="font-weight: 600;">${eq.nome}</span>
+            <input type="number" min="0" class="form-control input-conclusao" data-equipe="${eq.nome}" style="width: 90px; padding: 0.4rem 0.75rem;" placeholder="0">
+        </div>
+    `).join('');
+
+    container.querySelectorAll('.input-conclusao').forEach(input => {
+        const equipe = input.dataset.equipe;
+        if (conclusoesExistentes[equipe] !== undefined) {
+            input.value = conclusoesExistentes[equipe];
+        }
+    });
+}
+
+function coletarConclusoes() {
+    const inputs = document.querySelectorAll('.input-conclusao');
+    const conclusoes = {};
+    inputs.forEach(input => {
+        conclusoes[input.dataset.equipe] = parseInt(input.value) || 0;
+    });
+    return conclusoes;
+}
+
+function coletarColocacoes() {
+    const selects = document.querySelectorAll('.input-colocacao');
+    const colocacoes = {};
+    const posicoesUsadas = [];
+
+    selects.forEach(select => {
+        if (select.value) {
+            colocacoes[select.dataset.equipe] = parseInt(select.value);
+            posicoesUsadas.push(select.value);
+        }
+    });
+
+    const todasPreenchidas = selects.length > 0 && posicoesUsadas.length === selects.length;
+    const semDuplicadas = new Set(posicoesUsadas).size === posicoesUsadas.length;
+
+    return { colocacoes, valido: todasPreenchidas && semDuplicadas };
+}
+
 async function salvarSumula() {
     const btn = document.getElementById('btn-salvar-sumula');
     const msg = document.getElementById('msg-feedback');
     const fileInput = document.getElementById('input-evidencia');
-    
-    const placarA = parseInt(document.getElementById('input-placar-a').value) || 0;
-    const placarB = parseInt(document.getElementById('input-placar-b').value) || 0;
+    const msgColocacoes = document.getElementById('msg-colocacoes');
+
     const status = document.getElementById('input-status').value;
+    const isCorrida = jogoAtual.categoria === 'corrida';
+    const isMultiEquipe = ehFaseProva(jogoAtual.fase) || isCorrida;
+
+    let placarA = 0, placarB = 0, colocacoes = null, conclusoes = null;
+
+    if (isMultiEquipe) {
+        const resultado = coletarColocacoes();
+        if (status === 'encerrado' && !resultado.valido) {
+            msgColocacoes.style.display = 'block';
+            return;
+        }
+        msgColocacoes.style.display = 'none';
+        colocacoes = resultado.colocacoes;
+        if (isCorrida) {
+            conclusoes = coletarConclusoes();
+        }
+    } else {
+        placarA = parseInt(document.getElementById('input-placar-a').value) || 0;
+        placarB = parseInt(document.getElementById('input-placar-b').value) || 0;
+    }
 
     btn.disabled = true;
     btn.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Salvando Placar...';
@@ -157,9 +284,9 @@ async function salvarSumula() {
     }
 
     const atualizacoes = {
-        placar_a: placarA,
-        placar_b: placarB,
         status: status,
+        ...(isMultiEquipe ? { colocacoes } : { placar_a: placarA, placar_b: placarB }),
+        ...(isCorrida && { conclusoes }),
         ...(evidenciaUrl && { evidencia_url: evidenciaUrl }) // Só injeta o campo se existir URL
     };
 

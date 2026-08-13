@@ -82,7 +82,7 @@ export function renderAgendaPage() {
                             <tr>
                                 <th>Data / Hora</th>
                                 <th>Modalidade</th>
-                                <th>Confronto</th>
+                                <th style="text-align: center;">Confronto</th>
                                 <th>Local e Fase</th>
                             </tr>
                         </thead>

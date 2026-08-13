@@ -13,6 +13,15 @@ export const TABELA_PONTUACAO = {
     'corrida':       { 1: 80, 2: 60, 3: 40, conclusao: 1 } // +1 p/ cada conclusão
 };
 
+export const CATEGORIAS_PONTUACAO = {
+    'coletivo_plus': 'I – Esportes coletivos (acima de 4 atletas)',
+    'coletivo':      'II – Esportes até 4 participantes',
+    'individual':    'III – Esportes individuais',
+    'recreativa':    'IV – Jogos da escola (recreativa)',
+    'doacao':        'V – Doação',
+    'corrida':       'VI – Corrida'
+};
+
 export function sortByDateAndTime(jogos) {
     const meses = { "janeiro":1, "fevereiro":2, "março":3, "abril":4, "maio":5, "junho":6, "julho":7, "agosto":8, "setembro":9, "outubro":10, "novembro":11, "dezembro":12 };
     

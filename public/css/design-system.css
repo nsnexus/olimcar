@@ -9,7 +9,9 @@
     /* Cores Neutras / Backgrounds (SaaS Premium) */
     --color-bg-body: #F7F9FA;
     --color-bg-card: #FFFFFF;
-    
+    --color-surface: #FFFFFF;
+    --color-surface-hover: #F1F5F9;
+
     /* Cores de Texto (Hierarchy) */
     --color-text-main: #111827; /* Near black */
     --color-text-muted: #4B5563; /* Secondary */
