@@ -132,7 +132,7 @@ export function renderLandingPage() {
                             <span class="hero__badge-dot"></span>
                             PROGRAMAÇÃO
                         </span>
-                        <h2 class="agenda-home-title">Agenda dos Jogos</h2>
+                        <h2 class="premium-title" style="margin-bottom: 0;">Agenda dos Jogos</h2>
                     </div>
                     <a href="#/agenda" class="hero__btn hero__btn--ghost" style="border-radius: 12px; padding: 12px 24px;">
                         Ver agenda completa 
@@ -227,7 +227,7 @@ export function renderLandingPage() {
         <section class="features-section">
             <div class="container">
                 <div class="features-header">
-                    <h2>Modalidades em Disputa</h2>
+                    <h2 class="premium-title">Modalidades em Disputa</h2>
                     <p style="color: var(--color-text-muted); font-size: 1.1rem;">As categorias oficiais das nossas olimpíadas</p>
                 </div>
             </div>
@@ -281,7 +281,7 @@ export function renderLandingPage() {
 
         <section class="cta-section">
             <div class="container" style="text-align: center;">
-                <h2>Mais que uma competição.<br><span>Uma celebração.</span></h2>
+                <h2 class="premium-title">Mais que uma competição.<br><span>Uma celebração.</span></h2>
                 <p class="cta-text">
                    A Olimcar nasceu da crença de que o esporte transforma. 
                    Ele une equipes, fortalece vínculos e revela talentos que 
