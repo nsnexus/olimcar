@@ -14,7 +14,7 @@ import { renderRankingPage } from './pages/ranking.js';
 import { renderSobrePage } from './pages/sobre.js';
 import { renderTermosPage } from './pages/termos.js';
 import { loginUser, logoutUser, currentUser, authResolved } from './auth.js';
-import { seedInitialData } from './services/db.js';
+import { seedInitialData, getCollection } from './services/db.js';
 
 const appRoot = document.getElementById('app-root');
 const mainNav = document.getElementById('main-nav');
@@ -101,6 +101,12 @@ function router() {
 
     // Comportamento do Vídeo da Home e Hero Features
     if (hash === '/') {
+        // Fetch Inscritos
+        getCollection('usuarios').then(users => {
+            const inscritosEl = document.getElementById('cd-inscritos');
+            if (inscritosEl) inscritosEl.textContent = users.length;
+        });
+
         // Modal Teaser
         const btnTeaser = document.getElementById('btn-teaser');
         const modalTeaser = document.getElementById('teaser-modal');

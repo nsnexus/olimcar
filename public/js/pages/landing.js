@@ -52,11 +52,11 @@ export function renderLandingPage() {
                 </div>
 
                 <div class="hero__stats">
-                <div class="stat"><span class="stat__num">12</span><span class="stat__label">Equipes</span></div>
-                <div class="stat__divider"></div>
-                <div class="stat"><span class="stat__num">28</span><span class="stat__label">Modalidades</span></div>
-                <div class="stat__divider"></div>
-                <div class="stat"><span class="stat__num">+500</span><span class="stat__label">Atletas</span></div>
+                <div class="hero__stat"><span class="hero__stat-num">4</span><span class="hero__stat-label">Equipes</span></div>
+                <div class="hero__stat-divider"></div>
+                <div class="hero__stat"><span class="hero__stat-num">+40</span><span class="hero__stat-label">Modalidades</span></div>
+                <div class="hero__stat-divider"></div>
+                <div class="hero__stat"><span class="hero__stat-num" id="cd-inscritos">...</span><span class="hero__stat-label">Inscritos</span></div>
                 </div>
             </div>
 
