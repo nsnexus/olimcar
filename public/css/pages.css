@@ -1418,5 +1418,6 @@
 @media (max-width: 680px) {
   .agenda-home-grid { grid-template-columns: 1fr; }
   .agenda-home-header { flex-direction: column; align-items: flex-start; gap: 1rem; margin-bottom: 2rem; }
+  .agenda-home-header .hero__btn { display: none !important; }
   .agenda-home-section { padding: 4rem 1rem; }
 }
