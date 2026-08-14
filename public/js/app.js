@@ -102,9 +102,12 @@ function router() {
     // Comportamento do Vídeo da Home e Hero Features
     if (hash === '/') {
         // Fetch Inscritos
-        getCollection('usuarios').then(users => {
-            const inscritosEl = document.getElementById('cd-inscritos');
-            if (inscritosEl) inscritosEl.textContent = users.length;
+        Promise.all([
+            getCollection('equipes'),
+            getCollection('colaboradores')
+        ]).then(([equipes, colaboradores]) => {
+            const elInscritos = document.getElementById('cd-inscritos');
+            if (elInscritos && colaboradores) elInscritos.innerText = colaboradores.length;
         });
 
         // Modal Teaser

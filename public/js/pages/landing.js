@@ -11,8 +11,6 @@ export function renderLandingPage() {
             <div class="hero__overlay"></div>
             <div class="hero__aurora"></div>
             <div class="hero__grid"></div>
-            <!-- folhas flutuantes -->
-            <div class="leaves" id="leaves"></div>
 
             <div class="hero__content">
             <!-- COLUNA ESQUERDA -->
@@ -294,5 +292,8 @@ export function renderLandingPage() {
                 <a href="#/agenda" class="btn btn-primary" style="font-size: 1.1rem; padding: 0.85rem 2rem; border-radius: var(--radius-md);">Ver Agenda e Participar</a>
             </div>
         </section>
+
+        <!-- folhas flutuantes globais -->
+        <div class="leaves" id="leaves"></div>
     `;
 }

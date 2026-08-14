@@ -537,9 +537,7 @@
     animation: scroll-carousel 40s linear infinite;
 }
 
-.carousel-wrapper:hover .carousel-track {
-    animation-play-state: paused;
-}
+/* hover remido conforme solicitado: .carousel-wrapper:hover .carousel-track { animation-play-state: paused; } */
 
 @keyframes scroll-carousel {
     0% { transform: translateX(0); }
@@ -763,7 +761,7 @@
 }
 
 /* folhas */
-.leaves { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 4; }
+.leaves { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 9000; }
 .leaf {
   position: absolute;
   top: -40px;

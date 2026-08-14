@@ -67,7 +67,7 @@
 }
 
 /* folhas */
-.leaves { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 4; }
+.leaves { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 9000; }
 .leaf {
   position: absolute;
   top: -40px;
