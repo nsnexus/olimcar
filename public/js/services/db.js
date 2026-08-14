@@ -139,13 +139,25 @@ export async function seedInitialData() {
     if (existingMods.empty) {
         console.log("Semeando Modalidades...");
         const modalidades = [
-            { nome: 'Futebol Society', icone: '⚽', categoria_pontuacao: 'coletivo_plus', min_jogadores: 7, max_jogadores: 12 },
-            { nome: 'Voleibol', icone: '🏐', categoria_pontuacao: 'coletivo_plus', min_jogadores: 6, max_jogadores: 12 },
-            { nome: 'Tênis de Dupla', icone: '🎾', categoria_pontuacao: 'coletivo', min_jogadores: 2, max_jogadores: 4 },
-            { nome: 'Natação', icone: '🏊', categoria_pontuacao: 'individual', min_jogadores: 1, max_jogadores: 1 },
-            { nome: 'Jogos de Abertura', icone: '🎉', categoria_pontuacao: 'recreativa', min_jogadores: 1, max_jogadores: 99 },
-            { nome: 'Arrecadação', icone: '🥫', categoria_pontuacao: 'doacao', min_jogadores: 1, max_jogadores: 99 },
-            { nome: 'Corrida Rústica', icone: '🏃', categoria_pontuacao: 'corrida', min_jogadores: 1, max_jogadores: 99 }
+            { nome: 'Atletismo', icone: 'atletismo.png', categoria_pontuacao: 'individual', min_jogadores: 1, max_jogadores: 1 },
+            { nome: 'Basquete', icone: 'basquete.png', categoria_pontuacao: 'coletivo_plus', min_jogadores: 5, max_jogadores: 12 },
+            { nome: 'Beach Tênis', icone: 'beach-tenis.png', categoria_pontuacao: 'coletivo', min_jogadores: 2, max_jogadores: 4 },
+            { nome: 'Ciclismo', icone: 'ciclismo.png', categoria_pontuacao: 'individual', min_jogadores: 1, max_jogadores: 1 },
+            { nome: 'Corrida de Rua', icone: 'corrida-de-rua.png', categoria_pontuacao: 'corrida', min_jogadores: 1, max_jogadores: 99 },
+            { nome: 'Dama', icone: 'dama.png', categoria_pontuacao: 'recreativa', min_jogadores: 1, max_jogadores: 1 },
+            { nome: 'Dominó', icone: 'domino.png', categoria_pontuacao: 'recreativa', min_jogadores: 2, max_jogadores: 2 },
+            { nome: 'FIFA', icone: 'fifa.png', categoria_pontuacao: 'recreativa', min_jogadores: 1, max_jogadores: 2 },
+            { nome: 'Futebol', icone: 'futebol.png', categoria_pontuacao: 'coletivo_plus', min_jogadores: 11, max_jogadores: 20 },
+            { nome: 'Futsal', icone: 'futsal.png', categoria_pontuacao: 'coletivo_plus', min_jogadores: 5, max_jogadores: 12 },
+            { nome: 'Handebol', icone: 'handebol.png', categoria_pontuacao: 'coletivo_plus', min_jogadores: 7, max_jogadores: 14 },
+            { nome: 'Natação', icone: 'natacao.png', categoria_pontuacao: 'individual', min_jogadores: 1, max_jogadores: 1 },
+            { nome: 'Peteca', icone: 'peteca.png', categoria_pontuacao: 'coletivo', min_jogadores: 2, max_jogadores: 4 },
+            { nome: 'Sinuca', icone: 'sinuca.png', categoria_pontuacao: 'recreativa', min_jogadores: 1, max_jogadores: 2 },
+            { nome: 'Tênis de Mesa', icone: 'tenis-de-mesa.png', categoria_pontuacao: 'individual', min_jogadores: 1, max_jogadores: 2 },
+            { nome: 'Truco', icone: 'truco.png', categoria_pontuacao: 'recreativa', min_jogadores: 2, max_jogadores: 2 },
+            { nome: 'Vôlei de Areia', icone: 'volei-de-areia.png', categoria_pontuacao: 'coletivo', min_jogadores: 2, max_jogadores: 4 },
+            { nome: 'Vôlei de Quadra', icone: 'volei-de-quadra.png', categoria_pontuacao: 'coletivo_plus', min_jogadores: 6, max_jogadores: 12 },
+            { nome: 'Xadrez', icone: 'xadrez.png', categoria_pontuacao: 'recreativa', min_jogadores: 1, max_jogadores: 1 }
         ];
         
         for (let mod of modalidades) {
