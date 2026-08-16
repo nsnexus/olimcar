@@ -29,11 +29,13 @@ onAuthStateChanged(auth, async (user) => {
     }
     if (window.lucide) window.lucide.createIcons();
 
-    if (hash.startsWith('#/admin') || hash.startsWith('#/lider') || hash.startsWith('#/dashboard')) {
+    if (hash.startsWith('#/admin') || hash.startsWith('#/lider') || hash.startsWith('#/dashboard') || hash.startsWith('#/arbitro')) {
         if (!user) {
             window.location.hash = '/login';
-        } else if ((hash.startsWith('#/admin') || hash.startsWith('#/dashboard')) && currentUserData.role === 'lider') {
+        } else if ((hash.startsWith('#/admin') || hash.startsWith('#/dashboard') || hash.startsWith('#/arbitro')) && currentUserData.role === 'lider') {
             window.location.hash = '/lider';
+        } else if ((hash.startsWith('#/admin') || hash.startsWith('#/dashboard') || hash.startsWith('#/lider')) && currentUserData.role === 'arbitro') {
+            window.location.hash = '/arbitro';
         }
     }
 
@@ -74,7 +76,7 @@ function updateUIAfterLogin(role = 'admin') {
     const navAuth = document.querySelector('.nav-btn');
     if (navAuth) {
         navAuth.innerHTML = '<i data-lucide="layout-dashboard"></i> Painel';
-        navAuth.setAttribute('href', role === 'lider' ? '#/lider' : '#/dashboard');
+        navAuth.setAttribute('href', role === 'lider' ? '#/lider' : (role === 'arbitro' ? '#/arbitro' : '#/dashboard'));
         navAuth.classList.remove('btn-outline');
         navAuth.classList.add('btn-primary');
     }

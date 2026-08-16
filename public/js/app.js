@@ -8,6 +8,7 @@ import { renderModalidadesPage } from './pages/admin/modalidades.js';
 import { renderJogoEditorPage } from './pages/admin/jogo_editor.js';
 import { renderSumulaEditorPage } from './pages/admin/sumula_editor.js';
 import { renderLiderDashboardPage } from './pages/lider_dashboard.js';
+import { renderArbitroDashboardPage, loadArbitroJogos } from './pages/arbitro_dashboard.js';
 import { renderEquipesPublicPage } from './pages/equipes.js';
 import { renderResultadosPage } from './pages/resultados.js';
 import { renderRankingPage } from './pages/ranking.js';
@@ -27,7 +28,7 @@ mobileMenuBtn.addEventListener('click', () => {
 });
 
 // Rotas Privadas
-const privateRoutes = ['/dashboard', '/lider'];
+const privateRoutes = ['/dashboard', '/lider', '/arbitro'];
 
 // Sistema de Roteamento Simples Baseado em Hash
 const routes = {
@@ -39,6 +40,7 @@ const routes = {
     '/login': renderLoginPage,
     '/dashboard': renderDashboardPage,
     '/lider': renderLiderDashboardPage,
+    '/arbitro': renderArbitroDashboardPage,
     '/admin/equipes': renderEquipesPage,
     '/admin/modalidades': renderModalidadesPage,
     '/admin/jogo': renderJogoEditorPage,
@@ -255,6 +257,8 @@ function router() {
                     const authResult = await loginUser(email, password);
                     if (authResult.role === 'lider') {
                         window.location.hash = '/lider';
+                    } else if (authResult.role === 'arbitro') {
+                        window.location.hash = '/arbitro';
                     } else {
                         window.location.hash = '/dashboard';
                     }
@@ -267,6 +271,10 @@ function router() {
         }
     }
     
+    if (hash === '/arbitro') {
+        loadArbitroJogos();
+    }
+
     if (hash === '/dashboard') {
         const btnLogout = document.getElementById('btn-logout');
         const btnSeed = document.getElementById('btn-seed');

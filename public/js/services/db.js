@@ -263,24 +263,21 @@ export async function seedInitialData() {
 // Inicializador Automático de Usuários (Roda sem precisar clicar em nada)
 setTimeout(async () => {
     try {
-        const usuariosRef = collection(db, 'usuarios');
-        const existingUsers = await getDocs(usuariosRef);
-        
-        // A coleção não está vazia porque você já tinha criado 1 usuário antes.
-        if (existingUsers.size < 5) {
-            console.log("Auto-semeando Acessos de Líderes e Administradores...");
-            const lideres = [
-                { id: 'time_azul@olimcar.com.br', role: 'lider', equipeId: 'Equipe Azul' },
-                { id: 'time_amarelo@olimcar.com.br', role: 'lider', equipeId: 'Equipe Amarela' },
-                { id: 'time_verde@olimcar.com.br', role: 'lider', equipeId: 'Equipe Verde' },
-                { id: 'time_vermelho@olimcar.com.br', role: 'lider', equipeId: 'Equipe Vermelha' },
-                { id: '01P8mEIXC0Xw24aQJs7wSEybXom1', role: 'admin', equipeId: 'Admin Master' } // ID Exigido pelo Usuário
-            ];
-            
-            for (let u of lideres) {
+        const acessos = [
+            { id: 'time_azul@olimcar.com.br', role: 'lider', equipeId: 'Equipe Azul' },
+            { id: 'time_amarelo@olimcar.com.br', role: 'lider', equipeId: 'Equipe Amarela' },
+            { id: 'time_verde@olimcar.com.br', role: 'lider', equipeId: 'Equipe Verde' },
+            { id: 'time_vermelho@olimcar.com.br', role: 'lider', equipeId: 'Equipe Vermelha' },
+            { id: '01P8mEIXC0Xw24aQJs7wSEybXom1', role: 'admin', equipeId: 'Admin Master' }, // ID Exigido pelo Usuário
+            { id: 'jfFPhcTj5icb039OWkePCXHjtmw2', role: 'arbitro', equipeId: 'Arbitragem' }
+        ];
+
+        for (let u of acessos) {
+            const existente = await getDoc(doc(db, 'usuarios', u.id));
+            if (!existente.exists()) {
+                console.log(`Auto-semeando acesso: ${u.id} (${u.role})`);
                 await setDoc(doc(db, 'usuarios', u.id), u);
             }
-            console.log("Acessos configurados com sucesso no banco!");
         }
     } catch (error) {
         console.error("Erro no auto-seed de usuários:", error);

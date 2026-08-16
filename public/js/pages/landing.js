@@ -146,7 +146,7 @@ export function renderLandingPage() {
                         <div class="agenda-day-header">
                             <div>
                                 <div class="agenda-day-date"><span class="agenda-day-num">19</span> SET</div>
-                                <div class="agenda-day-weekday">Sexta-feira</div>
+                                <div class="agenda-day-weekday">Sábado</div>
                             </div>
                             <span class="agenda-day-badge" style="color: var(--yellow); border-color: rgba(236, 177, 31, 0.3);">ABERTURA</span>
                         </div>
@@ -164,7 +164,7 @@ export function renderLandingPage() {
                         <div class="agenda-day-header">
                             <div>
                                 <div class="agenda-day-date"><span class="agenda-day-num">20</span> SET</div>
-                                <div class="agenda-day-weekday">Sábado</div>
+                                <div class="agenda-day-weekday">Domingo</div>
                             </div>
                             <span class="agenda-day-badge" style="color: var(--yellow); border-color: rgba(236, 177, 31, 0.3);">DIA 2</span>
                         </div>
@@ -181,7 +181,7 @@ export function renderLandingPage() {
                         <div class="agenda-day-header">
                             <div>
                                 <div class="agenda-day-date"><span class="agenda-day-num">26</span> SET</div>
-                                <div class="agenda-day-weekday">Sexta-feira</div>
+                                <div class="agenda-day-weekday">Sábado</div>
                             </div>
                             <span class="agenda-day-badge" style="color: var(--yellow); border-color: rgba(236, 177, 31, 0.3);">DIA 3</span>
                         </div>
@@ -198,7 +198,7 @@ export function renderLandingPage() {
                         <div class="agenda-day-header">
                             <div>
                                 <div class="agenda-day-date"><span class="agenda-day-num">27</span> SET</div>
-                                <div class="agenda-day-weekday">Sábado</div>
+                                <div class="agenda-day-weekday">Domingo</div>
                             </div>
                             <span class="agenda-day-badge" style="color: var(--yellow); border-color: rgba(236, 177, 31, 0.3);">FINAL</span>
                         </div>

@@ -8,11 +8,11 @@ service cloud.firestore {
     }
     
     function isAdmGeral() {
-      return estaLogado() && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.perfil == 'adm_geral';
+      return estaLogado() && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == 'admin';
     }
 
     function isArbitro() {
-      return estaLogado() && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.perfil == 'arbitragem';
+      return estaLogado() && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == 'arbitro';
     }
 
     // 2. Regras por Coleção
