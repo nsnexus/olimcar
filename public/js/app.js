@@ -97,6 +97,10 @@ function router() {
     const routeFunction = routes[hash] || (() => '<div class="container" style="padding-top: 2rem;"><h2>404 - Página não encontrada</h2></div>');
     appRoot.innerHTML = routeFunction();
 
+    if (window.lucide) {
+        window.lucide.createIcons();
+    }
+
     if (mainFooter) {
         mainFooter.style.display = hash === '/' ? '' : 'none';
     }
