@@ -17,11 +17,14 @@ export function renderEquipesPage() {
             <div class="card">
                 <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                     <span>Lista Geral de Atletas</span>
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
                         <select id="filtro-modalidade-atletas" class="form-control" style="width: auto; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--color-border);">
                             <option value="">Todas as Modalidades</option>
                         </select>
                         <input type="text" id="filtro-atletas" placeholder="Buscar por nome, matrícula ou equipe..." class="form-control" style="max-width: 300px; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                        <button id="btn-exportar-csv" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.9rem; font-size: 0.9rem;" title="Exportar tabela atual para CSV">
+                            <i data-lucide="download"></i> Exportar CSV
+                        </button>
                     </div>
                 </div>
                 <div class="table-container" style="max-height: 500px; overflow-y: auto;">
@@ -51,11 +54,13 @@ async function loadEquipesData() {
     const statsContainer = document.getElementById('stats-equipes');
     const inputFiltro = document.getElementById('filtro-atletas');
     const selectModalidade = document.getElementById('filtro-modalidade-atletas');
+    const btnExportar = document.getElementById('btn-exportar-csv');
 
     if (!tbody || !statsContainer) return;
 
     try {
         const atletas = await getCollection('colaboradores');
+        let atletasFiltrados = [...atletas];
         
         // Gerar Estatísticas por Equipe
         const stats = {};
@@ -119,7 +124,7 @@ async function loadEquipesData() {
         const aplicarFiltros = () => {
             const termo = inputFiltro.value.toLowerCase();
             const modalidadeSelecionada = selectModalidade.value;
-            const filtrados = atletas.filter(a => {
+            atletasFiltrados = atletas.filter(a => {
                 const matchTermo = !termo ||
                     (a.nome && a.nome.toLowerCase().includes(termo)) ||
                     (a.equipe && a.equipe.toLowerCase().includes(termo)) ||
@@ -127,11 +132,18 @@ async function loadEquipesData() {
                 const matchModalidade = !modalidadeSelecionada || (a.modalidades || []).includes(modalidadeSelecionada);
                 return matchTermo && matchModalidade;
             });
-            renderTabela(filtrados);
+            renderTabela(atletasFiltrados);
         };
 
         inputFiltro.addEventListener('input', aplicarFiltros);
         selectModalidade.addEventListener('change', aplicarFiltros);
+
+        // Exportação CSV
+        if (btnExportar) {
+            btnExportar.addEventListener('click', () => {
+                exportarCSV(atletasFiltrados);
+            });
+        }
 
         renderTabela(atletas);
         if (window.lucide) window.lucide.createIcons();
@@ -142,3 +154,57 @@ async function loadEquipesData() {
         statsContainer.innerHTML = `<div class="card" style="padding: 2rem; text-align: center; color: var(--color-danger);">Falha de Comunicação</div>`;
     }
 }
+
+function exportarCSV(lista) {
+    if (!lista || lista.length === 0) {
+        alert('Nenhum atleta encontrado para exportar.');
+        return;
+    }
+
+    const escapeCSV = (val) => {
+        if (val === null || val === undefined) return '""';
+        const str = String(val).replace(/"/g, '""');
+        return `"${str}"`;
+    };
+
+    const cabecalho = [
+        'Nome do Atleta',
+        'Matrícula',
+        'Contato / WhatsApp',
+        'Equipe',
+        'Vínculo',
+        'Nº de Modalidades',
+        'Modalidades'
+    ];
+
+    const linhas = lista.map(a => {
+        const mods = (a.modalidades || [])
+            .filter(m => m && !/^Coluna\s*\d+$/i.test(m))
+            .join(', ');
+
+        return [
+            escapeCSV(a.nome || ''),
+            escapeCSV(a.matricula || ''),
+            escapeCSV(a.whatsapp || ''),
+            escapeCSV(a.equipe || 'Sem Equipe'),
+            escapeCSV(a.vinculo || ''),
+            escapeCSV(a.modalidades ? a.modalidades.length : 0),
+            escapeCSV(mods)
+        ].join(';');
+    });
+
+    const csvContent = '\uFEFF' + [cabecalho.map(escapeCSV).join(';'), ...linhas].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    const hoje = new Date();
+    const dataFormatada = hoje.toLocaleDateString('pt-BR').replace(/\//g, '-');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `atletas_olimcar_${dataFormatada}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
