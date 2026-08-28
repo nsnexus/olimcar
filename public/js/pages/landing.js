@@ -152,9 +152,11 @@ export function renderLandingPage() {
                         </div>
                         <div class="agenda-day-divider"></div>
                         <ul class="agenda-event-list">
-                            <li><span class="agenda-time">08h</span> <span class="agenda-event">Abertura oficial</span></li>
+                            <li><span class="agenda-time">08h</span> <span class="agenda-event">Abertura</span></li>
+                            <li><span class="agenda-time">09h</span> <span class="agenda-event">Início da gincana (Coleguium Rede de Ensino)</span></li>
+                            <li><span class="agenda-time">10h</span> <span class="agenda-event">Abertura da praça de alimentação</span></li>
                             <li><span class="agenda-time">10:30</span> <span class="agenda-event">Início dos jogos</span></li>
-                            <li><span class="agenda-time highlight">13h</span> <span class="agenda-event highlight"><i data-lucide="music" style="width: 16px; height: 16px;"></i> Felipe de Lucaa</span></li>
+                            <li><span class="agenda-time highlight">13h</span> <span class="agenda-event highlight"><i data-lucide="music" style="width: 16px; height: 16px;"></i> Felipe de Lucca</span></li>
                             <li><span class="agenda-time">21h</span> <span class="agenda-event">Encerramento</span></li>
                         </ul>
                     </div>
@@ -170,8 +172,9 @@ export function renderLandingPage() {
                         </div>
                         <div class="agenda-day-divider"></div>
                         <ul class="agenda-event-list">
-                            <li><span class="agenda-time">08h</span> <span class="agenda-event">Abertura</span></li>
-                            <li><span class="agenda-time highlight">13h</span> <span class="agenda-event highlight"><i data-lucide="music" style="width: 16px; height: 16px;"></i> Voz e Violão</span></li>
+                            <li><span class="agenda-time">08h</span> <span class="agenda-event">Abertura e início dos jogos</span></li>
+                            <li><span class="agenda-time">10h</span> <span class="agenda-event">Abertura da praça de alimentação</span></li>
+                            <li><span class="agenda-time highlight">13h</span> <span class="agenda-event highlight"><i data-lucide="music" style="width: 16px; height: 16px;"></i> Thiago Miller</span></li>
                             <li><span class="agenda-time">20h</span> <span class="agenda-event">Encerramento</span></li>
                         </ul>
                     </div>
@@ -187,7 +190,9 @@ export function renderLandingPage() {
                         </div>
                         <div class="agenda-day-divider"></div>
                         <ul class="agenda-event-list">
-                            <li><span class="agenda-time">08h</span> <span class="agenda-event">Abertura</span></li>
+                            <li><span class="agenda-time">08h</span> <span class="agenda-event">Abertura e início dos jogos</span></li>
+                            <li><span class="agenda-time">08h</span> <span class="agenda-event">Corrida de rua</span></li>
+                            <li><span class="agenda-time">10h</span> <span class="agenda-event">Abertura da praça de alimentação</span></li>
                             <li><span class="agenda-time highlight">13h</span> <span class="agenda-event highlight"><i data-lucide="music" style="width: 16px; height: 16px;"></i> Nilde Campelo</span></li>
                             <li><span class="agenda-time">21h</span> <span class="agenda-event">Encerramento</span></li>
                         </ul>
@@ -204,17 +209,18 @@ export function renderLandingPage() {
                         </div>
                         <div class="agenda-day-divider"></div>
                         <ul class="agenda-event-list">
-                            <li><span class="agenda-time">08h</span> <span class="agenda-event">Abertura</span></li>
-                            <li><span class="agenda-time highlight">12h</span> <span class="agenda-event highlight"><i data-lucide="music" style="width: 16px; height: 16px;"></i> Fabi Almeida</span></li>
+                            <li><span class="agenda-time">08h</span> <span class="agenda-event">Abertura e início dos jogos</span></li>
+                            <li><span class="agenda-time">10h</span> <span class="agenda-event">Abertura da praça de alimentação (piscina)</span></li>
+                            <li><span class="agenda-time highlight">12h</span> <span class="agenda-event highlight"><i data-lucide="music" style="width: 16px; height: 16px;"></i> Fabi Almeida (palco da piscina)</span></li>
                             <li><span class="agenda-time highlight">14:30</span> <span class="agenda-event highlight"><i data-lucide="trophy" style="width: 16px; height: 16px;"></i> Premiação</span></li>
-                            <li><span class="agenda-time highlight">16h</span> <span class="agenda-event highlight"><i data-lucide="party-popper" style="width: 16px; height: 16px;"></i> Samba Haw</span></li>
+                            <li><span class="agenda-time highlight">16h</span> <span class="agenda-event highlight"><i data-lucide="party-popper" style="width: 16px; height: 16px;"></i> Samba Haw (palco da piscina)</span></li>
                             <li><span class="agenda-time">19h</span> <span class="agenda-event">Encerramento</span></li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="agenda-home-footer">
-                    <span style="color: #e5484d;">📍</span> Praça de Alimentação · <strong style="color: var(--green-light);">Shows no palco secundário</strong>
+                    <span style="color: #e5484d;">📍</span> Praça de Alimentação · <strong style="color: var(--green-light);">Shows no palco secundário (dias 19, 20 e 26) e no palco da piscina (dia 27)</strong>
                 </div>
             </div>
         </section>
