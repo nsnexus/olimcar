@@ -40,10 +40,21 @@ export function renderDashboardPage() {
 
             <!-- CONTEÚDO: ABA JOGOS -->
             <div id="tab-content-jogos">
+                <div class="card" style="margin-top: 1.5rem; padding: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border: 1px dashed var(--color-danger);">
+                    <div>
+                        <strong style="color: var(--color-danger);"><i data-lucide="alert-triangle" style="width: 16px; height: 16px; vertical-align: text-bottom;"></i> Substituir Base de Jogos</strong>
+                        <p style="margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--color-text-muted);">Apaga TODOS os jogos cadastrados e carrega uma planilha nova no lugar. Placares já registrados serão perdidos.</p>
+                    </div>
+                    <input type="file" id="upload-jogos" accept=".xlsx, .xls, .csv" style="display: none;">
+                    <button id="btn-substituir-jogos" class="btn btn-outline" style="border-color: var(--color-danger); color: var(--color-danger); white-space: nowrap;">
+                        <i data-lucide="refresh-cw"></i> Excluir Tudo e Importar Planilha
+                    </button>
+                </div>
+
                 <div class="card" style="margin-top: 1.5rem;">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                         <span>Gerenciar Jogos e Resultados</span>
-                        
+
                         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                             <select id="admin-filter-data" class="form-control" style="width: auto; padding: 0.3rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--color-border);">
                                 <option value="">Todas Datas</option>
@@ -60,7 +71,7 @@ export function renderDashboardPage() {
                         <i data-lucide="database"></i> Seed Base
                     </button>
                 </div>
-                
+
                 <div class="table-container" style="max-height: 500px; overflow-y: auto;">
                     <table style="width: 100%;">
                         <thead style="position: sticky; top: 0; background: var(--color-surface); z-index: 10;">
@@ -161,6 +172,128 @@ export async function loadDashboardJogos() {
                 }
             }
         };
+
+        // Botão de Substituir Base de Jogos (excluir tudo + importar planilha nova)
+        const btnSubstituir = document.getElementById('btn-substituir-jogos');
+        const inputJogos = document.getElementById('upload-jogos');
+
+        if (btnSubstituir && inputJogos) {
+            btnSubstituir.addEventListener('click', () => {
+                const confirmacao = prompt('Isso vai APAGAR todos os jogos cadastrados (inclusive placares já lançados) e substituir pela planilha escolhida.\n\nDigite EXCLUIR para confirmar:');
+                if (confirmacao !== 'EXCLUIR') return;
+                inputJogos.click();
+            });
+
+            inputJogos.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const originalText = btnSubstituir.innerHTML;
+                btnSubstituir.disabled = true;
+
+                try {
+                    const { getCollection, deleteDocument, addDocument } = await import('../services/db.js');
+
+                    // 1. Excluir todos os jogos existentes
+                    btnSubstituir.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Excluindo jogos antigos...';
+                    const jogosAtuais = await getCollection('jogos');
+                    await Promise.all(jogosAtuais.map(j => deleteDocument('jogos', j.id)));
+
+                    // 2. Ler planilha (layout oficial "Tabela de Jogos - Olimcar":
+                    // MODALIDADE | ATLETAS POR EQUIPE | ATLETAS NA COMPETIÇÃO | TÉCNICO | LOCAL | JOGOS(fase) | TIME_A | X | TIME_B | DATA | HORÁRIO)
+                    btnSubstituir.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Lendo planilha...';
+                    const arrayBuffer = await file.arrayBuffer();
+                    const workbook = window.XLSX.read(arrayBuffer, { type: 'array' });
+                    const nomeAba = workbook.SheetNames.find(n => /jogos/i.test(n)) || workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[nomeAba];
+                    const linhas = window.XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                    // DATA/HORÁRIO vêm como número serial do Excel (não texto) — converter manualmente
+                    const DIAS_SEMANA = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
+                    const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+                    const formatarDataSerial = (serial) => {
+                        const dc = window.XLSX.SSF.parse_date_code(Math.floor(serial));
+                        const d = new Date(Date.UTC(dc.y, dc.m - 1, dc.d));
+                        return `${DIAS_SEMANA[d.getUTCDay()]}, ${dc.d} de ${MESES[dc.m - 1]} de ${dc.y}`;
+                    };
+                    const formatarHorarioSerial = (serial) => {
+                        const totalMin = Math.round((serial - Math.floor(serial)) * 24 * 60);
+                        return `${String(Math.floor(totalMin / 60)).padStart(2, '0')}:${String(totalMin % 60).padStart(2, '0')}`;
+                    };
+
+                    // Mapa de cores -> nome oficial cadastrado em "equipes"
+                    const equipesCadastradas = await getCollection('equipes');
+                    const mapEquipes = {};
+                    equipesCadastradas.forEach(eq => {
+                        const cor = (eq.nome || '').split(' ')[1];
+                        if (cor) mapEquipes[cor.toUpperCase()] = eq.nome;
+                    });
+                    const resolverEquipe = (texto) => {
+                        if (!texto) return { nome: 'A Definir' };
+                        const t = String(texto).trim().toUpperCase();
+                        if (t.includes('TODAS')) return { nome: 'Todas as Equipes' };
+                        if (t.includes('AZUL')) return { nome: mapEquipes['AZUL'] || 'Equipe Azul' };
+                        if (t.includes('AMAREL')) return { nome: mapEquipes['AMARELA'] || 'Equipe Amarela' };
+                        if (t.includes('VERDE')) return { nome: mapEquipes['VERDE'] || 'Equipe Verde' };
+                        if (t.includes('VERMELH')) return { nome: mapEquipes['VERMELHA'] || 'Equipe Vermelha' };
+                        return { nome: String(texto).trim() };
+                    };
+
+                    // 3. Importar linhas
+                    btnSubstituir.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Importando novos jogos...';
+                    let importados = 0;
+                    const novasPromessas = [];
+
+                    for (let i = 0; i < linhas.length; i++) {
+                        const colunas = linhas[i];
+                        if (!colunas || !colunas[0]) continue;
+
+                        const modalidade = String(colunas[0]).trim();
+                        const dataSerial = colunas[9];
+                        const horarioSerial = colunas[10];
+
+                        // Pula cabeçalho, título e linhas sem data/horário válidos (ex: legenda de pontuação no fim da planilha)
+                        if (modalidade.toUpperCase() === 'MODALIDADE') continue;
+                        if (typeof dataSerial !== 'number' || typeof horarioSerial !== 'number') continue;
+
+                        const local = colunas[4] ? String(colunas[4]).trim() : '';
+                        const fase = colunas[5] ? String(colunas[5]).trim() : '';
+                        const timeA_texto = colunas[6] ? String(colunas[6]).trim() : '';
+                        const timeB_texto = colunas[8] ? String(colunas[8]).trim() : ''; // coluna 7 é o "X"
+
+                        const jogoDoc = {
+                            data_jogo: formatarDataSerial(dataSerial),
+                            horario: formatarHorarioSerial(horarioSerial),
+                            modalidade_texto: modalidade,
+                            local,
+                            fase,
+                            equipe_a: resolverEquipe(timeA_texto),
+                            equipe_b: resolverEquipe(timeB_texto),
+                            placar_a: 0,
+                            placar_b: 0,
+                            status: 'agendado',
+                            criado_em: new Date().toISOString()
+                        };
+
+                        novasPromessas.push(addDocument('jogos', jogoDoc));
+                        importados++;
+                    }
+
+                    await Promise.all(novasPromessas);
+                    alert(`Base de jogos substituída! ${importados} jogos importados.`);
+                    location.reload();
+
+                } catch (error) {
+                    console.error('Erro ao substituir base de jogos:', error);
+                    alert('Erro ao processar a planilha. Verifique o formato e tente novamente.');
+                } finally {
+                    inputJogos.value = '';
+                    btnSubstituir.disabled = false;
+                    btnSubstituir.innerHTML = originalText;
+                    if (window.lucide) window.lucide.createIcons();
+                }
+            });
+        }
 
         // Botão de Importação de Inscrições
         const btnUpload = document.getElementById('btn-importar-inscricoes');
