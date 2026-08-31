@@ -179,14 +179,20 @@ export async function loadDashboardJogos() {
 
         if (btnSubstituir && inputJogos) {
             btnSubstituir.addEventListener('click', () => {
-                const confirmacao = prompt('Isso vai APAGAR todos os jogos cadastrados (inclusive placares já lançados) e substituir pela planilha escolhida.\n\nDigite EXCLUIR para confirmar:');
-                if (confirmacao !== 'EXCLUIR') return;
+                // Abre o seletor de arquivo direto no clique (prompt() antes disso consome
+                // o gesto do usuário no Chrome e o input.click() seguinte falha em silêncio)
                 inputJogos.click();
             });
 
             inputJogos.addEventListener('change', async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
+
+                const confirmacao = prompt(`Isso vai APAGAR todos os jogos cadastrados (inclusive placares já lançados) e substituir pelo arquivo "${file.name}".\n\nDigite EXCLUIR para confirmar:`);
+                if (confirmacao !== 'EXCLUIR') {
+                    inputJogos.value = '';
+                    return;
+                }
 
                 const originalText = btnSubstituir.innerHTML;
                 btnSubstituir.disabled = true;
