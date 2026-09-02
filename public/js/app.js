@@ -17,7 +17,7 @@ import { renderTermosPage } from './pages/termos.js';
 import { renderRegulamentoPage } from './pages/regulamento.js';
 import { renderRegulamentosAdminPage } from './pages/admin/regulamentos.js';
 import { loginUser, logoutUser, currentUser, authResolved } from './auth.js';
-import { seedInitialData, getCollection } from './services/db.js';
+import { seedInitialData, getCollectionCount } from './services/db.js';
 
 const appRoot = document.getElementById('app-root');
 const mainNav = document.getElementById('main-nav');
@@ -111,13 +111,10 @@ function router() {
 
     // Comportamento do Vídeo da Home e Hero Features
     if (hash === '/') {
-        // Fetch Inscritos
-        Promise.all([
-            getCollection('equipes'),
-            getCollection('colaboradores')
-        ]).then(([equipes, colaboradores]) => {
+        // Contagem de inscritos via leitura agregada (não baixa os documentos)
+        getCollectionCount('colaboradores').then((total) => {
             const elInscritos = document.getElementById('cd-inscritos');
-            if (elInscritos && colaboradores) elInscritos.innerText = colaboradores.length;
+            if (elInscritos && total !== null) elInscritos.innerText = total;
         });
 
         // Modal Teaser

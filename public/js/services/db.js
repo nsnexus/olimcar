@@ -1,6 +1,6 @@
 // public/js/services/db.js
 import { db, storage } from './firebase.js';
-import { collection, doc, setDoc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { collection, doc, setDoc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, where, orderBy, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
 // Estrutura oficial de pontuação (Regulamento OLIMCAR)
@@ -51,14 +51,47 @@ export function sortByDateAndTime(jogos) {
     return jogos.sort((a, b) => parseToTime(a.data_jogo, a.horario) - parseToTime(b.data_jogo, b.horario));
 }
 
-// Função genérica para pegar todos os documentos de uma coleção
-export async function getCollection(collectionName) {
+// Cache simples em memória (dura enquanto a aba estiver aberta) pra evitar
+// reler a coleção inteira toda vez que o usuário troca de página. Escritas
+// (addDocument/setDocument/updateDocument/deleteDocument) invalidam a
+// entrada correspondente, então dados alterados aparecem atualizados no
+// próximo getCollection daquela coleção.
+const CACHE_TTL_MS = 60 * 1000;
+const _cache = new Map(); // collectionName -> { data, ts }
+
+function invalidarCache(collectionName) {
+    _cache.delete(collectionName);
+}
+
+// Função genérica para pegar todos os documentos de uma coleção.
+// Passe { force: true } pra ignorar o cache e forçar leitura do servidor.
+export async function getCollection(collectionName, { force = false } = {}) {
+    const cacheado = _cache.get(collectionName);
+    if (!force && cacheado && (Date.now() - cacheado.ts) < CACHE_TTL_MS) {
+        return [...cacheado.data];
+    }
+
     try {
         const querySnapshot = await getDocs(collection(db, collectionName));
-        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const dados = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        _cache.set(collectionName, { data: dados, ts: Date.now() });
+        return [...dados];
     } catch (error) {
         console.error(`Erro ao buscar coleção ${collectionName}:`, error);
-        return [];
+        // Se a rede falhar mas ainda tivermos algo em cache (mesmo vencido), é melhor que nada.
+        return cacheado ? [...cacheado.data] : [];
+    }
+}
+
+// Conta os documentos de uma coleção sem baixar os documentos (1 leitura
+// agregada em vez de N leituras). Use quando só precisar do número.
+export async function getCollectionCount(collectionName) {
+    try {
+        const snap = await getCountFromServer(collection(db, collectionName));
+        return snap.data().count;
+    } catch (error) {
+        console.error(`Erro ao contar coleção ${collectionName}:`, error);
+        return null;
     }
 }
 
@@ -75,6 +108,7 @@ export async function getDocument(collectionName, id) {
 export async function addDocument(collectionName, data) {
     try {
         const docRef = await addDoc(collection(db, collectionName), data);
+        invalidarCache(collectionName);
         return docRef.id;
     } catch (e) {
         console.error(`Erro adicionar doc em ${collectionName}:`, e);
@@ -85,6 +119,7 @@ export async function addDocument(collectionName, data) {
 export async function setDocument(collectionName, id, data) {
     try {
         await setDoc(doc(db, collectionName, id), data);
+        invalidarCache(collectionName);
         return true;
     } catch (e) {
         console.error(`Erro ao setar doc ${id}:`, e);
@@ -95,6 +130,7 @@ export async function setDocument(collectionName, id, data) {
 export async function updateDocument(collectionName, id, data) {
     try {
         await updateDoc(doc(db, collectionName, id), data);
+        invalidarCache(collectionName);
         return true;
     } catch (e) {
         console.error(`Erro atualizar doc ${id}:`, e);
@@ -105,6 +141,7 @@ export async function updateDocument(collectionName, id, data) {
 export async function deleteDocument(collectionName, id) {
     try {
         await deleteDoc(doc(db, collectionName, id));
+        invalidarCache(collectionName);
         return true;
     } catch (e) {
         console.error(`Erro ao deletar doc ${id}:`, e);

@@ -1,0 +1,33 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Mesma checagem de perfil usada no firestore.rules (coleção "usuarios")
+    function isAdmGeral() {
+      return request.auth != null &&
+        firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isArbitro() {
+      return request.auth != null &&
+        firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.role == 'arbitro';
+    }
+
+    // Evidências de súmula (fotos de placar): admin ou árbitro enviam, leitura pública
+    match /evidencias/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmGeral() || isArbitro();
+    }
+
+    // Regulamentos em PDF: leitura pública, só admin envia/substitui/remove
+    match /regulamentos/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmGeral();
+    }
+
+    // Qualquer outro caminho fora dos dois de cima: bloqueado por padrão
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
