@@ -30,6 +30,12 @@ export function renderDashboardPage() {
                     <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Agendar Jogo</h3>
                     <p style="font-size: 0.85rem; color: var(--color-text-muted);">Cadastrar partida manual</p>
                 </div>
+
+                <div class="card" onclick="window.open('/tv.html', '_blank')" style="padding: 1.5rem; text-align: center; cursor: pointer; transition: transform 0.2s;">
+                    <i data-lucide="tv" style="width: 48px; height: 48px; color: var(--color-info); margin-bottom: 1rem;"></i>
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Painel de TV</h3>
+                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Abrir tela cheia para telão/TV</p>
+                </div>
             </div>
 
             <!-- NAVEGAÇÃO POR ABAS -->

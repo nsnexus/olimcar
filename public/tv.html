@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLIMCAR - Painel de TV</title>
+    <link rel="icon" type="image/png" href="/assets/logo-transparent.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/tv.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="tv">
+        <div class="tv-bg">
+            <div class="tv-bg-grid"></div>
+            <div class="tv-bg-aurora"></div>
+            <div class="tv-leaves" id="tv-leaves"></div>
+        </div>
+
+        <header class="tv-header">
+            <div class="tv-brand">
+                <img src="/assets/logo-transparent.png" alt="OLIMCAR" class="tv-logo">
+                <span class="tv-brand-text">OLIMCAR <strong>2026</strong></span>
+            </div>
+            <div class="tv-clock">
+                <div class="tv-time" id="tv-time">00:00:00</div>
+                <div class="tv-date" id="tv-date">carregando...</div>
+            </div>
+        </header>
+
+        <main class="tv-stage" id="tv-stage"></main>
+
+        <footer class="tv-footer" id="tv-dots"></footer>
+    </div>
+
+    <div class="tv-start-overlay" id="tv-start-overlay">
+        <img src="/assets/logo-transparent.png" alt="OLIMCAR">
+        <h1>Painel de TV — Olimcar 2026</h1>
+        <p>Clique ou pressione qualquer tecla para iniciar em tela cheia</p>
+        <span class="tv-start-btn"><i data-lucide="tv"></i> Iniciar Painel</span>
+    </div>
+
+    <script type="module" src="/js/tv.js"></script>
+    <script>if (window.lucide) window.lucide.createIcons();</script>
+</body>
+</html>

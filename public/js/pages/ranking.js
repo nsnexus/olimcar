@@ -39,6 +39,79 @@ export function renderRankingPage() {
     `;
 }
 
+// Calcula pontuação e medalhas por equipe a partir dos jogos encerrados.
+// Reaproveitado pela página de Ranking e pelo Painel de TV.
+export function calcularRanking(jogos, equipesDB) {
+    const encerrados = jogos.filter(j => j.status === 'encerrado');
+
+    const pontosPorEquipe = {};
+    const medalhasPorEquipe = {};
+    equipesDB.forEach(eq => {
+        pontosPorEquipe[eq.nome] = 0;
+        medalhasPorEquipe[eq.nome] = { 1: 0, 2: 0, 3: 0 };
+    });
+
+    let semCategoria = 0;
+    let ignoradosPorFase = 0;
+
+    const somarPonto = (equipe, categoria, posicao) => {
+        if (!(equipe in pontosPorEquipe)) return;
+        const pontos = TABELA_PONTUACAO[categoria]?.[posicao];
+        if (pontos === undefined) return;
+        pontosPorEquipe[equipe] += pontos;
+        if (posicao <= 3) medalhasPorEquipe[equipe][posicao]++;
+    };
+
+    encerrados.forEach(jogo => {
+        if (!jogo.categoria) { semCategoria++; return; }
+
+        if (jogo.colocacoes && Object.keys(jogo.colocacoes).length > 0) {
+            // Prova com todas as equipes de uma vez
+            Object.entries(jogo.colocacoes).forEach(([equipe, posicao]) => {
+                somarPonto(equipe, jogo.categoria, posicao);
+            });
+
+            // Corrida: +1 ponto por atleta que concluiu, além da colocação
+            if (jogo.categoria === 'corrida' && jogo.conclusoes) {
+                const pontoConclusao = TABELA_PONTUACAO.corrida.conclusao;
+                Object.entries(jogo.conclusoes).forEach(([equipe, qtd]) => {
+                    if (equipe in pontosPorEquipe && qtd > 0) {
+                        pontosPorEquipe[equipe] += qtd * pontoConclusao;
+                    }
+                });
+            }
+            return;
+        }
+
+        // Confronto direto: só pontua em jogos de FINAL (ouro/prata) ou DISPUTA DE 3º LUGAR (bronze)
+        const timeA = jogo.equipe_a?.nome;
+        const timeB = jogo.equipe_b?.nome;
+        const placarA = jogo.placar_a ?? 0;
+        const placarB = jogo.placar_b ?? 0;
+
+        if (placarA === placarB) { ignoradosPorFase++; return; } // Empate: sem colocação definível
+
+        const vencedor = placarA > placarB ? timeA : timeB;
+        const perdedor = placarA > placarB ? timeB : timeA;
+
+        if (ehFinal(jogo.fase)) {
+            somarPonto(vencedor, jogo.categoria, 1);
+            somarPonto(perdedor, jogo.categoria, 2);
+        } else if (ehTerceiroLugar(jogo.fase)) {
+            somarPonto(vencedor, jogo.categoria, 3);
+        } else {
+            ignoradosPorFase++;
+        }
+    });
+
+    const ranking = Object.entries(pontosPorEquipe).sort((a, b) => b[1] - a[1]);
+    const avisos = [];
+    if (semCategoria > 0) avisos.push(`${semCategoria} jogo(s) encerrado(s) sem categoria de pontuação definida (edite em Agenda/Jogo para incluir).`);
+    if (ignoradosPorFase > 0) avisos.push(`${ignoradosPorFase} confronto(s) fora de FINAL/3º Lugar (ou empatado) não geram pontos, só a colocação final pontua.`);
+
+    return { ranking, medalhasPorEquipe, avisos };
+}
+
 async function loadRanking() {
     const loadingDiv = document.getElementById('ranking-loading');
     const conteudoDiv = document.getElementById('ranking-conteudo');
@@ -53,69 +126,7 @@ async function loadRanking() {
             getCollection('equipes')
         ]);
 
-        const encerrados = jogos.filter(j => j.status === 'encerrado');
-
-        const pontosPorEquipe = {};
-        const medalhasPorEquipe = {};
-        equipesDB.forEach(eq => {
-            pontosPorEquipe[eq.nome] = 0;
-            medalhasPorEquipe[eq.nome] = { 1: 0, 2: 0, 3: 0 };
-        });
-
-        let semCategoria = 0;
-        let ignoradosPorFase = 0;
-
-        const somarPonto = (equipe, categoria, posicao) => {
-            if (!(equipe in pontosPorEquipe)) return;
-            const pontos = TABELA_PONTUACAO[categoria]?.[posicao];
-            if (pontos === undefined) return;
-            pontosPorEquipe[equipe] += pontos;
-            if (posicao <= 3) medalhasPorEquipe[equipe][posicao]++;
-        };
-
-        encerrados.forEach(jogo => {
-            if (!jogo.categoria) { semCategoria++; return; }
-
-            if (jogo.colocacoes && Object.keys(jogo.colocacoes).length > 0) {
-                // Prova com todas as equipes de uma vez
-                Object.entries(jogo.colocacoes).forEach(([equipe, posicao]) => {
-                    somarPonto(equipe, jogo.categoria, posicao);
-                });
-
-                // Corrida: +1 ponto por atleta que concluiu, além da colocação
-                if (jogo.categoria === 'corrida' && jogo.conclusoes) {
-                    const pontoConclusao = TABELA_PONTUACAO.corrida.conclusao;
-                    Object.entries(jogo.conclusoes).forEach(([equipe, qtd]) => {
-                        if (equipe in pontosPorEquipe && qtd > 0) {
-                            pontosPorEquipe[equipe] += qtd * pontoConclusao;
-                        }
-                    });
-                }
-                return;
-            }
-
-            // Confronto direto: só pontua em jogos de FINAL (ouro/prata) ou DISPUTA DE 3º LUGAR (bronze)
-            const timeA = jogo.equipe_a?.nome;
-            const timeB = jogo.equipe_b?.nome;
-            const placarA = jogo.placar_a ?? 0;
-            const placarB = jogo.placar_b ?? 0;
-
-            if (placarA === placarB) { ignoradosPorFase++; return; } // Empate: sem colocação definível
-
-            const vencedor = placarA > placarB ? timeA : timeB;
-            const perdedor = placarA > placarB ? timeB : timeA;
-
-            if (ehFinal(jogo.fase)) {
-                somarPonto(vencedor, jogo.categoria, 1);
-                somarPonto(perdedor, jogo.categoria, 2);
-            } else if (ehTerceiroLugar(jogo.fase)) {
-                somarPonto(vencedor, jogo.categoria, 3);
-            } else {
-                ignoradosPorFase++;
-            }
-        });
-
-        const ranking = Object.entries(pontosPorEquipe).sort((a, b) => b[1] - a[1]);
+        const { ranking, medalhasPorEquipe, avisos } = calcularRanking(jogos, equipesDB);
 
         if (ranking.length === 0) {
             listaDiv.innerHTML = `<div class="card" style="padding: 3rem; text-align: center; color: var(--color-text-muted);">
@@ -156,10 +167,6 @@ async function loadRanking() {
                 `;
             }).join('');
         }
-
-        const avisos = [];
-        if (semCategoria > 0) avisos.push(`${semCategoria} jogo(s) encerrado(s) sem categoria de pontuação definida (edite em Agenda/Jogo para incluir).`);
-        if (ignoradosPorFase > 0) avisos.push(`${ignoradosPorFase} confronto(s) fora de FINAL/3º Lugar (ou empatado) não geram pontos, só a colocação final pontua.`);
 
         if (avisos.length > 0) {
             avisoDiv.innerHTML = '⚠️ ' + avisos.join('<br>⚠️ ');
