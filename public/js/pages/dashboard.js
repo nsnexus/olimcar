@@ -36,6 +36,12 @@ export function renderDashboardPage() {
                     <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Painel de TV</h3>
                     <p style="font-size: 0.85rem; color: var(--color-text-muted);">Abrir tela cheia para telão/TV</p>
                 </div>
+
+                <div class="card" onclick="window.location.hash='/admin/regulamentos'" style="padding: 1.5rem; text-align: center; cursor: pointer; transition: transform 0.2s;">
+                    <i data-lucide="file-text" style="width: 48px; height: 48px; color: var(--color-danger); margin-bottom: 1rem;"></i>
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Regulamentos</h3>
+                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Enviar PDFs geral e por modalidade</p>
+                </div>
             </div>
 
             <!-- NAVEGAÇÃO POR ABAS -->

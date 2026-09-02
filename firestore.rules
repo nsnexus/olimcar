@@ -36,7 +36,13 @@ service cloud.firestore {
     match /jogos/{jogo} {
       allow read: if true; // Público acessa
       // Adm Geral pode tudo. Árbitro só pode se for um update de placar
-      allow write: if isAdmGeral() || isArbitro(); 
+      allow write: if isAdmGeral() || isArbitro();
+    }
+
+    // PDFs de regulamento (geral e por modalidade), públicos pra leitura
+    match /regulamentos/{documento} {
+      allow read: if true;
+      allow write: if isAdmGeral();
     }
     
     // Cada usuário pode ler o próprio documento (pra descobrir sua role no login).

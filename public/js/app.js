@@ -14,6 +14,8 @@ import { renderResultadosPage } from './pages/resultados.js';
 import { renderRankingPage } from './pages/ranking.js';
 import { renderSobrePage } from './pages/sobre.js';
 import { renderTermosPage } from './pages/termos.js';
+import { renderRegulamentoPage } from './pages/regulamento.js';
+import { renderRegulamentosAdminPage } from './pages/admin/regulamentos.js';
 import { loginUser, logoutUser, currentUser, authResolved } from './auth.js';
 import { seedInitialData, getCollection } from './services/db.js';
 
@@ -37,6 +39,7 @@ const routes = {
     '/equipes': renderEquipesPublicPage,
     '/resultados': renderResultadosPage,
     '/ranking': renderRankingPage,
+    '/regulamento': renderRegulamentoPage,
     '/login': renderLoginPage,
     '/dashboard': renderDashboardPage,
     '/lider': renderLiderDashboardPage,
@@ -45,6 +48,7 @@ const routes = {
     '/admin/modalidades': renderModalidadesPage,
     '/admin/jogo': renderJogoEditorPage,
     '/admin/sumula': renderSumulaEditorPage,
+    '/admin/regulamentos': renderRegulamentosAdminPage,
     '/sobre': renderSobrePage,
     '/termos': renderTermosPage,
     '/privacidade': () => `

@@ -1,7 +1,7 @@
 // public/js/services/db.js
 import { db, storage } from './firebase.js';
 import { collection, doc, setDoc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
 // Estrutura oficial de pontuação (Regulamento OLIMCAR)
 export const TABELA_PONTUACAO = {
@@ -127,6 +127,36 @@ export async function uploadEvidencia(file, jogoId) {
     } catch (e) {
         console.error('Erro no upload de evidência:', e);
         return null;
+    }
+}
+
+// Upload de PDF de regulamento para Storage. Retorna { url, path } ou null.
+export async function uploadRegulamento(file) {
+    if (!file) return null;
+
+    try {
+        const uniqueName = `${Date.now()}_${file.name}`;
+        const path = `regulamentos/${uniqueName}`;
+        const storageRef = ref(storage, path);
+
+        const snapshot = await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(snapshot.ref);
+        return { url, path };
+    } catch (e) {
+        console.error('Erro no upload de regulamento:', e);
+        return null;
+    }
+}
+
+// Remove um arquivo do Storage pelo caminho salvo no documento.
+export async function deleteArquivoStorage(path) {
+    if (!path) return true;
+    try {
+        await deleteObject(ref(storage, path));
+        return true;
+    } catch (e) {
+        console.error('Erro ao remover arquivo do storage:', e);
+        return false;
     }
 }
 
