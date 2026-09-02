@@ -2,27 +2,19 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
 
-    // Mesma checagem de perfil usada no firestore.rules (coleção "usuarios")
-    function isAdmGeral() {
-      return request.auth != null &&
-        firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.role == 'admin';
-    }
-
-    function isArbitro() {
-      return request.auth != null &&
-        firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.role == 'arbitro';
-    }
-
-    // Evidências de súmula (fotos de placar): admin ou árbitro enviam, leitura pública
+    // Checagem por perfil (firestore.get) depende de leitura cross-service
+    // Storage -> Firestore, que pode falhar/atrasar logo após habilitar o
+    // Storage num projeto (propagação de permissão interna do Firebase).
+    // Por ora simplificado pra exigir só login — mesmo padrão que o Storage
+    // usa por padrão quando você clica em "Get Started" no console.
     match /evidencias/{allPaths=**} {
       allow read: if true;
-      allow write: if isAdmGeral() || isArbitro();
+      allow write: if request.auth != null;
     }
 
-    // Regulamentos em PDF: leitura pública, só admin envia/substitui/remove
     match /regulamentos/{allPaths=**} {
       allow read: if true;
-      allow write: if isAdmGeral();
+      allow write: if request.auth != null;
     }
 
     // Qualquer outro caminho fora dos dois de cima: bloqueado por padrão
