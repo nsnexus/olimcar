@@ -24,9 +24,8 @@ export function renderRegulamentosAdminPage() {
 
                     <div id="reg-modalidade-wrap" style="display:none;">
                         <label style="display:block; font-size:0.85rem; font-weight:700; color:var(--color-text-muted); margin-bottom:0.4rem;">Modalidade</label>
-                        <select id="reg-modalidade" class="form-control" style="width:100%; padding:0.6rem; border-radius:6px; border:1px solid var(--color-border);">
-                            <option value="">Carregando modalidades...</option>
-                        </select>
+                        <input type="text" id="reg-modalidade" list="reg-modalidade-sugestoes" placeholder="Ex: Futebol, Natação, Xadrez..." class="form-control" style="width:100%; padding:0.6rem; border-radius:6px; border:1px solid var(--color-border);">
+                        <datalist id="reg-modalidade-sugestoes"></datalist>
                     </div>
 
                     <div>
@@ -61,7 +60,8 @@ let regulamentosCache = [];
 async function carregarPagina() {
     const selTipo = document.getElementById('reg-tipo');
     const wrapModalidade = document.getElementById('reg-modalidade-wrap');
-    const selModalidade = document.getElementById('reg-modalidade');
+    const inputModalidade = document.getElementById('reg-modalidade');
+    const sugestoesEl = document.getElementById('reg-modalidade-sugestoes');
     const inputArquivo = document.getElementById('reg-arquivo');
     const avisoSubstituicao = document.getElementById('reg-aviso-substituicao');
     const form = document.getElementById('form-regulamento');
@@ -71,10 +71,17 @@ async function carregarPagina() {
         getCollection('modalidades'),
         getCollection('regulamentos')
     ]);
-    modalidadesCache = modalidades.sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
+    modalidadesCache = modalidades;
     regulamentosCache = regulamentos;
 
-    selModalidade.innerHTML = modalidadesCache.map(m => `<option value="${m.nome}">${m.nome}</option>`).join('');
+    // Sugestões (não restringe digitação livre): junta modalidades cadastradas
+    // com as que já têm regulamento publicado.
+    const nomesSugeridos = new Set([
+        ...modalidadesCache.map(m => m.nome).filter(Boolean),
+        ...regulamentosCache.filter(r => r.modalidade).map(r => r.modalidade)
+    ]);
+    sugestoesEl.innerHTML = [...nomesSugeridos].sort((a, b) => a.localeCompare(b))
+        .map(nome => `<option value="${nome}"></option>`).join('');
 
     const atualizarVisibilidade = () => {
         wrapModalidade.style.display = selTipo.value === 'modalidade' ? 'block' : 'none';
@@ -82,12 +89,12 @@ async function carregarPagina() {
     };
 
     const atualizarAvisoSubstituicao = () => {
-        const existente = encontrarRegulamentoExistente(selTipo.value, selTipo.value === 'modalidade' ? selModalidade.value : null);
+        const existente = encontrarRegulamentoExistente(selTipo.value, selTipo.value === 'modalidade' ? inputModalidade.value.trim() : null);
         avisoSubstituicao.style.display = existente ? 'block' : 'none';
     };
 
     selTipo.addEventListener('change', atualizarVisibilidade);
-    selModalidade.addEventListener('change', atualizarAvisoSubstituicao);
+    inputModalidade.addEventListener('input', atualizarAvisoSubstituicao);
     atualizarVisibilidade();
 
     form.addEventListener('submit', async (e) => {
@@ -97,8 +104,8 @@ async function carregarPagina() {
         if (file.type !== 'application/pdf') { alert('O arquivo precisa ser um PDF.'); return; }
 
         const tipo = selTipo.value;
-        const modalidade = tipo === 'modalidade' ? selModalidade.value : null;
-        if (tipo === 'modalidade' && !modalidade) { alert('Selecione a modalidade.'); return; }
+        const modalidade = tipo === 'modalidade' ? inputModalidade.value.trim() : null;
+        if (tipo === 'modalidade' && !modalidade) { alert('Digite o nome da modalidade.'); return; }
 
         const btn = document.getElementById('btn-enviar-regulamento');
         const textoOriginal = btn.innerHTML;
@@ -145,7 +152,8 @@ async function carregarPagina() {
 }
 
 function encontrarRegulamentoExistente(tipo, modalidade) {
-    return regulamentosCache.find(r => r.tipo === tipo && (tipo === 'geral' || r.modalidade === modalidade));
+    const alvo = (modalidade || '').toLowerCase();
+    return regulamentosCache.find(r => r.tipo === tipo && (tipo === 'geral' || (r.modalidade || '').toLowerCase() === alvo));
 }
 
 async function recarregarLista() {
