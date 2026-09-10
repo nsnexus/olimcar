@@ -132,7 +132,7 @@ export async function loadDashboardJogos() {
     if (!tbody) return;
 
     try {
-        const { getCollection, sortByDateAndTime, deleteDocument } = await import('../services/db.js');
+        const { getCollection, sortByDateAndTime, deleteDocument } = await import('../services/db.js?v=20260910a');
         const jogosBrutos = await getCollection('jogos');
         
         todosJogosAdmin = jogosBrutos.filter(j => 
@@ -174,7 +174,7 @@ export async function loadDashboardJogos() {
         // Expõe a função de exclusão globalmente
         window.excluirJogo = async (id) => {
             if (confirm("Tem certeza que deseja excluir esta partida da agenda?")) {
-                const { deleteDocument } = await import('../services/db.js');
+                const { deleteDocument } = await import('../services/db.js?v=20260910a');
                 const sucesso = await deleteDocument('jogos', id);
                 if (sucesso) {
                     todosJogosAdmin = todosJogosAdmin.filter(j => j.id !== id);
@@ -210,7 +210,7 @@ export async function loadDashboardJogos() {
                 btnSubstituir.disabled = true;
 
                 try {
-                    const { getCollection, deleteDocument, addDocument } = await import('../services/db.js');
+                    const { getCollection, deleteDocument, addDocument } = await import('../services/db.js?v=20260910a');
 
                     // 1. Excluir todos os jogos existentes
                     btnSubstituir.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Excluindo jogos antigos...';
@@ -334,7 +334,7 @@ export async function loadDashboardJogos() {
                     const json = window.XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                     
                     if (json.length > 1) {
-                        const { getCollection, addDocument, setDocument, normalizarBusca } = await import('../services/db.js');
+                        const { getCollection, addDocument, setDocument, normalizarBusca } = await import('../services/db.js?v=20260910a');
 
                         let importedCount = 0;
                         const headerLine = json[0];
@@ -396,7 +396,7 @@ export async function loadDashboardJogos() {
                         // Atualiza a lista pública de modalidades (usada no filtro de /minhas-inscricoes).
                         // Junta o que já existia com o que veio agora, pra não perder modalidade de import anterior.
                         try {
-                            const { getDocument } = await import('../services/db.js');
+                            const { getDocument } = await import('../services/db.js?v=20260910a');
                             const metaAtual = await getDocument('meta', 'modalidades_inscricao');
                             const uniao = new Set([...(metaAtual?.lista || []), ...modalidadesVistas]);
                             await setDocument('meta', 'modalidades_inscricao', {

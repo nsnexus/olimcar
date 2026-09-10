@@ -1,6 +1,6 @@
 // public/js/tv.js — Painel de TV (loop de jogos, placares, medalhas e vídeos)
-import { getCollection, sortByDateAndTime } from './services/db.js';
-import { calcularRanking } from './pages/ranking.js';
+import { getCollection, sortByDateAndTime } from './services/db.js?v=20260910a';
+import { calcularRanking } from './pages/ranking.js?v=20260910a';
 
 // ---------- CONFIGURAÇÃO ----------
 

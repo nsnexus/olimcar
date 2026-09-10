@@ -1,5 +1,5 @@
 // public/js/services/db.js
-import { db, storage } from './firebase.js';
+import { db, storage } from './firebase.js?v=20260910a';
 import { collection, doc, setDoc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, where, orderBy, limit, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 

@@ -1,4 +1,4 @@
-import { getCollection, sortByDateAndTime } from '../services/db.js';
+import { getCollection, sortByDateAndTime } from '../services/db.js?v=20260910a';
 
 const CORES_EQUIPE = {
     "Equipe Azul": "var(--color-info)",
