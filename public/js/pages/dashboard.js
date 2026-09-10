@@ -334,7 +334,7 @@ export async function loadDashboardJogos() {
                     const json = window.XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                     
                     if (json.length > 1) {
-                        const { getCollection, addDocument } = await import('../services/db.js');
+                        const { getCollection, addDocument, normalizarBusca } = await import('../services/db.js');
 
                         let importedCount = 0;
                         const headerLine = json[0];
@@ -371,6 +371,7 @@ export async function loadDashboardJogos() {
 
                             const colaborador = {
                                 nome: row[1],
+                                nome_lower: normalizarBusca(row[1]),
                                 whatsapp: String(row[2] || ""),
                                 matricula: matriculaClean,
                                 vinculo: row[4] || "Colaborador",

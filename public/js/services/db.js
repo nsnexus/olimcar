@@ -1,6 +1,6 @@
 // public/js/services/db.js
 import { db, storage } from './firebase.js';
-import { collection, doc, setDoc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, where, orderBy, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { collection, doc, setDoc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, where, orderBy, limit, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
 // Estrutura oficial de pontuação (Regulamento OLIMCAR)
@@ -92,6 +92,35 @@ export async function getCollectionCount(collectionName) {
     } catch (error) {
         console.error(`Erro ao contar coleção ${collectionName}:`, error);
         return null;
+    }
+}
+
+// Normaliza texto pra busca: minúsculo, sem acento, espaços colapsados.
+export function normalizarBusca(s) {
+    return (s || '').toString().toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, ' ').trim();
+}
+
+// Busca colaboradores cujo nome_lower começa pelo prefixo dado (query no
+// servidor, traz só os que batem — não a base inteira). O campo nome_lower
+// é gravado na importação de inscrições.
+export async function buscarColaboradoresPorNome(prefixo, max = 40) {
+    const p = normalizarBusca(prefixo);
+    if (p.length < 3) return [];
+    try {
+        const q = query(
+            collection(db, 'colaboradores'),
+            where('nome_lower', '>=', p),
+            where('nome_lower', '<', p + ''),
+            orderBy('nome_lower'),
+            limit(max)
+        );
+        const snap = await getDocs(q);
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (error) {
+        console.error('Erro na busca de colaboradores por nome:', error);
+        return [];
     }
 }
 
