@@ -124,6 +124,24 @@ export async function buscarColaboradoresPorNome(prefixo, max = 40) {
     }
 }
 
+// Lista os inscritos de uma modalidade (query array-contains no servidor).
+// Filtro por equipe é aplicado pelo chamador no cliente (conjunto já pequeno).
+export async function buscarInscritosPorModalidade(modalidade, max = 300) {
+    if (!modalidade) return [];
+    try {
+        const q = query(
+            collection(db, 'colaboradores'),
+            where('modalidades', 'array-contains', modalidade),
+            limit(max)
+        );
+        const snap = await getDocs(q);
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (error) {
+        console.error('Erro na busca de inscritos por modalidade:', error);
+        return [];
+    }
+}
+
 export async function getDocument(collectionName, id) {
     try {
         const docSnap = await getDoc(doc(db, collectionName, id));

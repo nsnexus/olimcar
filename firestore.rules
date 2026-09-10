@@ -44,6 +44,12 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmGeral();
     }
+
+    // Metadados públicos (ex: lista de modalidades da inscrição pro filtro público)
+    match /meta/{documento} {
+      allow read: if true;
+      allow write: if isAdmGeral();
+    }
     
     // Cada usuário pode ler o próprio documento (pra descobrir sua role no login).
     // Só Adm Geral pode ler a lista toda ou escrever.

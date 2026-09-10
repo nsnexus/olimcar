@@ -334,10 +334,11 @@ export async function loadDashboardJogos() {
                     const json = window.XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                     
                     if (json.length > 1) {
-                        const { getCollection, addDocument, normalizarBusca } = await import('../services/db.js');
+                        const { getCollection, addDocument, setDocument, normalizarBusca } = await import('../services/db.js');
 
                         let importedCount = 0;
                         const headerLine = json[0];
+                        const modalidadesVistas = new Set();
 
                         // Buscar todos que já estão no banco para checar duplicados
                         const existentes = await getCollection('colaboradores');
@@ -359,7 +360,12 @@ export async function loadDashboardJogos() {
                             // Capturar todas as modalidades a partir da coluna 6
                             let mods = [];
                             for (let c = 6; c < row.length; c++) {
-                                if (row[c]) mods.push(headerLine[c]);
+                                if (row[c]) {
+                                    const nomeMod = headerLine[c];
+                                    mods.push(nomeMod);
+                                    const limpo = String(nomeMod || '').trim();
+                                    if (limpo && !/^coluna\s*\d+$/i.test(limpo)) modalidadesVistas.add(limpo);
+                                }
                             }
 
                             const matriculaClean = String(row[3] || "").trim();
@@ -386,6 +392,22 @@ export async function loadDashboardJogos() {
                         }
                         
                         await Promise.all(promessasInscricoes);
+
+                        // Atualiza a lista pública de modalidades (usada no filtro de /minhas-inscricoes).
+                        // Junta o que já existia com o que veio agora, pra não perder modalidade de import anterior.
+                        try {
+                            const { getDocument } = await import('../services/db.js');
+                            const metaAtual = await getDocument('meta', 'modalidades_inscricao');
+                            const uniao = new Set([...(metaAtual?.lista || []), ...modalidadesVistas]);
+                            await setDocument('meta', 'modalidades_inscricao', {
+                                lista: [...uniao].sort((a, b) => a.localeCompare(b)),
+                                equipes: ['Equipe Azul', 'Equipe Amarela', 'Equipe Verde', 'Equipe Vermelha'],
+                                atualizado_em: new Date().toISOString()
+                            });
+                        } catch (e) {
+                            console.error('Falha ao atualizar meta/modalidades_inscricao:', e);
+                        }
+
                         alert(`Sucesso! ${promessasInscricoes.length} NOVAS inscrições importadas.`);
                     }
                 } catch (error) {
