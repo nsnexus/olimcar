@@ -16,6 +16,7 @@ import { renderSobrePage } from './pages/sobre.js';
 import { renderTermosPage } from './pages/termos.js';
 import { renderRegulamentoPage } from './pages/regulamento.js';
 import { renderRegulamentosAdminPage } from './pages/admin/regulamentos.js';
+import { renderMinhasInscricoesPage } from './pages/minhas_inscricoes.js';
 import { loginUser, logoutUser, currentUser, authResolved } from './auth.js';
 import { seedInitialData, getCollectionCount } from './services/db.js';
 
@@ -37,6 +38,7 @@ const routes = {
     '/': renderLandingPage,
     '/agenda': renderAgendaPage,
     '/equipes': renderEquipesPublicPage,
+    '/minhas-inscricoes': renderMinhasInscricoesPage,
     '/resultados': renderResultadosPage,
     '/ranking': renderRankingPage,
     '/regulamento': renderRegulamentoPage,
