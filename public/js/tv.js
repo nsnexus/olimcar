@@ -1,15 +1,12 @@
 // public/js/tv.js — Painel de TV (loop de jogos, placares, medalhas e vídeos)
-import { getCollection, sortByDateAndTime } from './services/db.js?v=20260910a';
-import { calcularRanking } from './pages/ranking.js?v=20260910a';
+import { getCollection, sortByDateAndTime } from './services/db.js?v=20260912a';
+import { calcularRanking } from './pages/ranking.js?v=20260912a';
 
 // ---------- CONFIGURAÇÃO ----------
 
-// Vídeos institucionais/produzidos para o loop. Coloque os arquivos em
-// public/assets/video/tv/ e adicione o caminho aqui (ordem = ordem de exibição).
-const VIDEOS = [
-    // '/assets/video/tv/abertura.mp4',
-    // '/assets/video/tv/patrocinadores.mp4',
-];
+// Vídeos institucionais/produzidos para o loop. Cadastrados pelo admin em
+// /admin/tv-videos (Storage + coleção 'tv_videos'), lidos aqui a cada
+// atualização de dados — não precisa editar código pra trocar vídeo.
 
 const DURACAO_JOGOS_MS = 9000;
 const DURACAO_PLACARES_MS = 9000;
@@ -238,10 +235,16 @@ function renderMarcaOlimcar() {
 // ---------- MONTAGEM DA ROTAÇÃO ----------
 
 async function montarRotacao() {
-    const [jogosBrutos, equipes] = await Promise.all([
+    const [jogosBrutos, equipes, videosCadastrados] = await Promise.all([
         getCollection('jogos'),
-        getCollection('equipes')
+        getCollection('equipes'),
+        getCollection('tv_videos')
     ]);
+    const VIDEOS = videosCadastrados
+        .slice()
+        .sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0))
+        .map(v => v.url)
+        .filter(Boolean);
 
     const jogos = jogosBrutos.filter(j =>
         j.modalidade_texto && j.modalidade_texto.toUpperCase() !== 'MODALIDADE' &&

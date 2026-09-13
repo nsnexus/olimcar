@@ -1,5 +1,5 @@
 // public/js/services/db.js
-import { db, storage } from './firebase.js?v=20260910a';
+import { db, storage } from './firebase.js?v=20260912a';
 import { collection, doc, setDoc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, where, orderBy, limit, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
@@ -228,6 +228,28 @@ export async function uploadRegulamento(file) {
         return { url, path };
     } catch (e) {
         console.error('Erro no upload de regulamento:', e);
+        return null;
+    }
+}
+
+// Upload de vídeo pro Painel de TV. Cache longo (7 dias) pra não rebaixar
+// o arquivo inteiro toda volta do loop na TV — só a 1ª exibição consome banda.
+export async function uploadTvVideo(file) {
+    if (!file) return null;
+
+    try {
+        const uniqueName = `${Date.now()}_${file.name}`;
+        const path = `tv-videos/${uniqueName}`;
+        const storageRef = ref(storage, path);
+
+        const snapshot = await uploadBytes(storageRef, file, {
+            contentType: file.type || 'video/mp4',
+            cacheControl: 'public, max-age=604800'
+        });
+        const url = await getDownloadURL(snapshot.ref);
+        return { url, path };
+    } catch (e) {
+        console.error('Erro no upload de vídeo da TV:', e);
         return null;
     }
 }

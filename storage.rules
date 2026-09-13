@@ -17,7 +17,12 @@ service firebase.storage {
       allow write: if request.auth != null;
     }
 
-    // Qualquer outro caminho fora dos dois de cima: bloqueado por padrão
+    match /tv-videos/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Qualquer outro caminho fora dos de cima: bloqueado por padrão
     match /{allPaths=**} {
       allow read, write: if false;
     }

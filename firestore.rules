@@ -50,6 +50,12 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmGeral();
     }
+
+    // Vídeos do Painel de TV (playlist), públicos pra leitura
+    match /tv_videos/{documento} {
+      allow read: if true;
+      allow write: if isAdmGeral();
+    }
     
     // Cada usuário pode ler o próprio documento (pra descobrir sua role no login).
     // Só Adm Geral pode ler a lista toda ou escrever.

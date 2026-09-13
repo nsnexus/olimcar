@@ -1,24 +1,25 @@
 // public/js/app.js
-import { renderLandingPage } from './pages/landing.js?v=20260910a';
-import { renderLoginPage } from './pages/login.js?v=20260910a';
-import { renderDashboardPage, loadDashboardJogos } from './pages/dashboard.js?v=20260910a';
-import { renderAgendaPage } from './pages/agenda.js?v=20260910a';
-import { renderEquipesPage } from './pages/admin/equipes.js?v=20260910a';
-import { renderModalidadesPage } from './pages/admin/modalidades.js?v=20260910a';
-import { renderJogoEditorPage } from './pages/admin/jogo_editor.js?v=20260910a';
-import { renderSumulaEditorPage } from './pages/admin/sumula_editor.js?v=20260910a';
-import { renderLiderDashboardPage } from './pages/lider_dashboard.js?v=20260910a';
-import { renderArbitroDashboardPage, loadArbitroJogos } from './pages/arbitro_dashboard.js?v=20260910a';
-import { renderEquipesPublicPage } from './pages/equipes.js?v=20260910a';
-import { renderResultadosPage } from './pages/resultados.js?v=20260910a';
-import { renderRankingPage } from './pages/ranking.js?v=20260910a';
-import { renderSobrePage } from './pages/sobre.js?v=20260910a';
-import { renderTermosPage } from './pages/termos.js?v=20260910a';
-import { renderRegulamentoPage } from './pages/regulamento.js?v=20260910a';
-import { renderRegulamentosAdminPage } from './pages/admin/regulamentos.js?v=20260910a';
-import { renderMinhasInscricoesPage } from './pages/minhas_inscricoes.js?v=20260910a';
-import { loginUser, logoutUser, currentUser, authResolved } from './auth.js?v=20260910a';
-import { seedInitialData, getCollectionCount } from './services/db.js?v=20260910a';
+import { renderLandingPage } from './pages/landing.js?v=20260912a';
+import { renderLoginPage } from './pages/login.js?v=20260912a';
+import { renderDashboardPage, loadDashboardJogos } from './pages/dashboard.js?v=20260912a';
+import { renderAgendaPage } from './pages/agenda.js?v=20260912a';
+import { renderEquipesPage } from './pages/admin/equipes.js?v=20260912a';
+import { renderModalidadesPage } from './pages/admin/modalidades.js?v=20260912a';
+import { renderJogoEditorPage } from './pages/admin/jogo_editor.js?v=20260912a';
+import { renderSumulaEditorPage } from './pages/admin/sumula_editor.js?v=20260912a';
+import { renderLiderDashboardPage } from './pages/lider_dashboard.js?v=20260912a';
+import { renderArbitroDashboardPage, loadArbitroJogos } from './pages/arbitro_dashboard.js?v=20260912a';
+import { renderEquipesPublicPage } from './pages/equipes.js?v=20260912a';
+import { renderResultadosPage } from './pages/resultados.js?v=20260912a';
+import { renderRankingPage } from './pages/ranking.js?v=20260912a';
+import { renderSobrePage } from './pages/sobre.js?v=20260912a';
+import { renderTermosPage } from './pages/termos.js?v=20260912a';
+import { renderRegulamentoPage } from './pages/regulamento.js?v=20260912a';
+import { renderRegulamentosAdminPage } from './pages/admin/regulamentos.js?v=20260912a';
+import { renderTvVideosAdminPage } from './pages/admin/tv_videos.js?v=20260912a';
+import { renderMinhasInscricoesPage } from './pages/minhas_inscricoes.js?v=20260912a';
+import { loginUser, logoutUser, currentUser, authResolved } from './auth.js?v=20260912a';
+import { seedInitialData, getCollectionCount } from './services/db.js?v=20260912a';
 
 const appRoot = document.getElementById('app-root');
 const mainNav = document.getElementById('main-nav');
@@ -51,6 +52,7 @@ const routes = {
     '/admin/jogo': renderJogoEditorPage,
     '/admin/sumula': renderSumulaEditorPage,
     '/admin/regulamentos': renderRegulamentosAdminPage,
+    '/admin/tv-videos': renderTvVideosAdminPage,
     '/sobre': renderSobrePage,
     '/termos': renderTermosPage,
     '/privacidade': () => `
