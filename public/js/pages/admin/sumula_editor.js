@@ -1,5 +1,5 @@
 // public/js/pages/admin/sumula_editor.js
-import { getDocument, updateDocument, uploadEvidencia, getCollection } from '../../services/db.js?v=20260912a';
+import { getDocument, updateDocument, uploadEvidencia, getCollection } from '../../services/db.js?v=20260912c';
 
 let jogoAtual = null;
 

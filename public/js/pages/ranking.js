@@ -1,4 +1,4 @@
-import { getCollection, TABELA_PONTUACAO, CATEGORIAS_PONTUACAO } from '../services/db.js?v=20260912a';
+import { getCollection, TABELA_PONTUACAO, CATEGORIAS_PONTUACAO } from '../services/db.js?v=20260912c';
 
 const CORES_EQUIPE = {
     "Equipe Azul": "var(--color-info)",

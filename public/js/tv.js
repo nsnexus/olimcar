@@ -1,6 +1,6 @@
 // public/js/tv.js — Painel de TV (loop de jogos, placares, medalhas e vídeos)
-import { getCollection, sortByDateAndTime } from './services/db.js?v=20260912a';
-import { calcularRanking } from './pages/ranking.js?v=20260912a';
+import { getCollection, sortByDateAndTime } from './services/db.js?v=20260912c';
+import { calcularRanking } from './pages/ranking.js?v=20260912c';
 
 // ---------- CONFIGURAÇÃO ----------
 
@@ -214,14 +214,8 @@ function renderMedalhas(jogos, equipes) {
 }
 
 // ---------- RENDER: VÍDEO ----------
-
-function renderVideo(src) {
-    return `
-        <div class="tv-video-wrap">
-            <video id="tv-video-el" src="${src}" autoplay muted playsinline></video>
-        </div>
-    `;
-}
+// O elemento de vídeo em tela cheia mora fora da árvore do .tv (ver tv.html)
+// pra não herdar o transform de .tv-slide — só controlamos ele aqui.
 
 function renderMarcaOlimcar() {
     return `
@@ -281,7 +275,7 @@ async function montarRotacao() {
     if (VIDEOS.length === 0) {
         slides.push({ tipo: 'video', html: renderMarcaOlimcar(), duracao: DURACAO_VAZIO_MS });
     } else {
-        VIDEOS.forEach(src => slides.push({ tipo: 'video-arquivo', html: renderVideo(src), duracao: null }));
+        VIDEOS.forEach(src => slides.push({ tipo: 'video-arquivo', html: '', duracao: null, videoSrc: src }));
     }
 
     return { slides, hojeFmt };
@@ -329,14 +323,29 @@ function irParaSlide(i) {
         atualizarDots();
 
         const slide = rotacao.slides[indiceAtual];
+        const overlay = document.getElementById('tv-video-overlay');
+        const videoEl = document.getElementById('tv-video-el');
+
         if (slide.tipo === 'video-arquivo') {
-            const videoEl = document.getElementById('tv-video-el');
-            if (videoEl) {
-                videoEl.addEventListener('ended', proximoSlide, { once: true });
-                videoEl.play().catch(() => {}); // autoplay pode exigir interação; overlay inicial cobre isso
-            }
+            overlay.hidden = false;
+            videoEl.muted = false;
+            videoEl.src = slide.videoSrc;
+            // .onended (não addEventListener) porque o <video> é reaproveitado entre
+            // slides — assim cada troca substitui o handler em vez de empilhar.
+            videoEl.onended = proximoSlide;
+            // Tenta tocar com áudio (o clique em "Iniciar Painel" já liberou autoplay
+            // com som pra essa aba). Se o navegador ainda assim bloquear, cai pra mudo
+            // em vez de travar a tela preta.
+            videoEl.play().catch(() => {
+                videoEl.muted = true;
+                videoEl.play().catch(() => {});
+            });
             timerAtual = setTimeout(proximoSlide, DURACAO_VIDEO_FALLBACK_MS);
         } else {
+            overlay.hidden = true;
+            videoEl.pause();
+            videoEl.removeAttribute('src');
+            videoEl.load();
             timerAtual = setTimeout(proximoSlide, slide.duracao);
         }
     };

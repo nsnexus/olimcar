@@ -1,5 +1,5 @@
 // public/js/pages/admin/tv_videos.js
-import { getCollection, addDocument, updateDocument, deleteDocument, uploadTvVideo, deleteArquivoStorage } from '../../services/db.js?v=20260912a';
+import { getCollection, addDocument, updateDocument, deleteDocument, uploadTvVideo, deleteArquivoStorage } from '../../services/db.js?v=20260912c';
 
 export function renderTvVideosAdminPage() {
     setTimeout(carregarPagina, 100);

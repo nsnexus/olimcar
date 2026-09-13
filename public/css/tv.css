@@ -344,6 +344,25 @@ html, body {
     height: 100%;
     object-fit: contain;
 }
+
+/* Vídeo enviado pelo admin: toma a tela inteira (por cima de header/rodapé) */
+.tv-video-fullscreen-wrap {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.tv-video-fullscreen-wrap video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.tv-video-fullscreen-wrap[hidden] {
+    display: none;
+}
 .tv-brand-placeholder {
     flex: 1;
     display: flex;

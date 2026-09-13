@@ -40,6 +40,13 @@
         <footer class="tv-footer" id="tv-dots"></footer>
     </div>
 
+    <!-- Fora da árvore do .tv de propósito: .tv-slide tem transform (animação),
+         o que vira "containing block" pra position:fixed filho e quebraria
+         o vídeo em tela cheia se ele ficasse lá dentro. -->
+    <div class="tv-video-fullscreen-wrap" id="tv-video-overlay" hidden>
+        <video id="tv-video-el" playsinline></video>
+    </div>
+
     <div class="tv-start-overlay" id="tv-start-overlay">
         <img src="/assets/logo-transparent.png" alt="OLIMCAR">
         <h1>Painel de TV — Olimcar 2026</h1>
@@ -47,7 +54,7 @@
         <span class="tv-start-btn"><i data-lucide="tv"></i> Iniciar Painel</span>
     </div>
 
-    <script type="module" src="/js/tv.js?v=20260912a"></script>
+    <script type="module" src="/js/tv.js?v=20260912c"></script>
     <script>if (window.lucide) window.lucide.createIcons();</script>
 </body>
 </html>
