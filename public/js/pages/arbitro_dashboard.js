@@ -65,13 +65,13 @@ export async function loadArbitroJogos() {
     const btnLogout = document.getElementById('btn-logout-arbitro');
     if (btnLogout) {
         btnLogout.addEventListener('click', async () => {
-            const { logoutUser } = await import('../auth.js?v=20260916a');
+            const { logoutUser } = await import('../auth.js?v=20260916c');
             await logoutUser();
         });
     }
 
     try {
-        const { getCollection, sortByDateAndTime } = await import('../services/db.js?v=20260916a');
+        const { getCollection, sortByDateAndTime } = await import('../services/db.js?v=20260916c');
         const jogosBrutos = await getCollection('jogos');
 
         todosJogosArbitro = jogosBrutos.filter(j =>

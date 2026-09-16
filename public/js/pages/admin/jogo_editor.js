@@ -1,4 +1,4 @@
-import { getDocument, updateDocument, addDocument, getCollection, CATEGORIAS_PONTUACAO } from '../../services/db.js?v=20260916a';
+import { getDocument, updateDocument, addDocument, getCollection, CATEGORIAS_PONTUACAO } from '../../services/db.js?v=20260916c';
 
 let jogoAtual = null;
 

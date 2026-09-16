@@ -1,4 +1,4 @@
-import { getCollection, sortByDateAndTime } from '../services/db.js?v=20260916a';
+import { getCollection, sortByDateAndTime } from '../services/db.js?v=20260916c';
 
 let todosJogos = []; // Estado local para os filtros
 

@@ -1,6 +1,6 @@
 // public/js/tv.js — Painel de TV (loop de jogos, placares, medalhas e vídeos)
-import { getCollection, sortByDateAndTime } from './services/db.js?v=20260916a';
-import { calcularRanking } from './pages/ranking.js?v=20260916a';
+import { getCollection, getDocument, sortByDateAndTime } from './services/db.js?v=20260916c';
+import { calcularRanking } from './pages/ranking.js?v=20260916c';
 
 // ---------- CONFIGURAÇÃO ----------
 
@@ -13,8 +13,11 @@ const DURACAO_PLACARES_MS = 9000;
 const DURACAO_MEDALHAS_MS = 15000;
 const DURACAO_VAZIO_MS = 10000;
 const DURACAO_VIDEO_FALLBACK_MS = 10 * 60 * 1000; // rede de segurança genérica (ajustada pra duração real assim que ela é lida)
-const ITENS_POR_PAGINA = 8;
 const REFRESH_DADOS_MS = 3 * 60 * 1000; // reconsulta o Firestore a cada 3 min
+
+// Ajustado por aplicarConfig() a partir de meta/tv_config (formato/escala
+// definidos em /admin/tv-videos) — sem depender de saber a resolução em px.
+let itensPorPagina = 8;
 
 const CORES_EQUIPE = {
     "Equipe Azul": "#2f6fed",
@@ -226,6 +229,54 @@ function renderMarcaOlimcar() {
     `;
 }
 
+// Conteúdo das laterais enquanto um vídeo toca (a marca sozinha some no vazio):
+// jogos de hoje de um lado, placares do outro — aproveita o espaço que o
+// vídeo (geralmente 16:9) deixa sobrando fora do centro.
+const MAX_ITENS_LATERAL_VIDEO = 6;
+
+function renderLateralVideoFallback() {
+    return `<img src="/assets/logo-transparent.png" alt="OLIMCAR">`;
+}
+
+function renderLateralVideoJogos(jogosHoje) {
+    if (jogosHoje.length === 0) return renderLateralVideoFallback();
+    const itens = jogosHoje.slice(0, MAX_ITENS_LATERAL_VIDEO).map(j => {
+        const timeA = nomeCurto(j.equipe_a?.nome || 'A Definir');
+        const timeB = nomeCurto(j.equipe_b?.nome || 'A Definir');
+        return `<div class="tv-video-side-item">
+            <span class="tv-video-side-hora">${j.horario || '--:--'}</span>
+            <span class="tv-video-side-txt">${j.modalidade_texto || ''} — ${timeA} x ${timeB}</span>
+        </div>`;
+    }).join('');
+    const resto = jogosHoje.length - MAX_ITENS_LATERAL_VIDEO;
+    return `
+        <div class="tv-video-side-list">
+            <div class="tv-video-side-title"><i data-lucide="calendar-days"></i> Jogos de Hoje</div>
+            ${itens}
+            ${resto > 0 ? `<div class="tv-video-side-mais">+ ${resto} jogo${resto > 1 ? 's' : ''}</div>` : ''}
+        </div>
+    `;
+}
+
+function renderLateralVideoPlacares(placaresHoje) {
+    if (placaresHoje.length === 0) return renderLateralVideoFallback();
+    const itens = placaresHoje.slice(0, MAX_ITENS_LATERAL_VIDEO).map(j => {
+        const timeA = nomeCurto(j.equipe_a?.nome || 'A Definir');
+        const timeB = nomeCurto(j.equipe_b?.nome || 'A Definir');
+        return `<div class="tv-video-side-item">
+            <span class="tv-video-side-txt">${timeA} <strong>${j.placar_a ?? 0}</strong> × <strong>${j.placar_b ?? 0}</strong> ${timeB}</span>
+        </div>`;
+    }).join('');
+    const resto = placaresHoje.length - MAX_ITENS_LATERAL_VIDEO;
+    return `
+        <div class="tv-video-side-list">
+            <div class="tv-video-side-title"><i data-lucide="trophy"></i> Placares de Hoje</div>
+            ${itens}
+            ${resto > 0 ? `<div class="tv-video-side-mais">+ ${resto} resultado${resto > 1 ? 's' : ''}</div>` : ''}
+        </div>
+    `;
+}
+
 // ---------- MONTAGEM DA ROTAÇÃO ----------
 
 async function montarRotacao() {
@@ -252,7 +303,7 @@ async function montarRotacao() {
 
     const slides = [];
 
-    const paginasJogos = chunk(jogosHoje, ITENS_POR_PAGINA);
+    const paginasJogos = chunk(jogosHoje, itensPorPagina);
     if (paginasJogos.length === 0) {
         slides.push({ tipo: 'jogos', html: renderJogosVazio(hojeFmt), duracao: DURACAO_VAZIO_MS });
     } else {
@@ -261,7 +312,7 @@ async function montarRotacao() {
         });
     }
 
-    const paginasPlacares = chunk(placaresHoje, ITENS_POR_PAGINA);
+    const paginasPlacares = chunk(placaresHoje, itensPorPagina);
     if (paginasPlacares.length === 0) {
         slides.push({ tipo: 'placares', html: renderPlacaresVazio(), duracao: DURACAO_VAZIO_MS });
     } else {
@@ -272,13 +323,16 @@ async function montarRotacao() {
 
     slides.push({ tipo: 'medalhas', html: renderMedalhas(jogos, equipes), duracao: DURACAO_MEDALHAS_MS });
 
+    const videoSideEsquerda = renderLateralVideoJogos(jogosHoje);
+    const videoSideDireita = renderLateralVideoPlacares(placaresHoje);
+
     if (VIDEOS.length === 0) {
         slides.push({ tipo: 'video', html: renderMarcaOlimcar(), duracao: DURACAO_VAZIO_MS });
     } else {
         VIDEOS.forEach(src => slides.push({ tipo: 'video-arquivo', html: '', duracao: null, videoSrc: src }));
     }
 
-    return { slides, hojeFmt };
+    return { slides, hojeFmt, videoSideEsquerda, videoSideDireita };
 }
 
 // ---------- MOTOR DE ROTAÇÃO ----------
@@ -328,6 +382,10 @@ function irParaSlide(i) {
 
         if (slide.tipo === 'video-arquivo') {
             overlay.hidden = false;
+            const lados = overlay.querySelectorAll('.tv-video-side');
+            if (lados[0]) lados[0].innerHTML = rotacao.videoSideEsquerda || '';
+            if (lados[1]) lados[1].innerHTML = rotacao.videoSideDireita || '';
+            if (window.lucide) window.lucide.createIcons();
             videoEl.muted = false;
             videoEl.src = slide.videoSrc;
             // .onended (não addEventListener) porque o <video> é reaproveitado entre
@@ -394,18 +452,34 @@ function verificarVirada(diaCarregado) {
     }, 60000);
 }
 
+// ---------- CONFIGURAÇÃO DO FORMATO (definida em /admin/tv-videos) ----------
+
+async function aplicarConfig() {
+    let config = {};
+    try {
+        config = (await getDocument('meta', 'tv_config')) || {};
+    } catch (e) {
+        console.error('Erro ao ler meta/tv_config:', e);
+    }
+    document.body.classList.toggle('tv--faixa', config.formato === 'faixa');
+    document.documentElement.style.setProperty('--tv-escala', config.escala || 1);
+    itensPorPagina = config.formato === 'faixa' ? 1 : 8;
+}
+
 // ---------- INÍCIO ----------
 
 async function iniciar() {
     iniciarRelogio();
     criarFolhas();
 
+    await aplicarConfig();
     rotacao = await montarRotacao();
     verificarVirada(rotacao.hojeFmt);
     renderDots();
     irParaSlide(0);
 
     setInterval(async () => {
+        await aplicarConfig();
         const novaRotacao = await montarRotacao();
         rotacao = novaRotacao;
         renderDots();

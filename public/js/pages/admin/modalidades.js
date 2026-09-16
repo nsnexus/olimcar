@@ -1,4 +1,4 @@
-import { TABELA_PONTUACAO } from '../../services/db.js?v=20260916a';
+import { TABELA_PONTUACAO } from '../../services/db.js?v=20260916c';
 
 export function renderModalidadesPage() {
     return `

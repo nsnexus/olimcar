@@ -1,5 +1,5 @@
 // public/js/pages/admin/tv_videos.js
-import { getCollection, addDocument, updateDocument, deleteDocument, uploadTvVideo, deleteArquivoStorage } from '../../services/db.js?v=20260916a';
+import { getCollection, getDocument, setDocument, addDocument, updateDocument, deleteDocument, uploadTvVideo, deleteArquivoStorage } from '../../services/db.js?v=20260916c';
 
 export function renderTvVideosAdminPage() {
     setTimeout(carregarPagina, 100);
@@ -15,6 +15,31 @@ export function renderTvVideosAdminPage() {
                 Vídeos entram no loop do <a href="/tv.html" target="_blank">Painel de TV</a> na ordem daqui.
                 Sem nenhum vídeo, o painel mostra a marca Olimcar no lugar. Recomendado: MP4 (H.264), até ~50MB, Full HD.
             </p>
+
+            <div class="card" style="padding: 2rem; margin-bottom: 2rem;">
+                <h3 style="margin-bottom: 0.5rem;">Configurações do Painel</h3>
+                <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-bottom: 1.25rem; max-width: 560px;">
+                    Sem saber a resolução exata do painel (comum em painel de LED)? Ajuste aqui olhando o resultado
+                    direto no <a href="/tv.html" target="_blank">Painel de TV</a> — ele aplica em até 3 min, sem precisar editar código.
+                </p>
+                <form id="form-tv-config" style="display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: flex-end;">
+                    <div>
+                        <label style="display:block; font-size:0.85rem; font-weight:700; color:var(--color-text-muted); margin-bottom:0.4rem;">Formato da tela</label>
+                        <select id="tv-config-formato" class="form-control" style="padding:0.6rem; border-radius:6px; border:1px solid var(--color-border); min-width:260px;">
+                            <option value="normal">Tela normal (16:9 — TV, monitor)</option>
+                            <option value="faixa">Faixa de LED (bem mais larga que alta)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.85rem; font-weight:700; color:var(--color-text-muted); margin-bottom:0.4rem;">Escala do conteúdo</label>
+                        <input type="number" id="tv-config-escala" class="form-control" min="0.3" max="3" step="0.1" value="1" style="padding:0.6rem; border-radius:6px; border:1px solid var(--color-border); width:110px;">
+                    </div>
+                    <button type="submit" id="btn-salvar-tv-config" class="btn btn-primary">
+                        <i data-lucide="save"></i> Salvar
+                    </button>
+                    <span id="tv-config-status" style="font-size:0.85rem; color: var(--color-success);"></span>
+                </form>
+            </div>
 
             <div class="card" style="padding: 2rem; margin-bottom: 2rem;">
                 <h3 style="margin-bottom: 1.25rem;">Enviar novo vídeo</h3>
@@ -51,6 +76,46 @@ let videosCache = [];
 async function carregarPagina() {
     const form = document.getElementById('form-tv-video');
     if (!form) return;
+
+    // Configurações do painel (formato/escala)
+    const formConfig = document.getElementById('form-tv-config');
+    const selFormato = document.getElementById('tv-config-formato');
+    const inputEscala = document.getElementById('tv-config-escala');
+    const statusConfig = document.getElementById('tv-config-status');
+
+    try {
+        const config = await getDocument('meta', 'tv_config');
+        if (config) {
+            selFormato.value = config.formato || 'normal';
+            inputEscala.value = config.escala || 1;
+        }
+    } catch (e) {
+        console.error('Erro ao carregar meta/tv_config:', e);
+    }
+
+    formConfig.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btnSalvar = document.getElementById('btn-salvar-tv-config');
+        const textoOriginal = btnSalvar.innerHTML;
+        btnSalvar.disabled = true;
+        btnSalvar.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Salvando...';
+        statusConfig.textContent = '';
+
+        try {
+            await setDocument('meta', 'tv_config', {
+                formato: selFormato.value,
+                escala: parseFloat(inputEscala.value) || 1
+            });
+            statusConfig.textContent = 'Salvo! O painel de TV aplica em até 3 min (ou recarregue a página dele agora).';
+        } catch (err) {
+            console.error('Erro ao salvar meta/tv_config:', err);
+            alert('Erro ao salvar a configuração. Tente novamente.');
+        } finally {
+            btnSalvar.disabled = false;
+            btnSalvar.innerHTML = textoOriginal;
+            if (window.lucide) window.lucide.createIcons();
+        }
+    });
 
     videosCache = await ordenarPorOrdem(await getCollection('tv_videos'));
 

@@ -11,6 +11,13 @@ html, body {
     font-family: var(--font-sans);
 }
 
+/* Escala geral, ajustável em /admin/tv-videos sem precisar saber a
+   resolução exata do painel — todo tamanho relevante usa em/rem, então
+   escala junto quando --tv-escala muda. */
+.tv {
+    font-size: calc(1rem * var(--tv-escala, 1));
+}
+
 .tv {
     position: relative;
     width: 100vw;
@@ -363,6 +370,9 @@ html, body {
 .tv-video-fullscreen-wrap[hidden] {
     display: none;
 }
+.tv-video-side {
+    display: none; /* só aparece no formato faixa (vídeo widescreen não preenche a largura toda) */
+}
 .tv-brand-placeholder {
     flex: 1;
     display: flex;
@@ -442,6 +452,188 @@ html, body {
     font-size: 1.1rem;
     letter-spacing: 0.5px;
     box-shadow: var(--shadow-md);
+}
+
+/* ==========================================================================
+   FORMATO FAIXA DE LED — painel bem mais largo que alto (ex: 2m x 60cm).
+   Ativado em /admin/tv-videos (campo "Formato"), sem precisar saber a
+   resolução em pixel: vira uma faixa horizontal única, header compacto
+   do lado, rodapé de pontos escondido (sem espaço vertical pra ele).
+   ========================================================================== */
+body.tv--faixa .tv {
+    flex-direction: row;
+}
+
+body.tv--faixa .tv-header {
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0.4em;
+    padding: 0.6em 1em;
+    border-right: 1px solid var(--color-border);
+    flex-shrink: 0;
+    width: auto;
+}
+body.tv--faixa .tv-brand { gap: 0.5em; }
+body.tv--faixa .tv-logo { height: 2.4em; }
+body.tv--faixa .tv-brand-text { font-size: 1.1em; letter-spacing: 1px; }
+body.tv--faixa .tv-clock { text-align: left; }
+body.tv--faixa .tv-time { font-size: 1.5em; }
+body.tv--faixa .tv-date { font-size: 0.6em; margin-top: 0.1em; white-space: nowrap; }
+
+body.tv--faixa .tv-stage {
+    padding: 0.3em 1em;
+    align-items: center;
+    min-width: 0; /* deixa o filho encolher em vez de forçar o .tv a virar wide/overflow */
+}
+body.tv--faixa .tv-slide {
+    justify-content: center;
+    min-width: 0;
+}
+
+body.tv--faixa .tv-slide-title {
+    font-size: 1em;
+    margin-bottom: 0.35em;
+    flex-shrink: 0;
+}
+body.tv--faixa .tv-slide-title i { width: 1.2em; height: 1.2em; }
+body.tv--faixa .tv-slide-subtitle { font-size: 0.75em; }
+
+/* Um item por vez (ITENS_POR_PAGINA=1 nesse formato), ocupando a faixa toda */
+body.tv--faixa .tv-games-grid,
+body.tv--faixa .tv-scores-grid {
+    grid-template-columns: 1fr;
+}
+body.tv--faixa .tv-game-card,
+body.tv--faixa .tv-score-card {
+    flex: 1;
+    padding: 0.5em 1.2em;
+}
+body.tv--faixa .tv-game-time { font-size: 2em; min-width: auto; }
+body.tv--faixa .tv-game-modalidade { font-size: 1.6em; }
+body.tv--faixa .tv-game-meta { font-size: 0.9em; }
+body.tv--faixa .tv-game-teams { font-size: 1.4em; gap: 0.5em; }
+body.tv--faixa .tv-team-dot { width: 0.7em; height: 0.7em; }
+
+body.tv--faixa .tv-score-team { font-size: 1.7em; }
+body.tv--faixa .tv-score-value { font-size: 3em; }
+body.tv--faixa .tv-score-footer { font-size: 1em; }
+
+/* Medalhas em fileira única (só 4 equipes, cabe de lado a lado) */
+body.tv--faixa .tv-medal-list {
+    flex-direction: row;
+    gap: 0.6em;
+    min-width: 0;
+}
+body.tv--faixa .tv-medal-card {
+    flex: 1 1 0;
+    min-width: 0; /* sem isso o flex:1 não encolhe abaixo do conteúdo e o 4º card corta */
+    overflow: hidden;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3em;
+    padding: 0.5em 0.6em;
+    text-align: center;
+}
+body.tv--faixa .tv-medal-rank { font-size: 1.6em; min-width: auto; }
+body.tv--faixa .tv-medal-team { flex-direction: column; gap: 0.3em; max-width: 100%; }
+body.tv--faixa .tv-medal-name {
+    font-size: 1.1em;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+body.tv--faixa .tv-medal-bar-bg { display: none; }
+body.tv--faixa .tv-medal-badges { gap: 0.3em; }
+body.tv--faixa .tv-medal-badge { font-size: 0.75em; padding: 0.15em 0.4em; }
+body.tv--faixa .tv-medal-points { font-size: 1.2em; min-width: auto; }
+
+body.tv--faixa .tv-empty-title { font-size: 1.2em; }
+body.tv--faixa .tv-empty-text { font-size: 0.85em; }
+body.tv--faixa .tv-empty i { width: 2.2em; height: 2.2em; }
+
+/* Sem espaço vertical pra pontos de progresso nessa faixa */
+body.tv--faixa .tv-footer { display: none; }
+
+/* Vídeo: aproveita a altura toda no centro (proporção original, sem cortar);
+   os cantos que sobram nas laterais mostram a marca em vez de preto vazio. */
+body.tv--faixa .tv-video-fullscreen-wrap {
+    flex-direction: row;
+}
+body.tv--faixa .tv-video-fullscreen-wrap video {
+    width: auto;
+    height: 100%;
+    object-fit: contain;
+    flex: 0 0 auto;
+}
+body.tv--faixa .tv-video-side {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0.8em 1.2em;
+    background:
+        radial-gradient(60% 60% at 50% 50%, rgba(28,199,190,.14), transparent 70%),
+        #000;
+}
+/* Sem jogo/placar pra mostrar: cai pra logo centralizado (mesmo fallback de antes) */
+body.tv--faixa .tv-video-side > img {
+    height: 55%;
+    opacity: 0.85;
+    filter: drop-shadow(0 0 20px rgba(28,199,190,.4));
+    animation: tvLogoPulse 3.5s ease-in-out infinite;
+}
+/* Com jogo/placar de hoje: mini-lista ocupando a lateral toda */
+.tv-video-side-list {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.4em;
+    overflow: hidden;
+}
+.tv-video-side-title {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 1em;
+    color: var(--color-primary-500);
+    margin-bottom: 0.3em;
+}
+.tv-video-side-title i { width: 1.1em; height: 1.1em; }
+.tv-video-side-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5em;
+    font-size: 0.85em;
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.tv-video-side-hora {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-primary-500);
+    flex-shrink: 0;
+}
+.tv-video-side-txt {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.tv-video-side-mais {
+    font-size: 0.75em;
+    color: var(--color-text-muted);
+    margin-top: 0.2em;
 }
 
 /* ---------- RESPONSIVO (TVs menores / retrato) ---------- */
