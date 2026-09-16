@@ -1,6 +1,6 @@
 // public/js/tv.js — Painel de TV (loop de jogos, placares, medalhas e vídeos)
-import { getCollection, sortByDateAndTime } from './services/db.js?v=20260912c';
-import { calcularRanking } from './pages/ranking.js?v=20260912c';
+import { getCollection, sortByDateAndTime } from './services/db.js?v=20260916a';
+import { calcularRanking } from './pages/ranking.js?v=20260916a';
 
 // ---------- CONFIGURAÇÃO ----------
 
@@ -12,7 +12,7 @@ const DURACAO_JOGOS_MS = 9000;
 const DURACAO_PLACARES_MS = 9000;
 const DURACAO_MEDALHAS_MS = 15000;
 const DURACAO_VAZIO_MS = 10000;
-const DURACAO_VIDEO_FALLBACK_MS = 45000; // caso o vídeo não dispare 'ended'
+const DURACAO_VIDEO_FALLBACK_MS = 10 * 60 * 1000; // rede de segurança genérica (ajustada pra duração real assim que ela é lida)
 const ITENS_POR_PAGINA = 8;
 const REFRESH_DADOS_MS = 3 * 60 * 1000; // reconsulta o Firestore a cada 3 min
 
@@ -301,7 +301,7 @@ function atualizarDots() {
         if (i < indiceAtual) dot.classList.add('done');
         if (i === indiceAtual) {
             dot.classList.add('active');
-            const duracao = rotacao.slides[i].duracao || DURACAO_VIDEO_FALLBACK_MS;
+            const duracao = rotacao.slides[i].duracaoReal || rotacao.slides[i].duracao || DURACAO_VIDEO_FALLBACK_MS;
             requestAnimationFrame(() => {
                 fill.style.animation = `tvDotFill linear forwards`;
                 fill.style.animationDuration = duracao + 'ms';
@@ -340,9 +340,22 @@ function irParaSlide(i) {
                 videoEl.muted = true;
                 videoEl.play().catch(() => {});
             });
+
+            // Fallback genérico primeiro; assim que a duração real do vídeo
+            // é conhecida, reajusta o timer pra ela (+3s de margem) — o
+            // 'ended' deve disparar antes disso de qualquer forma.
             timerAtual = setTimeout(proximoSlide, DURACAO_VIDEO_FALLBACK_MS);
+            videoEl.onloadedmetadata = () => {
+                if (isFinite(videoEl.duration) && videoEl.duration > 0) {
+                    clearTimeout(timerAtual);
+                    slide.duracaoReal = videoEl.duration * 1000 + 3000;
+                    atualizarDots();
+                    timerAtual = setTimeout(proximoSlide, slide.duracaoReal);
+                }
+            };
         } else {
             overlay.hidden = true;
+            videoEl.onloadedmetadata = null;
             videoEl.pause();
             videoEl.removeAttribute('src');
             videoEl.load();

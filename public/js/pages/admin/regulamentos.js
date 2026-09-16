@@ -1,5 +1,5 @@
 // public/js/pages/admin/regulamentos.js
-import { getCollection, addDocument, deleteDocument, uploadRegulamento, deleteArquivoStorage } from '../../services/db.js?v=20260912c';
+import { getCollection, addDocument, deleteDocument, uploadRegulamento, deleteArquivoStorage } from '../../services/db.js?v=20260916a';
 
 export function renderRegulamentosAdminPage() {
     setTimeout(carregarPagina, 100);

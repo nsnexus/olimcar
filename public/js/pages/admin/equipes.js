@@ -1,4 +1,4 @@
-import { getCollection } from '../../services/db.js?v=20260912c';
+import { getCollection } from '../../services/db.js?v=20260916a';
 
 export function renderEquipesPage() {
     setTimeout(loadEquipesData, 100);
