@@ -41,6 +41,14 @@
     color: #fff;
 }
 
+/* Grade de cards do painel admin — faltava display:grid, então o
+   grid-template-columns inline não tinha efeito e cada card ocupava a
+   largura toda, empilhado (gigante no mobile). */
+.modalidades-grid {
+    display: grid;
+    gap: 1rem;
+}
+
 /* Cards */
 .card {
     background-color: var(--color-bg-card);

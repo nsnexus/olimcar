@@ -1,4 +1,4 @@
-import { buscarColaboradoresPorNome, buscarInscritosPorModalidade, normalizarBusca, getDocument } from '../services/db.js?v=20260916c';
+import { buscarColaboradoresPorNome, buscarInscritosPorModalidade, normalizarBusca, getDocument } from '../services/db.js?v=20260916d';
 
 const CORES_EQUIPE = {
     "Equipe Azul": "var(--color-info)",

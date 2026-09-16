@@ -12,41 +12,53 @@ export function renderDashboardPage() {
                 </button>
             </div>
             
-            <div class="modalidades-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-                <div class="card" onclick="window.location.hash='/admin/equipes'" style="padding: 1.5rem; text-align: center; cursor: pointer; transition: transform 0.2s;">
-                    <i data-lucide="users" style="width: 48px; height: 48px; color: var(--color-primary-500); margin-bottom: 1rem;"></i>
-                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Gestão de Equipes</h3>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Administrar times e inscritos</p>
-                </div>
-                
-                <div class="card" onclick="window.location.hash='/admin/modalidades'" style="padding: 1.5rem; text-align: center; cursor: pointer; transition: transform 0.2s;">
-                    <i data-lucide="dribbble" style="width: 48px; height: 48px; color: var(--color-warning); margin-bottom: 1rem;"></i>
-                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Modalidades</h3>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Ver regras e pontos</p>
+            <div class="modalidades-grid" style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));">
+                <div class="card" onclick="window.location.hash='/admin/equipes'" style="padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 0.9rem; cursor: pointer;">
+                    <i data-lucide="users" style="width: 26px; height: 26px; color: var(--color-primary-500); flex-shrink: 0;"></i>
+                    <div style="min-width: 0;">
+                        <h3 style="font-size: 0.95rem; margin: 0;">Gestão de Equipes</h3>
+                        <p style="font-size: 0.78rem; color: var(--color-text-muted); margin: 0.1rem 0 0;">Administrar times e inscritos</p>
+                    </div>
                 </div>
 
-                <div class="card" onclick="window.location.hash='/admin/jogo'" style="padding: 1.5rem; text-align: center; cursor: pointer; transition: transform 0.2s;">
-                    <i data-lucide="calendar-plus" style="width: 48px; height: 48px; color: var(--color-success); margin-bottom: 1rem;"></i>
-                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Agendar Jogo</h3>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Cadastrar partida manual</p>
+                <div class="card" onclick="window.location.hash='/admin/modalidades'" style="padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 0.9rem; cursor: pointer;">
+                    <i data-lucide="dribbble" style="width: 26px; height: 26px; color: var(--color-warning); flex-shrink: 0;"></i>
+                    <div style="min-width: 0;">
+                        <h3 style="font-size: 0.95rem; margin: 0;">Modalidades</h3>
+                        <p style="font-size: 0.78rem; color: var(--color-text-muted); margin: 0.1rem 0 0;">Ver regras e pontos</p>
+                    </div>
                 </div>
 
-                <div class="card" onclick="window.open('/tv.html', '_blank')" style="padding: 1.5rem; text-align: center; cursor: pointer; transition: transform 0.2s;">
-                    <i data-lucide="tv" style="width: 48px; height: 48px; color: var(--color-info); margin-bottom: 1rem;"></i>
-                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Painel de TV</h3>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Abrir tela cheia para telão/TV</p>
+                <div class="card" onclick="window.location.hash='/admin/jogo'" style="padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 0.9rem; cursor: pointer;">
+                    <i data-lucide="calendar-plus" style="width: 26px; height: 26px; color: var(--color-success); flex-shrink: 0;"></i>
+                    <div style="min-width: 0;">
+                        <h3 style="font-size: 0.95rem; margin: 0;">Agendar Jogo</h3>
+                        <p style="font-size: 0.78rem; color: var(--color-text-muted); margin: 0.1rem 0 0;">Cadastrar partida manual</p>
+                    </div>
                 </div>
 
-                <div class="card" onclick="window.location.hash='/admin/regulamentos'" style="padding: 1.5rem; text-align: center; cursor: pointer; transition: transform 0.2s;">
-                    <i data-lucide="file-text" style="width: 48px; height: 48px; color: var(--color-danger); margin-bottom: 1rem;"></i>
-                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Regulamentos</h3>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Enviar PDFs geral e por modalidade</p>
+                <div class="card" onclick="window.open('/tv.html', '_blank')" style="padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 0.9rem; cursor: pointer;">
+                    <i data-lucide="tv" style="width: 26px; height: 26px; color: var(--color-info); flex-shrink: 0;"></i>
+                    <div style="min-width: 0;">
+                        <h3 style="font-size: 0.95rem; margin: 0;">Painel de TV</h3>
+                        <p style="font-size: 0.78rem; color: var(--color-text-muted); margin: 0.1rem 0 0;">Abrir tela cheia para telão/TV</p>
+                    </div>
                 </div>
 
-                <div class="card" onclick="window.location.hash='/admin/tv-videos'" style="padding: 1.5rem; text-align: center; cursor: pointer; transition: transform 0.2s;">
-                    <i data-lucide="video" style="width: 48px; height: 48px; color: var(--color-info); margin-bottom: 1rem;"></i>
-                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Vídeos do Painel de TV</h3>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Enviar vídeos pro loop da TV</p>
+                <div class="card" onclick="window.location.hash='/admin/regulamentos'" style="padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 0.9rem; cursor: pointer;">
+                    <i data-lucide="file-text" style="width: 26px; height: 26px; color: var(--color-danger); flex-shrink: 0;"></i>
+                    <div style="min-width: 0;">
+                        <h3 style="font-size: 0.95rem; margin: 0;">Regulamentos</h3>
+                        <p style="font-size: 0.78rem; color: var(--color-text-muted); margin: 0.1rem 0 0;">Enviar PDFs geral e por modalidade</p>
+                    </div>
+                </div>
+
+                <div class="card" onclick="window.location.hash='/admin/tv-videos'" style="padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 0.9rem; cursor: pointer;">
+                    <i data-lucide="video" style="width: 26px; height: 26px; color: var(--color-info); flex-shrink: 0;"></i>
+                    <div style="min-width: 0;">
+                        <h3 style="font-size: 0.95rem; margin: 0;">Vídeos do Painel de TV</h3>
+                        <p style="font-size: 0.78rem; color: var(--color-text-muted); margin: 0.1rem 0 0;">Enviar vídeos pro loop da TV</p>
+                    </div>
                 </div>
             </div>
 
@@ -138,7 +150,7 @@ export async function loadDashboardJogos() {
     if (!tbody) return;
 
     try {
-        const { getCollection, sortByDateAndTime, deleteDocument } = await import('../services/db.js?v=20260916c');
+        const { getCollection, sortByDateAndTime, deleteDocument } = await import('../services/db.js?v=20260916d');
         const jogosBrutos = await getCollection('jogos');
         
         todosJogosAdmin = jogosBrutos.filter(j => 
@@ -180,7 +192,7 @@ export async function loadDashboardJogos() {
         // Expõe a função de exclusão globalmente
         window.excluirJogo = async (id) => {
             if (confirm("Tem certeza que deseja excluir esta partida da agenda?")) {
-                const { deleteDocument } = await import('../services/db.js?v=20260916c');
+                const { deleteDocument } = await import('../services/db.js?v=20260916d');
                 const sucesso = await deleteDocument('jogos', id);
                 if (sucesso) {
                     todosJogosAdmin = todosJogosAdmin.filter(j => j.id !== id);
@@ -216,7 +228,7 @@ export async function loadDashboardJogos() {
                 btnSubstituir.disabled = true;
 
                 try {
-                    const { getCollection, deleteDocument, addDocument } = await import('../services/db.js?v=20260916c');
+                    const { getCollection, deleteDocument, addDocument } = await import('../services/db.js?v=20260916d');
 
                     // 1. Excluir todos os jogos existentes
                     btnSubstituir.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Excluindo jogos antigos...';
@@ -340,7 +352,7 @@ export async function loadDashboardJogos() {
                     const json = window.XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                     
                     if (json.length > 1) {
-                        const { getCollection, addDocument, setDocument, normalizarBusca } = await import('../services/db.js?v=20260916c');
+                        const { getCollection, addDocument, setDocument, normalizarBusca } = await import('../services/db.js?v=20260916d');
 
                         let importedCount = 0;
                         const headerLine = json[0];
@@ -402,7 +414,7 @@ export async function loadDashboardJogos() {
                         // Atualiza a lista pública de modalidades (usada no filtro de /minhas-inscricoes).
                         // Junta o que já existia com o que veio agora, pra não perder modalidade de import anterior.
                         try {
-                            const { getDocument } = await import('../services/db.js?v=20260916c');
+                            const { getDocument } = await import('../services/db.js?v=20260916d');
                             const metaAtual = await getDocument('meta', 'modalidades_inscricao');
                             const uniao = new Set([...(metaAtual?.lista || []), ...modalidadesVistas]);
                             await setDocument('meta', 'modalidades_inscricao', {
