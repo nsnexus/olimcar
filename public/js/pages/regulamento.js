@@ -1,5 +1,5 @@
 // public/js/pages/regulamento.js
-import { getCollection } from '../services/db.js?v=20260916d';
+import { getCollection } from '../services/db.js?v=20260916e';
 
 export function renderRegulamentoPage() {
     setTimeout(carregarRegulamentos, 100);

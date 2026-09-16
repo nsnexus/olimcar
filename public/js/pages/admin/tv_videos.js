@@ -1,5 +1,5 @@
 // public/js/pages/admin/tv_videos.js
-import { getCollection, getDocument, setDocument, addDocument, updateDocument, deleteDocument, uploadTvVideo, deleteArquivoStorage } from '../../services/db.js?v=20260916d';
+import { getCollection, getDocument, setDocument, addDocument, updateDocument, deleteDocument, uploadTvVideo, deleteArquivoStorage } from '../../services/db.js?v=20260916e';
 
 export function renderTvVideosAdminPage() {
     setTimeout(carregarPagina, 100);
@@ -27,7 +27,8 @@ export function renderTvVideosAdminPage() {
                         <label style="display:block; font-size:0.85rem; font-weight:700; color:var(--color-text-muted); margin-bottom:0.4rem;">Formato da tela</label>
                         <select id="tv-config-formato" class="form-control" style="padding:0.6rem; border-radius:6px; border:1px solid var(--color-border); min-width:260px;">
                             <option value="normal">Tela normal (16:9 — TV, monitor)</option>
-                            <option value="faixa">Faixa de LED (bem mais larga que alta)</option>
+                            <option value="faixa">Faixa de LED horizontal (bem mais larga que alta)</option>
+                            <option value="totem">Totem de LED vertical (bem mais alto que largo)</option>
                         </select>
                     </div>
                     <div>

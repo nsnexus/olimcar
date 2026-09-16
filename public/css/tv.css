@@ -636,6 +636,143 @@ body.tv--faixa .tv-video-side > img {
     margin-top: 0.2em;
 }
 
+/* ==========================================================================
+   FORMATO TOTEM DE LED — painel vertical, bem mais alto que largo
+   (ex: 60cm x 2m, ~278x556px). .tv já é column por padrão, então aqui é
+   sobretudo: fonte grande, 1 item por vez sem cortar (permite quebrar
+   linha em vez de nowrap — largura é o recurso escasso, altura sobra),
+   header compacto empilhado, vídeo com faixas em cima/embaixo em vez de
+   nas laterais (vídeo 16:9 limitado pela largura, sobra espaço vertical).
+   ========================================================================== */
+body.tv--totem .tv-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3em;
+    padding: 1em 0.5em 0.7em;
+    text-align: center;
+}
+body.tv--totem .tv-brand { flex-direction: column; gap: 0.3em; }
+body.tv--totem .tv-logo { height: 3em; }
+body.tv--totem .tv-brand-text { font-size: 1.3em; }
+body.tv--totem .tv-clock { text-align: center; }
+body.tv--totem .tv-time { font-size: 1.8em; }
+body.tv--totem .tv-date { font-size: 0.75em; white-space: normal; }
+
+body.tv--totem .tv-stage {
+    padding: 0.5em 0.8em;
+}
+body.tv--totem .tv-slide-title {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.3em;
+    font-size: 1.3em;
+}
+body.tv--totem .tv-slide-title i { width: 1.3em; height: 1.3em; }
+body.tv--totem .tv-slide-subtitle { margin-left: 0; font-size: 0.7em; }
+
+/* 1 item por vez (itensPorPagina=1), pode quebrar linha — sem nowrap/ellipsis */
+body.tv--totem .tv-games-grid,
+body.tv--totem .tv-scores-grid {
+    grid-template-columns: 1fr;
+}
+body.tv--totem .tv-game-card {
+    flex: 1;
+    flex-direction: column;
+    text-align: center;
+    gap: 0.6em;
+    padding: 1em;
+}
+body.tv--totem .tv-game-time { font-size: 2.4em; min-width: auto; }
+body.tv--totem .tv-game-modalidade {
+    font-size: 1.5em;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+}
+body.tv--totem .tv-game-meta { font-size: 1em; }
+body.tv--totem .tv-game-teams {
+    font-size: 1.3em;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+body.tv--totem .tv-score-card { flex: 1; padding: 1em; }
+body.tv--totem .tv-score-team { font-size: 1.4em; white-space: normal; }
+body.tv--totem .tv-score-value { font-size: 3em; }
+body.tv--totem .tv-score-footer { font-size: 0.95em; flex-direction: column; gap: 0.3em; text-align: center; }
+
+/* .tv-medal-list já empilha os cards em coluna por padrão (perfeito pro
+   totem). Mas cada card sozinho é uma LINHA horizontal (rank|time|barra|
+   medalhas|pontos) — largura estreita demais pro totem, então reestrutura
+   o conteúdo do card também em coluna, igual foi feito no formato faixa. */
+body.tv--totem .tv-medal-card {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    gap: 0.5em;
+    padding: 1em 1.2em;
+    text-align: center;
+}
+body.tv--totem .tv-medal-rank { font-size: 2em; min-width: auto; }
+body.tv--totem .tv-medal-team { flex-direction: column; gap: 0.3em; max-width: 100%; }
+body.tv--totem .tv-medal-name {
+    font-size: 1.3em;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+body.tv--totem .tv-medal-bar-bg { display: none; }
+body.tv--totem .tv-medal-badges { gap: 0.4em; }
+body.tv--totem .tv-medal-badge { font-size: 0.9em; }
+body.tv--totem .tv-medal-points { font-size: 1.3em; min-width: auto; }
+
+body.tv--totem .tv-empty-title { font-size: 1.3em; }
+body.tv--totem .tv-empty-text { font-size: 0.9em; }
+
+/* Vídeo: limitado pela largura (16:9 numa faixa estreita), sobra espaço
+   vertical — faixas em cima/embaixo em vez de nas laterais. */
+body.tv--totem .tv-video-fullscreen-wrap {
+    flex-direction: column;
+}
+body.tv--totem .tv-video-fullscreen-wrap video {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    flex: 0 0 auto;
+}
+body.tv--totem .tv-video-side {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 1em;
+    background:
+        radial-gradient(60% 60% at 50% 50%, rgba(28,199,190,.14), transparent 70%),
+        #000;
+}
+body.tv--totem .tv-video-side > img {
+    height: auto;
+    width: 55%;
+    opacity: 0.85;
+    filter: drop-shadow(0 0 20px rgba(28,199,190,.4));
+    animation: tvLogoPulse 3.5s ease-in-out infinite;
+}
+body.tv--totem .tv-video-side-list { justify-content: center; }
+body.tv--totem .tv-video-side-title { font-size: 1.2em; justify-content: center; }
+body.tv--totem .tv-video-side-item {
+    flex-direction: column;
+    gap: 0.1em;
+    font-size: 1em;
+    white-space: normal;
+    justify-content: center;
+    text-align: center;
+}
+body.tv--totem .tv-video-side-txt { white-space: normal; overflow: visible; text-overflow: clip; }
+
 /* ---------- RESPONSIVO (TVs menores / retrato) ---------- */
 @media (max-width: 1100px) {
     .tv-games-grid, .tv-scores-grid { grid-template-columns: 1fr; }

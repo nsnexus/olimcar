@@ -1,6 +1,6 @@
 // public/js/tv.js — Painel de TV (loop de jogos, placares, medalhas e vídeos)
-import { getCollection, getDocument, sortByDateAndTime } from './services/db.js?v=20260916d';
-import { calcularRanking } from './pages/ranking.js?v=20260916d';
+import { getCollection, getDocument, sortByDateAndTime } from './services/db.js?v=20260916e';
+import { calcularRanking } from './pages/ranking.js?v=20260916e';
 
 // ---------- CONFIGURAÇÃO ----------
 
@@ -462,8 +462,9 @@ async function aplicarConfig() {
         console.error('Erro ao ler meta/tv_config:', e);
     }
     document.body.classList.toggle('tv--faixa', config.formato === 'faixa');
+    document.body.classList.toggle('tv--totem', config.formato === 'totem');
     document.documentElement.style.setProperty('--tv-escala', config.escala || 1);
-    itensPorPagina = config.formato === 'faixa' ? 1 : 8;
+    itensPorPagina = (config.formato === 'faixa' || config.formato === 'totem') ? 1 : 8;
 }
 
 // ---------- INÍCIO ----------
