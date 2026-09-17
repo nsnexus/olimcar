@@ -8,6 +8,7 @@
  *
  * Este script carimba ?v=<versao> em:
  *   - <script src="/js/app.js"> e /js/tv.js no index.html / tv.html
+ *   - <link rel="stylesheet" href="/css/*.css"> nos mesmos HTML
  *   - todos os import ... from './x.js'  e  import('./x.js')  dentro de public/js
  *
  * Rode ANTES de cada deploy:
@@ -26,7 +27,7 @@ const version = arg || new Date().toISOString().replace(/[-:T]/g, '').slice(0, 1
 
 let changed = 0;
 
-// 1. HTML: carimba os <script src="/js/*.js">
+// 1. HTML: carimba os <script src="/js/*.js"> e <link ... href="/css/*.css">
 for (const htmlFile of ['index.html', 'tv.html']) {
     const p = path.join(PUBLIC, htmlFile);
     if (!fs.existsSync(p)) continue;
@@ -34,6 +35,10 @@ for (const htmlFile of ['index.html', 'tv.html']) {
     const before = s;
     s = s.replace(
         /(src=["'])(\/js\/[^"'?]+\.js)(\?v=[^"']*)?(["'])/g,
+        (_m, a, file, _q, b) => `${a}${file}?v=${version}${b}`
+    );
+    s = s.replace(
+        /(href=["'])(\/css\/[^"'?]+\.css)(\?v=[^"']*)?(["'])/g,
         (_m, a, file, _q, b) => `${a}${file}?v=${version}${b}`
     );
     if (s !== before) { fs.writeFileSync(p, s, 'utf8'); changed++; console.log('  html:', htmlFile); }

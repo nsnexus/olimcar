@@ -1,7 +1,7 @@
 // public/js/auth.js
-import { auth } from './services/firebase.js?v=20260916e';
+import { auth } from './services/firebase.js?v=20260917b';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-import { getDocument } from './services/db.js?v=20260916e';
+import { getDocument } from './services/db.js?v=20260917b';
 
 // Estado global do usuário atual
 export let currentUser = null;

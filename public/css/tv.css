@@ -52,12 +52,17 @@ html, body {
     background:
         radial-gradient(38% 45% at 12% 25%, rgba(20, 224, 212, 0.20), transparent 70%),
         radial-gradient(32% 40% at 88% 78%, rgba(236, 177, 31, 0.16), transparent 70%);
+    background-position: 0 0;
     mix-blend-mode: screen;
     animation: tvAuroraFloat 16s ease-in-out infinite alternate;
 }
+/* Antes usava transform, que move a CAIXA do elemento inteira — como ela é
+   inset:0 (exatamente do tamanho da tela), deslizar abria um vão numa borda
+   (visível em telas estreitas, como o totem). background-position só
+   desloca o desenho pintado dentro da caixa, que nunca sai do lugar. */
 @keyframes tvAuroraFloat {
-    0%   { transform: translate3d(0,0,0); opacity: .75; }
-    100% { transform: translate3d(40px,-30px,0); opacity: 1; }
+    0%   { background-position: 0px 0px; opacity: .75; }
+    100% { background-position: 40px -30px; opacity: 1; }
 }
 .tv-leaves { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .tv-leaf {
@@ -128,6 +133,7 @@ html, body {
     display: flex;
     flex-direction: column;
     min-height: 0;
+    overflow: hidden; /* nunca deixa aparecer scrollbar num painel de TV/totem */
     opacity: 0;
     transform: translateY(24px) scale(0.99);
     animation: tvSlideIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -705,28 +711,35 @@ body.tv--totem .tv-score-footer { font-size: 0.95em; flex-direction: column; gap
    totem). Mas cada card sozinho é uma LINHA horizontal (rank|time|barra|
    medalhas|pontos) — largura estreita demais pro totem, então reestrutura
    o conteúdo do card também em coluna, igual foi feito no formato faixa. */
+body.tv--totem .tv-medal-list {
+    min-height: 0;
+    gap: 0.5em;
+}
 body.tv--totem .tv-medal-card {
+    flex: 1 1 0;
+    min-height: 0; /* sem isso os 4 cards nao encolhem pra caber e aparece scrollbar */
+    overflow: hidden;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     min-width: 0;
-    gap: 0.5em;
-    padding: 1em 1.2em;
+    gap: 0.4em;
+    padding: 0.6em 1.2em;
     text-align: center;
 }
-body.tv--totem .tv-medal-rank { font-size: 2em; min-width: auto; }
-body.tv--totem .tv-medal-team { flex-direction: column; gap: 0.3em; max-width: 100%; }
+body.tv--totem .tv-medal-rank { font-size: 1.7em; min-width: auto; line-height: 1; }
+body.tv--totem .tv-medal-team { flex-direction: column; gap: 0.25em; max-width: 100%; }
 body.tv--totem .tv-medal-name {
-    font-size: 1.3em;
+    font-size: 1.15em;
     max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 body.tv--totem .tv-medal-bar-bg { display: none; }
-body.tv--totem .tv-medal-badges { gap: 0.4em; }
-body.tv--totem .tv-medal-badge { font-size: 0.9em; }
-body.tv--totem .tv-medal-points { font-size: 1.3em; min-width: auto; }
+body.tv--totem .tv-medal-badges { gap: 0.35em; }
+body.tv--totem .tv-medal-badge { font-size: 0.8em; padding: 0.15em 0.4em; }
+body.tv--totem .tv-medal-points { font-size: 1.15em; min-width: auto; }
 
 body.tv--totem .tv-empty-title { font-size: 1.3em; }
 body.tv--totem .tv-empty-text { font-size: 0.9em; }

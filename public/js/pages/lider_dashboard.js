@@ -1,5 +1,5 @@
 // public/js/pages/lider_dashboard.js
-import { currentUserData } from '../auth.js?v=20260916e';
+import { currentUserData } from '../auth.js?v=20260917b';
 
 export function renderLiderDashboardPage() {
     setTimeout(loadLiderData, 50);
@@ -69,13 +69,13 @@ async function loadLiderData() {
     const btnLogout = document.getElementById('btn-logout-lider');
     if (btnLogout) {
         btnLogout.addEventListener('click', async () => {
-            const { logoutUser } = await import('../auth.js?v=20260916e');
+            const { logoutUser } = await import('../auth.js?v=20260917b');
             await logoutUser();
         });
     }
 
     // Carregar Atletas da Equipe
-    const { getCollection } = await import('../services/db.js?v=20260916e');
+    const { getCollection } = await import('../services/db.js?v=20260917b');
     const todosColabs = await getCollection('colaboradores');
     const meusAtletas = todosColabs.filter(c => c.equipe === equipeNome);
 
