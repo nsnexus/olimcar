@@ -30,6 +30,9 @@ export function renderLiderDashboardPage() {
                             <option value="">Todas as Modalidades</option>
                         </select>
                         <input type="text" id="filtro-nome-lider" placeholder="Buscar por nome ou matrícula..." class="form-control" style="max-width: 260px; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--color-border);">
+                        <button id="btn-xlsx-lider" class="btn btn-outline" type="button">
+                            <i data-lucide="sheet"></i> Baixar XLSX
+                        </button>
                     </div>
                 </div>
                 <div class="table-container">
@@ -114,22 +117,74 @@ async function loadLiderData() {
         if (window.lucide) window.lucide.createIcons();
     };
 
-    const aplicarFiltros = () => {
+    const getFiltrados = () => {
         const termo = inputNome.value.toLowerCase();
         const modalidadeSelecionada = selectModalidade.value;
-        const filtrados = meusAtletas.filter(a => {
+        return meusAtletas.filter(a => {
             const matchTermo = !termo ||
                 (a.nome && a.nome.toLowerCase().includes(termo)) ||
                 (a.matricula && String(a.matricula).toLowerCase().includes(termo));
             const matchModalidade = !modalidadeSelecionada || modalidadesLimpas(a).includes(modalidadeSelecionada);
             return matchTermo && matchModalidade;
         });
-        renderTabela(filtrados);
     };
+
+    const aplicarFiltros = () => renderTabela(getFiltrados());
 
     inputNome.addEventListener('input', aplicarFiltros);
     selectModalidade.addEventListener('change', aplicarFiltros);
 
+    const btnXlsx = document.getElementById('btn-xlsx-lider');
+    if (btnXlsx) {
+        btnXlsx.addEventListener('click', () => exportarXlsx(getFiltrados(), modalidadesLimpas, equipeNome, btnXlsx));
+    }
+
     renderTabela(meusAtletas);
     if (window.lucide) window.lucide.createIcons();
+}
+
+async function garantirSheetJS() {
+    if (window.XLSX) return;
+    await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js';
+        script.onload = resolve;
+        script.onerror = () => reject(new Error('Falha ao carregar biblioteca de planilha'));
+        document.head.appendChild(script);
+    });
+}
+
+async function exportarXlsx(lista, modalidadesLimpas, equipeNome, btn) {
+    const textoOriginal = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Gerando...';
+    if (window.lucide) window.lucide.createIcons();
+
+    try {
+        await garantirSheetJS();
+
+        const linhas = lista.map(a => ({
+            'Matrícula': a.matricula || '-',
+            'Nome do Colaborador': a.nome || '-',
+            'Modalidades': modalidadesLimpas(a).join(', ') || 'Nenhuma',
+            'Contato': a.whatsapp || '-',
+            'Status': a.status || 'Ativo'
+        }));
+
+        const planilha = window.XLSX.utils.json_to_sheet(linhas);
+        planilha['!cols'] = [{ wch: 24 }, { wch: 32 }, { wch: 36 }, { wch: 16 }, { wch: 12 }];
+
+        const workbook = window.XLSX.utils.book_new();
+        window.XLSX.utils.book_append_sheet(workbook, planilha, 'Colaboradores');
+
+        const dataHoje = new Date().toISOString().slice(0, 10);
+        window.XLSX.writeFile(workbook, `colaboradores-${equipeNome.replace(/\s+/g, '-').toLowerCase()}-${dataHoje}.xlsx`);
+    } catch (err) {
+        console.error('Erro ao gerar XLSX:', err);
+        alert('Erro ao gerar a planilha. Tente novamente.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = textoOriginal;
+        if (window.lucide) window.lucide.createIcons();
+    }
 }
