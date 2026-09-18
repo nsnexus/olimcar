@@ -17,6 +17,7 @@ import { renderTermosPage } from './pages/termos.js?v=20260917b';
 import { renderRegulamentoPage } from './pages/regulamento.js?v=20260917b';
 import { renderRegulamentosAdminPage } from './pages/admin/regulamentos.js?v=20260917b';
 import { renderTvVideosAdminPage } from './pages/admin/tv_videos.js?v=20260917b';
+import { renderTvImagensAdminPage } from './pages/admin/tv_imagens.js?v=20260917b';
 import { renderMinhasInscricoesPage } from './pages/minhas_inscricoes.js?v=20260917b';
 import { loginUser, logoutUser, currentUser, authResolved } from './auth.js?v=20260917b';
 import { seedInitialData, getCollectionCount } from './services/db.js?v=20260917b';
@@ -53,6 +54,7 @@ const routes = {
     '/admin/sumula': renderSumulaEditorPage,
     '/admin/regulamentos': renderRegulamentosAdminPage,
     '/admin/tv-videos': renderTvVideosAdminPage,
+    '/admin/tv-imagens': renderTvImagensAdminPage,
     '/sobre': renderSobrePage,
     '/termos': renderTermosPage,
     '/privacidade': () => `

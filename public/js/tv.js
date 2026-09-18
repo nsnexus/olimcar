@@ -1,6 +1,11 @@
 // public/js/tv.js — Painel de TV (loop de jogos, placares, medalhas e vídeos)
 import { getCollection, getDocument, sortByDateAndTime } from './services/db.js?v=20260917b';
 import { calcularRanking } from './pages/ranking.js?v=20260917b';
+import {
+    formatarDataBR, paginarPorAltura, corEquipe, nomeCurto,
+    criarCardJogo, renderJogos, renderJogosVazio,
+    criarCardPlacar, renderPlacares, renderPlacaresVazio
+} from './services/tv_render.js?v=20260917b';
 
 // ---------- CONFIGURAÇÃO ----------
 
@@ -15,39 +20,11 @@ const DURACAO_VAZIO_MS = 10000;
 const DURACAO_VIDEO_FALLBACK_MS = 10 * 60 * 1000; // rede de segurança genérica (ajustada pra duração real assim que ela é lida)
 const REFRESH_DADOS_MS = 3 * 60 * 1000; // reconsulta o Firestore a cada 3 min
 
-// Ajustado por aplicarConfig() a partir de meta/tv_config (formato/escala
-// definidos em /admin/tv-videos) — sem depender de saber a resolução em px.
-let itensPorPagina = 8;
-
-const CORES_EQUIPE = {
-    "Equipe Azul": "#2f6fed",
-    "Equipe Vermelha": "#e5484d",
-    "Equipe Amarela": "#ECB11F",
-    "Equipe Verde": "#1CC7BE"
-};
-
-const DIAS_SEMANA = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
-const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-
-// ---------- HELPERS DE DATA/HORA ----------
-
+// formatarHojeBR() = mesmo texto que fica salvo em jogos.data_jogo, usado
+// pra filtrar "os jogos de hoje" — mantém o nome local pra não reescrever
+// todo o resto do arquivo, só delega pro helper compartilhado.
 function formatarHojeBR(d = new Date()) {
-    return `${DIAS_SEMANA[d.getDay()]}, ${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}`;
-}
-
-function corEquipe(nome) {
-    return CORES_EQUIPE[nome] || 'rgba(234,250,248,0.4)';
-}
-
-function nomeCurto(nome) {
-    return (nome || 'A Definir').replace(/^Equipe\s+/i, '');
-}
-
-function chunk(arr, size) {
-    if (arr.length === 0) return [];
-    const out = [];
-    for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
-    return out;
+    return formatarDataBR(d);
 }
 
 // ---------- RELÓGIO ----------
@@ -81,93 +58,6 @@ function criarFolhas() {
         leaf.style.animationDelay = (-Math.random() * dur) + 's';
         container.appendChild(leaf);
     }
-}
-
-// ---------- RENDER: JOGOS DO DIA ----------
-
-function renderJogos(pagina, indicePagina, totalPaginas, hojeFmt) {
-    const cards = pagina.map((j, i) => {
-        const timeA = j.equipe_a?.nome || 'A Definir';
-        const timeB = j.equipe_b?.nome || 'A Definir';
-        const live = j.status === 'ao_vivo';
-        return `
-            <div class="tv-game-card ${live ? 'is-live' : ''}" style="animation-delay:${i * 0.06}s">
-                <div class="tv-game-time">${j.horario || '--:--'}</div>
-                <div class="tv-game-info">
-                    <div class="tv-game-modalidade">${j.modalidade_texto || ''} ${live ? '<span class="tv-live-badge"><span class="tv-live-dot"></span> AO VIVO</span>' : ''}</div>
-                    <div class="tv-game-meta">${j.fase || 'Fase Única'} · ${j.local || 'Local a definir'}</div>
-                </div>
-                <div class="tv-game-teams">
-                    <span class="tv-team-dot" style="background:${corEquipe(timeA)}"></span>
-                    <span>${nomeCurto(timeA)}</span>
-                    <span class="tv-game-vs">×</span>
-                    <span class="tv-team-dot" style="background:${corEquipe(timeB)}"></span>
-                    <span>${nomeCurto(timeB)}</span>
-                </div>
-            </div>
-        `;
-    }).join('');
-
-    return `
-        <h2 class="tv-slide-title"><i data-lucide="calendar-days"></i> Jogos de Hoje
-            <span class="tv-slide-subtitle">${hojeFmt}${totalPaginas > 1 ? ` · página ${indicePagina}/${totalPaginas}` : ''}</span>
-        </h2>
-        <div class="tv-games-grid">${cards}</div>
-    `;
-}
-
-function renderJogosVazio(hojeFmt) {
-    return `
-        <h2 class="tv-slide-title"><i data-lucide="calendar-days"></i> Jogos de Hoje
-            <span class="tv-slide-subtitle">${hojeFmt}</span>
-        </h2>
-        <div class="tv-empty">
-            <i data-lucide="calendar-x"></i>
-            <div class="tv-empty-title">Nenhum jogo agendado para hoje</div>
-            <div class="tv-empty-text">Confira a agenda completa no site oficial da Olimcar.</div>
-        </div>
-    `;
-}
-
-// ---------- RENDER: PLACARES DO DIA ----------
-
-function renderPlacares(pagina, indicePagina, totalPaginas) {
-    const cards = pagina.map((j, i) => {
-        const timeA = j.equipe_a?.nome || 'A Definir';
-        const timeB = j.equipe_b?.nome || 'A Definir';
-        return `
-            <div class="tv-score-card" style="animation-delay:${i * 0.06}s">
-                <div class="tv-score-row">
-                    <div class="tv-score-team"><span class="tv-team-dot" style="background:${corEquipe(timeA)}"></span><span class="name">${nomeCurto(timeA)}</span></div>
-                    <div class="tv-score-value">${j.placar_a ?? 0}</div>
-                </div>
-                <div class="tv-score-divider"></div>
-                <div class="tv-score-row">
-                    <div class="tv-score-team"><span class="tv-team-dot" style="background:${corEquipe(timeB)}"></span><span class="name">${nomeCurto(timeB)}</span></div>
-                    <div class="tv-score-value">${j.placar_b ?? 0}</div>
-                </div>
-                <div class="tv-score-footer"><span>${j.modalidade_texto || ''}</span><span>${j.fase || ''}</span></div>
-            </div>
-        `;
-    }).join('');
-
-    return `
-        <h2 class="tv-slide-title"><i data-lucide="trophy"></i> Placares de Hoje
-            <span class="tv-slide-subtitle">${totalPaginas > 1 ? `página ${indicePagina}/${totalPaginas}` : ''}</span>
-        </h2>
-        <div class="tv-scores-grid">${cards}</div>
-    `;
-}
-
-function renderPlacaresVazio() {
-    return `
-        <h2 class="tv-slide-title"><i data-lucide="trophy"></i> Placares de Hoje</h2>
-        <div class="tv-empty">
-            <i data-lucide="hourglass"></i>
-            <div class="tv-empty-title">Nenhum resultado registrado ainda</div>
-            <div class="tv-empty-text">Assim que os jogos de hoje forem encerrados, os placares aparecem aqui.</div>
-        </div>
-    `;
 }
 
 // ---------- RENDER: MEDALHAS ----------
@@ -302,8 +192,10 @@ async function montarRotacao() {
     const placaresHoje = jogosHoje.filter(j => j.status === 'encerrado');
 
     const slides = [];
+    const stageEl = document.getElementById('tv-stage');
 
-    const paginasJogos = chunk(jogosHoje, itensPorPagina);
+    const tituloAmostraJogos = `<h2 class="tv-slide-title"><i data-lucide="calendar-days"></i> Jogos de Hoje<span class="tv-slide-subtitle">${hojeFmt} · página 1/1</span></h2>`;
+    const paginasJogos = paginarPorAltura(jogosHoje, criarCardJogo, 'tv-games-grid', tituloAmostraJogos, stageEl);
     if (paginasJogos.length === 0) {
         slides.push({ tipo: 'jogos', html: renderJogosVazio(hojeFmt), duracao: DURACAO_VAZIO_MS });
     } else {
@@ -312,7 +204,8 @@ async function montarRotacao() {
         });
     }
 
-    const paginasPlacares = chunk(placaresHoje, itensPorPagina);
+    const tituloAmostraPlacares = `<h2 class="tv-slide-title"><i data-lucide="trophy"></i> Placares de Hoje<span class="tv-slide-subtitle">página 1/1</span></h2>`;
+    const paginasPlacares = paginarPorAltura(placaresHoje, criarCardPlacar, 'tv-scores-grid', tituloAmostraPlacares, stageEl);
     if (paginasPlacares.length === 0) {
         slides.push({ tipo: 'placares', html: renderPlacaresVazio(), duracao: DURACAO_VAZIO_MS });
     } else {
@@ -464,7 +357,6 @@ async function aplicarConfig() {
     document.body.classList.toggle('tv--faixa', config.formato === 'faixa');
     document.body.classList.toggle('tv--totem', config.formato === 'totem');
     document.documentElement.style.setProperty('--tv-escala', config.escala || 1);
-    itensPorPagina = (config.formato === 'faixa' || config.formato === 'totem') ? 1 : 8;
 }
 
 // ---------- INÍCIO ----------

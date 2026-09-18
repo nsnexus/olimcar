@@ -52,17 +52,20 @@ html, body {
     background:
         radial-gradient(38% 45% at 12% 25%, rgba(20, 224, 212, 0.20), transparent 70%),
         radial-gradient(32% 40% at 88% 78%, rgba(236, 177, 31, 0.16), transparent 70%);
-    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: 130% 130%;
+    background-position: -10% -10%;
     mix-blend-mode: screen;
     animation: tvAuroraFloat 16s ease-in-out infinite alternate;
 }
-/* Antes usava transform, que move a CAIXA do elemento inteira — como ela é
-   inset:0 (exatamente do tamanho da tela), deslizar abria um vão numa borda
-   (visível em telas estreitas, como o totem). background-position só
-   desloca o desenho pintado dentro da caixa, que nunca sai do lugar. */
+/* Antes usava transform (move a CAIXA inteira, abre vão na borda) e depois
+   background-position sozinho (sem no-repeat, o navegador repete o padrao e
+   a EMENDA do proximo tile aparecia na borda esquerda ao deslocar — mesmo
+   vao, causa diferente). Fundo maior que a caixa (130%) + no-repeat: sempre
+   sobra imagem fora dos limites, deslocar nunca expoe emenda nem vão. */
 @keyframes tvAuroraFloat {
-    0%   { background-position: 0px 0px; opacity: .75; }
-    100% { background-position: 40px -30px; opacity: 1; }
+    0%   { background-position: -10% -10%; opacity: .75; }
+    100% { background-position: 2% 4%; opacity: 1; }
 }
 .tv-leaves { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .tv-leaf {
@@ -83,8 +86,10 @@ html, body {
     position: relative;
     z-index: 5;
     display: flex;
+    flex-wrap: wrap; /* sem isso, em tela estreita, marca e relogio nao cabem lado a lado e SOBREPOEM (space-between com espaco negativo) em vez de quebrar linha */
     align-items: center;
     justify-content: space-between;
+    gap: 0.5rem 1rem;
     padding: 2.2rem 3.2rem 1.2rem;
     flex-shrink: 0;
 }
@@ -275,6 +280,68 @@ html, body {
 .tv-score-divider { height: 1px; background: var(--color-border); margin: 0.7rem 0; }
 .tv-score-footer {
     display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--color-text-muted); margin-top: 0.6rem;
+}
+
+/* ---------- TABELA COMPACTA (gerador de imagem do totem — cabe muito mais
+   jogo por tela que o card grande, usado só em admin/tv_imagens.js) ---------- */
+.tv-table-jogos, .tv-table-placares {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+.tv-row-jogo, .tv-row-placar {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.45rem 0.15rem;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.95rem;
+    line-height: 1.25;
+    /* Fonte de sistema, não a de marca (Montserrat/Rajdhani via @font-face):
+       nesse tamanho bem pequeno (fonte compacta pra caber muito jogo por
+       imagem) o html2canvas rasteriza webfont customizada com um "fantasma"
+       (glyph desenhado com métrica de uma fonte e traço de outra). Fonte de
+       sistema não tem esse problema, e não faz falta — marca já tá no logo. */
+    font-family: -apple-system, Arial, sans-serif;
+}
+.tv-row-jogo:last-child, .tv-row-placar:last-child { border-bottom: none; }
+.tv-row-hora {
+    flex-shrink: 0;
+    min-width: 3em;
+    color: var(--color-primary-500);
+    font-weight: 700;
+}
+.tv-row-mod {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    font-weight: 600;
+}
+.tv-row-mod small { color: var(--color-text-muted); font-weight: 400; }
+/* Sem text-overflow:ellipsis de propósito: o html2canvas (gerador de imagem
+   do totem) tem bug conhecido que desenha o texto original E o cortado
+   sobrepostos quando o navegador aplica ellipsis. O corte "…" é feito na
+   marra em JS (truncar(), tv_render.js) antes de virar HTML — overflow:hidden
+   aqui é só uma rede de segurança, não deveria nem precisar cortar nada. */
+.tv-row-times, .tv-row-placar-times {
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: 48%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+    font-weight: 600;
+    font-size: 0.85em;
+    white-space: nowrap;
+}
+.tv-row-x { color: var(--color-text-muted); margin: 0 0.1em; }
+.tv-row-placar-score {
+    font-weight: 700;
+    color: var(--color-primary-500);
+    margin: 0 0.15em;
 }
 
 /* ---------- ESTADO VAZIO ---------- */
@@ -654,13 +721,18 @@ body.tv--totem .tv-header {
     flex-direction: column;
     align-items: center;
     gap: 0.3em;
-    padding: 1em 0.5em 0.7em;
+    padding: 0.6em 0.5em 0.4em;
     text-align: center;
 }
 body.tv--totem .tv-brand { flex-direction: column; gap: 0.3em; }
 body.tv--totem .tv-logo { height: 3em; }
-body.tv--totem .tv-brand-text { font-size: 1.3em; }
-body.tv--totem .tv-clock { text-align: center; }
+/* logo ja traz "OLIMCAR 2026" desenhado dentro da imagem — repetir em
+   texto embaixo so empilhava mais uma linha no totem, que e curto de
+   altura pra sobrar (cada linha a menos = mais espaco pros jogos). */
+body.tv--totem .tv-brand-text { display: none; }
+/* relogio/data tambem fora do totem, mesmo motivo: nao sao o que a
+   pessoa vem ler no painel (o jogo é), e cada linha custa card inteiro. */
+body.tv--totem .tv-clock { display: none; }
 body.tv--totem .tv-time { font-size: 1.8em; }
 body.tv--totem .tv-date { font-size: 0.75em; white-space: normal; }
 
@@ -672,15 +744,32 @@ body.tv--totem .tv-slide-title {
     text-align: center;
     gap: 0.3em;
     font-size: 1.3em;
+    margin-bottom: 0.6em;
 }
 body.tv--totem .tv-slide-title i { width: 1.3em; height: 1.3em; }
 body.tv--totem .tv-slide-subtitle { margin-left: 0; font-size: 0.7em; }
 
-/* 1 item por vez (itensPorPagina=1), pode quebrar linha — sem nowrap/ellipsis */
+/* 1 coluna (largura é o recurso escasso no totem); quantos cabem por
+   página é calculado em runtime pela altura real (ver paginarPorAltura em
+   tv.js) — aqui só garante que o texto pode quebrar linha em vez de
+   cortar com nowrap/ellipsis */
 body.tv--totem .tv-games-grid,
 body.tv--totem .tv-scores-grid {
     grid-template-columns: 1fr;
 }
+
+/* Tabela do gerador de imagem: fonte bem menor que o resto do totem de
+   propósito — é lida de perto (imagem impressa/tela pequena), não de
+   longe como o card grande do painel ao vivo, então dá pra caber MUITO
+   mais jogo por imagem sem virar 40 PNGs pro mesmo dia. */
+body.tv--totem .tv-row-jogo,
+body.tv--totem .tv-row-placar {
+    font-size: 0.6em;
+    padding: 0.4em 0.1em;
+    gap: 0.4em;
+}
+body.tv--totem .tv-row-hora { min-width: 2.6em; }
+body.tv--totem .tv-team-dot { width: 0.6em; height: 0.6em; }
 body.tv--totem .tv-game-card {
     flex: 1;
     flex-direction: column;

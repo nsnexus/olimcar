@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>OLIMCAR - Render de imagem do painel</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/design-system.css?v=20260917b">
+    <link rel="stylesheet" href="/css/tv.css?v=20260917b">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<!--
+    Página "muda": não carrega tv.js nem faz nada sozinha. Existe só pra ser
+    aberta dentro de um <iframe> por admin/tv_imagens.js, que escreve o
+    conteúdo (classe do formato + HTML da página) direto no DOM daqui e
+    tira um "print" com html2canvas — precisa de um documento isolado
+    porque tv.css estiliza html/body inteiros (não daria pra injetar isso
+    dentro do painel administrativo sem quebrar o layout dele).
+-->
+<body>
+    <div class="tv">
+        <div class="tv-bg">
+            <div class="tv-bg-grid"></div>
+            <div class="tv-bg-aurora"></div>
+        </div>
+
+        <!-- Sem .tv-clock de propósito: relógio congelado numa imagem estática
+             baixada mostraria uma hora errada pro resto do dia. -->
+        <header class="tv-header">
+            <div class="tv-brand">
+                <img src="/assets/logo-transparent.png" alt="OLIMCAR" class="tv-logo">
+                <span class="tv-brand-text">OLIMCAR <strong>2026</strong></span>
+            </div>
+        </header>
+
+        <main class="tv-stage" id="tv-stage"></main>
+    </div>
+</body>
+</html>
