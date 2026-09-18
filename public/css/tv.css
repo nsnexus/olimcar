@@ -282,67 +282,122 @@ html, body {
     display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--color-text-muted); margin-top: 0.6rem;
 }
 
-/* ---------- TABELA COMPACTA (gerador de imagem do totem — cabe muito mais
-   jogo por tela que o card grande, usado só em admin/tv_imagens.js) ---------- */
+/* ---------- MINI-CARD (gerador de imagem do totem, admin/tv_imagens.js) ----------
+   Card com borda em vez de linha fina de tabela — precisa de fonte grande
+   pra ler numa tela pequena (278x556), então cabe MENOS jogo por imagem que
+   uma tabela crua, mas da pra ler de verdade. Quantos cabem por página é
+   calculado pela altura real (paginarPorAltura em tv_imagens.js). */
 .tv-table-jogos, .tv-table-placares {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    flex: 1;
+    min-height: 0;
+}
+.tv-row-jogo, .tv-row-placar {
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 0.55em 0.7em;
+    background: rgba(15, 46, 44, 0.45);
+    /* Fonte de sistema, não a de marca (Montserrat/Rajdhani via @font-face):
+       o html2canvas (gerador de imagem do totem) às vezes rasteriza webfont
+       customizada com um "fantasma" (glyph desenhado com métrica de uma
+       fonte e traço de outra). Fonte de sistema não tem esse problema, e
+       não faz falta — marca já tá no logo. */
+    font-family: -apple-system, Arial, sans-serif;
+}
+.tv-row-jogo-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5em;
+    margin-bottom: 0.3em;
+}
+.tv-row-hora {
+    flex-shrink: 0;
+    color: var(--color-primary-500);
+    font-weight: 800;
+    font-size: 1.15em;
+    line-height: 1.15;
+}
+.tv-row-mod {
+    flex: 1;
+    min-width: 0;
+    /* Sem nowrap/ellipsis/overflow:hidden de propósito: modalidade+fase têm
+       tamanho variável e cortar no meio da palavra (ou o bug do html2canvas
+       que desenha texto cortado sobreposto ao original com ellipsis) ficava
+       feio/ilegível. Deixa quebrar linha — a altura do card já é medida de
+       verdade depois (paginarPorAltura em tv_imagens.js), então uma linha a
+       mais só deixa ESSE card um pouco mais alto, nunca corta texto. */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: 0.68em;
+    line-height: 1.3;
+    color: var(--color-text-muted);
+}
+.tv-row-mod small { color: inherit; opacity: 0.85; font-weight: 500; text-transform: none; }
+.tv-row-times, .tv-row-placar-times {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4em;
+    overflow: hidden;
+    white-space: nowrap;
+    font-weight: 800;
+    font-size: 1.05em;
+}
+.tv-row-x { color: var(--color-text-muted); margin: 0 0.1em; font-weight: 400; }
+.tv-row-placar-score {
+    font-weight: 800;
+    color: var(--color-primary-500);
+    margin: 0 0.2em;
+}
+
+.tv-table-medalhas {
     display: flex;
     flex-direction: column;
     flex: 1;
     min-height: 0;
 }
-.tv-row-jogo, .tv-row-placar {
-    display: flex;
-    align-items: baseline;
-    gap: 0.6rem;
-    padding: 0.45rem 0.15rem;
-    border-bottom: 1px solid var(--color-border);
-    font-size: 0.95rem;
-    line-height: 1.25;
-    /* Fonte de sistema, não a de marca (Montserrat/Rajdhani via @font-face):
-       nesse tamanho bem pequeno (fonte compacta pra caber muito jogo por
-       imagem) o html2canvas rasteriza webfont customizada com um "fantasma"
-       (glyph desenhado com métrica de uma fonte e traço de outra). Fonte de
-       sistema não tem esse problema, e não faz falta — marca já tá no logo. */
-    font-family: -apple-system, Arial, sans-serif;
-}
-.tv-row-jogo:last-child, .tv-row-placar:last-child { border-bottom: none; }
-.tv-row-hora {
-    flex-shrink: 0;
-    min-width: 3em;
-    color: var(--color-primary-500);
-    font-weight: 700;
-}
-.tv-row-mod {
-    flex: 1;
-    min-width: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    font-weight: 600;
-}
-.tv-row-mod small { color: var(--color-text-muted); font-weight: 400; }
-/* Sem text-overflow:ellipsis de propósito: o html2canvas (gerador de imagem
-   do totem) tem bug conhecido que desenha o texto original E o cortado
-   sobrepostos quando o navegador aplica ellipsis. O corte "…" é feito na
-   marra em JS (truncar(), tv_render.js) antes de virar HTML — overflow:hidden
-   aqui é só uma rede de segurança, não deveria nem precisar cortar nada. */
-.tv-row-times, .tv-row-placar-times {
-    flex-shrink: 1;
-    min-width: 0;
-    max-width: 48%;
-    overflow: hidden;
+.tv-row-medalha {
     display: flex;
     align-items: center;
-    gap: 0.3em;
+    gap: 0.6rem;
+    padding: 0.5rem 0.15rem;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.95rem;
+    font-family: -apple-system, Arial, sans-serif;
+}
+.tv-row-medalha:last-child { border-bottom: none; }
+.tv-row-medalha-rank {
+    flex-shrink: 0;
+    min-width: 1.6em;
+    font-weight: 700;
+    color: var(--color-primary-500);
+}
+.tv-row-medalha-nome {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
     font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.tv-row-medalha-badges {
+    flex-shrink: 0;
     font-size: 0.85em;
     white-space: nowrap;
 }
-.tv-row-x { color: var(--color-text-muted); margin: 0 0.1em; }
-.tv-row-placar-score {
+.tv-row-medalha-pontos {
+    flex-shrink: 0;
+    min-width: 3.2em;
+    text-align: right;
     font-weight: 700;
     color: var(--color-primary-500);
-    margin: 0 0.15em;
 }
+.tv-row-medalha-pontos small { color: var(--color-text-muted); font-weight: 400; margin-left: 0.2em; }
 
 /* ---------- ESTADO VAZIO ---------- */
 .tv-empty {
@@ -758,18 +813,15 @@ body.tv--totem .tv-scores-grid {
     grid-template-columns: 1fr;
 }
 
-/* Tabela do gerador de imagem: fonte bem menor que o resto do totem de
-   propósito — é lida de perto (imagem impressa/tela pequena), não de
-   longe como o card grande do painel ao vivo, então dá pra caber MUITO
-   mais jogo por imagem sem virar 40 PNGs pro mesmo dia. */
+/* Mini-card do gerador de imagem: fonte um pouco menor que o resto do
+   totem (que usa fonte gigante pra ler de longe) — aqui é lido de perto
+   (imagem impressa/tela pequena), mas ainda precisa ser GRANDE o
+   suficiente pra ler mesmo (era pequena demais numa 1ª versão). */
 body.tv--totem .tv-row-jogo,
 body.tv--totem .tv-row-placar {
-    font-size: 0.6em;
-    padding: 0.4em 0.1em;
-    gap: 0.4em;
+    font-size: 0.85em;
 }
-body.tv--totem .tv-row-hora { min-width: 2.6em; }
-body.tv--totem .tv-team-dot { width: 0.6em; height: 0.6em; }
+body.tv--totem .tv-team-dot { width: 0.7em; height: 0.7em; }
 body.tv--totem .tv-game-card {
     flex: 1;
     flex-direction: column;

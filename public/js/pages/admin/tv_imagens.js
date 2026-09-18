@@ -5,14 +5,16 @@
 // <iframe> isolado no tamanho exato do totem, e "fotografa" cada página com
 // html2canvas. Alguém baixa os PNGs aqui e carrega no cartão do totem.
 import { getCollection, getDocument, sortByDateAndTime } from '../../services/db.js?v=20260917b';
+import { calcularRanking } from '../../pages/ranking.js?v=20260917b';
 import {
-    formatarDataBR, chunk,
-    renderTabelaJogos, renderJogosVazio,
-    renderTabelaPlacares, renderPlacaresVazio
+    formatarDataBR, chunk, paginarPorAltura,
+    criarLinhaJogoTabela, renderTabelaJogos, renderJogosVazio,
+    criarLinhaPlacarTabela, renderTabelaPlacares, renderPlacaresVazio,
+    renderTabelaMedalhas, renderMedalhasVazio
 } from '../../services/tv_render.js?v=20260917b';
 
 const RESOLUCAO = { largura: 278, altura: 556 }; // totem de LED (60cm x 2m) — ver tv.css
-const ITENS_POR_PAGINA = 10; // fixo (a pedido) em vez de calcular pela altura
+const ITENS_POR_PAGINA_MEDALHAS = 10; // lista curta (uma por equipe), fixo é suficiente
 
 export function renderTvImagensAdminPage() {
     setTimeout(carregarPagina, 100);
@@ -27,8 +29,8 @@ export function renderTvImagensAdminPage() {
             <p style="color: var(--color-text-muted); margin-bottom: 1.5rem; max-width: 640px;">
                 O totem físico não tem entrada HDMI nem navegador — só reproduz imagens de um
                 cartão/USB. Esta página gera PNGs prontos, no tamanho exato da tela
-                (${RESOLUCAO.largura} × ${RESOLUCAO.altura}px), com os jogos e placares de hoje.
-                Baixe e carregue no cartão do totem.
+                (${RESOLUCAO.largura} × ${RESOLUCAO.altura}px), com os jogos e placares de hoje e
+                o quadro de medalhas geral. Baixe e carregue no cartão do totem.
             </p>
 
             <div class="card" style="padding: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
@@ -114,8 +116,9 @@ async function gerarImagens() {
         await garantirHtml2Canvas();
 
         status.textContent = 'Carregando jogos de hoje...';
-        const [jogosBrutos, config] = await Promise.all([
+        const [jogosBrutos, equipes, config] = await Promise.all([
             getCollection('jogos', { force: true }),
+            getCollection('equipes'),
             getDocument('meta', 'tv_config')
         ]);
 
@@ -137,10 +140,12 @@ async function gerarImagens() {
         doc.body.classList.add('tv--totem');
         doc.documentElement.style.setProperty('--tv-escala', escala);
         await esperarPintura();
+        const stageEl = doc.getElementById('tv-stage');
 
         const imagens = [];
 
-        const paginasJogos = chunk(jogosHoje, ITENS_POR_PAGINA);
+        const tituloAmostraJogos = `<h2 class="tv-slide-title"><i data-lucide="calendar-days"></i> Jogos de Hoje<span class="tv-slide-subtitle">${hojeFmt} · página 1/1</span></h2>`;
+        const paginasJogos = paginarPorAltura(jogosHoje, criarLinhaJogoTabela, 'tv-table-jogos', tituloAmostraJogos, stageEl);
         if (paginasJogos.length === 0) {
             const blob = await capturarPagina(doc, renderJogosVazio(hojeFmt));
             imagens.push({ label: 'Jogos de hoje — nenhum jogo', arquivo: 'totem-jogos.png', blob });
@@ -152,7 +157,8 @@ async function gerarImagens() {
             }
         }
 
-        const paginasPlacares = chunk(placaresHoje, ITENS_POR_PAGINA);
+        const tituloAmostraPlacares = `<h2 class="tv-slide-title"><i data-lucide="trophy"></i> Placares de Hoje<span class="tv-slide-subtitle">página 1/1</span></h2>`;
+        const paginasPlacares = paginarPorAltura(placaresHoje, criarLinhaPlacarTabela, 'tv-table-placares', tituloAmostraPlacares, stageEl);
         if (paginasPlacares.length === 0) {
             const blob = await capturarPagina(doc, renderPlacaresVazio());
             imagens.push({ label: 'Placares de hoje — nenhum resultado', arquivo: 'totem-placares.png', blob });
@@ -161,6 +167,23 @@ async function gerarImagens() {
                 const html = renderTabelaPlacares(paginasPlacares[i], i + 1, paginasPlacares.length);
                 const blob = await capturarPagina(doc, html);
                 imagens.push({ label: `Placares — página ${i + 1}/${paginasPlacares.length}`, arquivo: `totem-placares-${i + 1}-de-${paginasPlacares.length}.png`, blob });
+            }
+        }
+
+        // Quadro de medalhas é geral (todos os jogos já encerrados, não só
+        // hoje) — mesmo critério do painel ao vivo (tv.js). Lista curta (uma
+        // linha por equipe), fixo em 10 basta sem precisar medir altura.
+        const { ranking, medalhasPorEquipe } = calcularRanking(jogos, equipes);
+        const itensMedalhas = ranking.map(([equipe, pontos], i) => ({ equipe, pontos, medalhas: medalhasPorEquipe[equipe], posicao: i + 1 }));
+        const paginasMedalhas = chunk(itensMedalhas, ITENS_POR_PAGINA_MEDALHAS);
+        if (paginasMedalhas.length === 0) {
+            const blob = await capturarPagina(doc, renderMedalhasVazio());
+            imagens.push({ label: 'Quadro de medalhas — pontuação em breve', arquivo: 'totem-medalhas.png', blob });
+        } else {
+            for (let i = 0; i < paginasMedalhas.length; i++) {
+                const html = renderTabelaMedalhas(paginasMedalhas[i], i + 1, paginasMedalhas.length);
+                const blob = await capturarPagina(doc, html);
+                imagens.push({ label: `Medalhas — página ${i + 1}/${paginasMedalhas.length}`, arquivo: `totem-medalhas-${i + 1}-de-${paginasMedalhas.length}.png`, blob });
             }
         }
 

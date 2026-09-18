@@ -147,17 +147,21 @@ export function renderJogos(pagina, indicePagina, totalPaginas, dataFmt) {
 export function criarLinhaJogoTabela(j) {
     const timeA = j.equipe_a?.nome || 'A Definir';
     const timeB = j.equipe_b?.nome || 'A Definir';
-    const modalidade = truncar(j.modalidade_texto, j.fase ? 18 : 26);
-    const fase = j.fase ? truncar(j.fase, 14) : '';
+    // Sem truncar modalidade/fase: a linha quebra pra 2ª linha se precisar
+    // (CSS: .tv-row-mod sem nowrap) em vez de cortar no meio da palavra —
+    // a altura do card é medida de verdade depois (paginarPorAltura), então
+    // uma linha a mais só deixa ESSE card um pouco maior, nunca corta texto.
     return `
         <div class="tv-row-jogo">
-            <span class="tv-row-hora">${j.horario || '--:--'}</span>
-            <span class="tv-row-mod">${modalidade}${fase ? `<small> · ${fase}</small>` : ''}</span>
-            <span class="tv-row-times">
-                <span class="tv-team-dot" style="background:${corEquipe(timeA)}"></span>${truncar(nomeCurto(timeA), 12)}
+            <div class="tv-row-jogo-top">
+                <span class="tv-row-hora">${j.horario || '--:--'}</span>
+                <span class="tv-row-mod">${j.modalidade_texto || ''}${j.fase ? `<small> · ${j.fase}</small>` : ''}</span>
+            </div>
+            <div class="tv-row-times">
+                <span class="tv-team-dot" style="background:${corEquipe(timeA)}"></span>${truncar(nomeCurto(timeA), 14)}
                 <span class="tv-row-x">×</span>
-                <span class="tv-team-dot" style="background:${corEquipe(timeB)}"></span>${truncar(nomeCurto(timeB), 12)}
-            </span>
+                <span class="tv-team-dot" style="background:${corEquipe(timeB)}"></span>${truncar(nomeCurto(timeB), 14)}
+            </div>
         </div>
     `;
 }
@@ -222,12 +226,14 @@ export function criarLinhaPlacarTabela(j) {
     const timeB = j.equipe_b?.nome || 'A Definir';
     return `
         <div class="tv-row-placar">
-            <span class="tv-row-mod">${j.modalidade_texto || ''}${j.fase ? `<small> · ${j.fase}</small>` : ''}</span>
-            <span class="tv-row-placar-times">
-                <span class="tv-team-dot" style="background:${corEquipe(timeA)}"></span>${nomeCurto(timeA)}
+            <div class="tv-row-jogo-top">
+                <span class="tv-row-mod">${j.modalidade_texto || ''}${j.fase ? `<small> · ${j.fase}</small>` : ''}</span>
+            </div>
+            <div class="tv-row-placar-times">
+                <span class="tv-team-dot" style="background:${corEquipe(timeA)}"></span>${truncar(nomeCurto(timeA), 12)}
                 <span class="tv-row-placar-score">${j.placar_a ?? 0} × ${j.placar_b ?? 0}</span>
-                <span class="tv-team-dot" style="background:${corEquipe(timeB)}"></span>${nomeCurto(timeB)}
-            </span>
+                <span class="tv-team-dot" style="background:${corEquipe(timeB)}"></span>${truncar(nomeCurto(timeB), 12)}
+            </div>
         </div>
     `;
 }
@@ -249,6 +255,42 @@ export function renderPlacaresVazio() {
             <i data-lucide="hourglass"></i>
             <div class="tv-empty-title">Nenhum resultado registrado ainda</div>
             <div class="tv-empty-text">Assim que os jogos forem encerrados, os placares aparecem aqui.</div>
+        </div>
+    `;
+}
+
+// ---------- TABELA: QUADRO DE MEDALHAS ----------
+// item = { equipe, pontos, medalhas: {1,2,3}, posicao } — monta esse
+// formato antes de chunkar (calcularRanking devolve tupla + mapa separado).
+export function criarLinhaMedalha(item) {
+    const medalhas = item.medalhas || {};
+    return `
+        <div class="tv-row-medalha">
+            <span class="tv-row-medalha-rank">${item.posicao}º</span>
+            <span class="tv-row-medalha-nome"><span class="tv-team-dot" style="background:${corEquipe(item.equipe)}"></span>${truncar(nomeCurto(item.equipe), 16)}</span>
+            <span class="tv-row-medalha-badges">🥇${medalhas[1] || 0} 🥈${medalhas[2] || 0} 🥉${medalhas[3] || 0}</span>
+            <span class="tv-row-medalha-pontos">${item.pontos}<small>pts</small></span>
+        </div>
+    `;
+}
+
+export function renderTabelaMedalhas(pagina, indicePagina, totalPaginas) {
+    const linhas = pagina.map(criarLinhaMedalha).join('');
+    return `
+        <h2 class="tv-slide-title"><i data-lucide="medal"></i> Quadro de Medalhas
+            <span class="tv-slide-subtitle">${totalPaginas > 1 ? `página ${indicePagina}/${totalPaginas}` : ''}</span>
+        </h2>
+        <div class="tv-table-medalhas">${linhas}</div>
+    `;
+}
+
+export function renderMedalhasVazio() {
+    return `
+        <h2 class="tv-slide-title"><i data-lucide="medal"></i> Quadro de Medalhas</h2>
+        <div class="tv-empty">
+            <i data-lucide="medal"></i>
+            <div class="tv-empty-title">Pontuação em breve</div>
+            <div class="tv-empty-text">O quadro é atualizado conforme os jogos vão sendo encerrados.</div>
         </div>
     `;
 }
