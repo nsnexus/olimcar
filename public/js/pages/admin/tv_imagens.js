@@ -4,7 +4,7 @@
 // o mesmo HTML/CSS do painel ao vivo (tv.css + tv_render.js) dentro de um
 // <iframe> isolado no tamanho exato do totem, e "fotografa" cada página com
 // html2canvas. Alguém baixa os PNGs aqui e carrega no cartão do totem.
-import { getCollection, getDocument, sortByDateAndTime } from '../../services/db.js?v=20260917b';
+import { getCollection, getDocument, getTabelaPontuacao, sortByDateAndTime } from '../../services/db.js?v=20260917b';
 import { calcularRanking } from '../../pages/ranking.js?v=20260917b';
 import {
     formatarDataBR, chunk, paginarPorAltura,
@@ -116,10 +116,11 @@ async function gerarImagens() {
         await garantirHtml2Canvas();
 
         status.textContent = 'Carregando jogos de hoje...';
-        const [jogosBrutos, equipes, config] = await Promise.all([
+        const [jogosBrutos, equipes, config, tabelaPontuacao] = await Promise.all([
             getCollection('jogos', { force: true }),
             getCollection('equipes'),
-            getDocument('meta', 'tv_config')
+            getDocument('meta', 'tv_config'),
+            getTabelaPontuacao()
         ]);
 
         const jogos = jogosBrutos.filter(j =>
@@ -173,7 +174,7 @@ async function gerarImagens() {
         // Quadro de medalhas é geral (todos os jogos já encerrados, não só
         // hoje) — mesmo critério do painel ao vivo (tv.js). Lista curta (uma
         // linha por equipe), fixo em 10 basta sem precisar medir altura.
-        const { ranking, medalhasPorEquipe } = calcularRanking(jogos, equipes);
+        const { ranking, medalhasPorEquipe } = calcularRanking(jogos, equipes, tabelaPontuacao);
         const itensMedalhas = ranking.map(([equipe, pontos], i) => ({ equipe, pontos, medalhas: medalhasPorEquipe[equipe], posicao: i + 1 }));
         const paginasMedalhas = chunk(itensMedalhas, ITENS_POR_PAGINA_MEDALHAS);
         if (paginasMedalhas.length === 0) {

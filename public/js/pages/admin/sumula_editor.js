@@ -1,5 +1,6 @@
 // public/js/pages/admin/sumula_editor.js
 import { getDocument, updateDocument, uploadEvidencia, getCollection } from '../../services/db.js?v=20260917b';
+import { avancarChaveEliminatoria } from '../../services/bracket.js?v=20260917b';
 
 let jogoAtual = null;
 
@@ -295,7 +296,22 @@ async function salvarSumula() {
     if (sucesso) {
         msg.style.color = 'var(--color-success)';
         msg.innerText = "Súmula oficializada com sucesso!";
-        setTimeout(() => { window.history.back(); }, 1500);
+
+        // Semifinal (JOGO 01/02) encerrada com vencedor definido: avança
+        // automaticamente pra FINAL (vencedor) e 3º LUGAR (perdedor) da
+        // mesma modalidade/data, se esses jogos existirem.
+        if (!isMultiEquipe) {
+            try {
+                const avanco = await avancarChaveEliminatoria({ ...jogoAtual, status, placar_a: placarA, placar_b: placarB });
+                if (avanco) {
+                    msg.innerText = `Súmula oficializada! ${avanco.vencedor} avançou pra Final, ${avanco.perdedor} vai pra disputa de 3º Lugar.`;
+                }
+            } catch (e) {
+                console.error('Erro ao avançar chave eliminatória:', e);
+            }
+        }
+
+        setTimeout(() => { window.history.back(); }, 1800);
     } else {
         msg.style.color = 'var(--color-danger)';
         msg.innerText = "Erro ao atualizar. Verifique sua permissão.";

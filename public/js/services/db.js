@@ -9,9 +9,32 @@ export const TABELA_PONTUACAO = {
     'coletivo':      { 1: 35, 2: 25, 3: 15 }, // Até 4 participantes
     'individual':    { 1: 25, 2: 15, 3: 10 },
     'recreativa':    { 1: 80, 2: 60, 3: 40, 4: 20 },
-    'doacao':        { 1: 100, 2: 75, 3: 50, 4: 25 },
+    // Regulamento (Art. 24, V): 40/25/15/0 pela colocação na arrecadação,
+    // + 80 pontos à parte pra quem bater a meta de 1 tonelada (bônus fixo,
+    // não modelado ainda — não há tela pra lançar kg arrecadado por equipe).
+    'doacao':        { 1: 40, 2: 25, 3: 15, 4: 0 },
     'corrida':       { 1: 80, 2: 60, 3: 40, conclusao: 1 } // +1 p/ cada conclusão
 };
+
+// Tabela de pontuação editável em admin/pontuacao.js (meta/tabela_pontuacao
+// no Firestore). Faz merge por categoria com o TABELA_PONTUACAO padrão
+// acima — se só a categoria X foi editada, as outras continuam no default,
+// e uma categoria/posição faltando no doc do Firestore não vira 0 nem some.
+export async function getTabelaPontuacao() {
+    let salva = null;
+    try {
+        salva = await getDocument('meta', 'tabela_pontuacao');
+    } catch (e) {
+        console.error('Erro ao ler meta/tabela_pontuacao:', e);
+    }
+    if (!salva) return TABELA_PONTUACAO;
+
+    const mesclada = {};
+    for (const categoria of Object.keys(TABELA_PONTUACAO)) {
+        mesclada[categoria] = { ...TABELA_PONTUACAO[categoria], ...(salva[categoria] || {}) };
+    }
+    return mesclada;
+}
 
 export const CATEGORIAS_PONTUACAO = {
     'coletivo_plus': 'I – Esportes coletivos (acima de 4 atletas)',

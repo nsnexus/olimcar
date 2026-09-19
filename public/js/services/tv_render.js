@@ -268,7 +268,7 @@ export function criarLinhaMedalha(item) {
         <div class="tv-row-medalha">
             <span class="tv-row-medalha-rank">${item.posicao}º</span>
             <span class="tv-row-medalha-nome"><span class="tv-team-dot" style="background:${corEquipe(item.equipe)}"></span>${truncar(nomeCurto(item.equipe), 16)}</span>
-            <span class="tv-row-medalha-badges">🥇${medalhas[1] || 0} 🥈${medalhas[2] || 0} 🥉${medalhas[3] || 0}</span>
+            <span class="tv-row-medalha-badges">🥇${medalhas[1] || 0} 🥈${medalhas[2] || 0} 🥉${medalhas[3] || 0} <small>4º ${medalhas[4] || 0}</small></span>
             <span class="tv-row-medalha-pontos">${item.pontos}<small>pts</small></span>
         </div>
     `;

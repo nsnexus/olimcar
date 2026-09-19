@@ -670,6 +670,7 @@
 .medal-gold { color: #d4af37; background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212,175,55,0.2); }
 .medal-silver { color: #718096; background: rgba(148, 163, 184, 0.1); border: 1px solid rgba(148,163,184,0.2); }
 .medal-bronze { color: #cd7f32; background: rgba(205, 127, 50, 0.1); border: 1px solid rgba(205,127,50,0.2); }
+.medal-fourth { color: var(--color-text-muted); background: rgba(148, 163, 184, 0.06); border: 1px solid var(--color-border); }
 .medal-badge svg { width: 14px; height: 14px; }
 
 .ranking-points {
@@ -779,12 +780,12 @@
 .hero__content {
   position: relative;
   z-index: 5;
-  max-width: 1320px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 120px 40px 60px;
   width: 100%;
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: 1fr;
   gap: 60px;
   align-items: center;
 }

@@ -1,4 +1,4 @@
-import { getCollection, TABELA_PONTUACAO, CATEGORIAS_PONTUACAO } from '../services/db.js?v=20260917b';
+import { getCollection, getTabelaPontuacao, TABELA_PONTUACAO, CATEGORIAS_PONTUACAO } from '../services/db.js?v=20260917b';
 
 const CORES_EQUIPE = {
     "Equipe Azul": "var(--color-info)",
@@ -7,11 +7,11 @@ const CORES_EQUIPE = {
     "Equipe Verde": "var(--color-success)"
 };
 
-function ehFinal(fase) {
+export function ehFinal(fase) {
     return (fase || '').trim().toUpperCase() === 'FINAL';
 }
 
-function ehTerceiroLugar(fase) {
+export function ehTerceiroLugar(fase) {
     const f = (fase || '').trim().toUpperCase();
     return f.includes('3') && f.includes('LUGAR');
 }
@@ -40,15 +40,17 @@ export function renderRankingPage() {
 }
 
 // Calcula pontuação e medalhas por equipe a partir dos jogos encerrados.
-// Reaproveitado pela página de Ranking e pelo Painel de TV.
-export function calcularRanking(jogos, equipesDB) {
+// Reaproveitado pela página de Ranking e pelo Painel de TV. `tabelaPontuacao`
+// é opcional (default = tabela fixa do código) — passe o resultado de
+// getTabelaPontuacao() pra usar os valores editados em admin/pontuacao.js.
+export function calcularRanking(jogos, equipesDB, tabelaPontuacao = TABELA_PONTUACAO) {
     const encerrados = jogos.filter(j => j.status === 'encerrado');
 
     const pontosPorEquipe = {};
     const medalhasPorEquipe = {};
     equipesDB.forEach(eq => {
         pontosPorEquipe[eq.nome] = 0;
-        medalhasPorEquipe[eq.nome] = { 1: 0, 2: 0, 3: 0 };
+        medalhasPorEquipe[eq.nome] = { 1: 0, 2: 0, 3: 0, 4: 0 };
     });
 
     let semCategoria = 0;
@@ -56,10 +58,10 @@ export function calcularRanking(jogos, equipesDB) {
 
     const somarPonto = (equipe, categoria, posicao) => {
         if (!(equipe in pontosPorEquipe)) return;
-        const pontos = TABELA_PONTUACAO[categoria]?.[posicao];
+        const pontos = tabelaPontuacao[categoria]?.[posicao];
         if (pontos === undefined) return;
         pontosPorEquipe[equipe] += pontos;
-        if (posicao <= 3) medalhasPorEquipe[equipe][posicao]++;
+        if (posicao <= 4) medalhasPorEquipe[equipe][posicao]++;
     };
 
     encerrados.forEach(jogo => {
@@ -73,7 +75,7 @@ export function calcularRanking(jogos, equipesDB) {
 
             // Corrida: +1 ponto por atleta que concluiu, além da colocação
             if (jogo.categoria === 'corrida' && jogo.conclusoes) {
-                const pontoConclusao = TABELA_PONTUACAO.corrida.conclusao;
+                const pontoConclusao = tabelaPontuacao.corrida.conclusao;
                 Object.entries(jogo.conclusoes).forEach(([equipe, qtd]) => {
                     if (equipe in pontosPorEquipe && qtd > 0) {
                         pontosPorEquipe[equipe] += qtd * pontoConclusao;
@@ -112,6 +114,80 @@ export function calcularRanking(jogos, equipesDB) {
     return { ranking, medalhasPorEquipe, avisos };
 }
 
+// Extrato linha-a-linha (1 jogo/prova encerrado = 1 linha) do que virou
+// pontuação e do que ficou de fora, pra conferência em admin/pontuacao.js —
+// mesma regra de cálculo do calcularRanking acima, só que explicando cada
+// caso em vez de só somar.
+export function gerarExtratoPontuacao(jogos, equipesDB, tabelaPontuacao = TABELA_PONTUACAO) {
+    const nomesEquipes = new Set(equipesDB.map(eq => eq.nome));
+    const encerrados = jogos.filter(j => j.status === 'encerrado');
+
+    const pontosDe = (categoria, posicao) => tabelaPontuacao[categoria]?.[posicao];
+
+    return encerrados.map(jogo => {
+        const linha = {
+            id: jogo.id,
+            modalidade: jogo.modalidade_texto || '(sem modalidade)',
+            fase: jogo.fase || '-',
+            categoria: jogo.categoria || null,
+            categoriaLabel: jogo.categoria ? (CATEGORIAS_PONTUACAO[jogo.categoria] || jogo.categoria) : null,
+            colocacoes: [],
+            aviso: null
+        };
+
+        if (!jogo.categoria) {
+            linha.aviso = 'Sem categoria de pontuação definida — não pontua.';
+            return linha;
+        }
+
+        if (jogo.colocacoes && Object.keys(jogo.colocacoes).length > 0) {
+            linha.colocacoes = Object.entries(jogo.colocacoes)
+                .filter(([equipe]) => nomesEquipes.has(equipe))
+                .map(([equipe, posicao]) => ({ posicao, equipe, pontos: pontosDe(jogo.categoria, posicao) ?? 0 }))
+                .sort((a, b) => a.posicao - b.posicao);
+
+            if (jogo.categoria === 'corrida' && jogo.conclusoes) {
+                const pontoConclusao = tabelaPontuacao.corrida.conclusao;
+                Object.entries(jogo.conclusoes).forEach(([equipe, qtd]) => {
+                    if (qtd > 0) {
+                        const existente = linha.colocacoes.find(c => c.equipe === equipe);
+                        const bonus = qtd * pontoConclusao;
+                        if (existente) existente.pontos += bonus;
+                        else linha.colocacoes.push({ posicao: null, equipe, pontos: bonus, obs: `+${bonus}pt por conclusão` });
+                    }
+                });
+            }
+            return linha;
+        }
+
+        const timeA = jogo.equipe_a?.nome;
+        const timeB = jogo.equipe_b?.nome;
+        const placarA = jogo.placar_a ?? 0;
+        const placarB = jogo.placar_b ?? 0;
+
+        if (placarA === placarB) {
+            linha.aviso = 'Empate — sem colocação definível, não pontua.';
+            return linha;
+        }
+
+        const vencedor = placarA > placarB ? timeA : timeB;
+        const perdedor = placarA > placarB ? timeB : timeA;
+
+        if (ehFinal(jogo.fase)) {
+            linha.colocacoes = [
+                { posicao: 1, equipe: vencedor, pontos: pontosDe(jogo.categoria, 1) ?? 0 },
+                { posicao: 2, equipe: perdedor, pontos: pontosDe(jogo.categoria, 2) ?? 0 }
+            ];
+        } else if (ehTerceiroLugar(jogo.fase)) {
+            linha.colocacoes = [{ posicao: 3, equipe: vencedor, pontos: pontosDe(jogo.categoria, 3) ?? 0 }];
+        } else {
+            linha.aviso = 'Fora de FINAL/3º Lugar — não pontua (só o resultado final da chave pontua).';
+        }
+
+        return linha;
+    });
+}
+
 async function loadRanking() {
     const loadingDiv = document.getElementById('ranking-loading');
     const conteudoDiv = document.getElementById('ranking-conteudo');
@@ -121,12 +197,13 @@ async function loadRanking() {
     if (!loadingDiv) return;
 
     try {
-        const [jogos, equipesDB] = await Promise.all([
+        const [jogos, equipesDB, tabelaPontuacao] = await Promise.all([
             getCollection('jogos'),
-            getCollection('equipes')
+            getCollection('equipes'),
+            getTabelaPontuacao()
         ]);
 
-        const { ranking, medalhasPorEquipe, avisos } = calcularRanking(jogos, equipesDB);
+        const { ranking, medalhasPorEquipe, avisos } = calcularRanking(jogos, equipesDB, tabelaPontuacao);
 
         if (ranking.length === 0) {
             listaDiv.innerHTML = `<div class="card" style="padding: 3rem; text-align: center; color: var(--color-text-muted);">
@@ -155,6 +232,7 @@ async function loadRanking() {
                                 <div class="medal-badge medal-gold"><i data-lucide="medal"></i> ${medalhas[1]}</div>
                                 <div class="medal-badge medal-silver"><i data-lucide="medal"></i> ${medalhas[2]}</div>
                                 <div class="medal-badge medal-bronze"><i data-lucide="medal"></i> ${medalhas[3]}</div>
+                                <div class="medal-badge medal-fourth" title="4º lugar">4º ${medalhas[4]}</div>
                             </div>
                             <div class="ranking-points">${pontos} <span style="font-size: 0.9rem; font-weight:600; color:var(--color-text-muted)">pts</span></div>
                         </div>

@@ -59,48 +59,6 @@ export function renderLandingPage() {
                 <div class="hero__stat"><span class="hero__stat-num" id="cd-inscritos">...</span><span class="hero__stat-label">Inscritos</span></div>
                 </div>
             </div>
-
-            <!-- COLUNA DIREITA - COUNTDOWN -->
-            <div class="hero__right">
-                <div class="countdown-card">
-                <div class="countdown-card__glow"></div>
-                <div class="countdown-card__header">
-                    <span class="live-tag"><span class="live-tag__pulse"></span>EM CONTAGEM</span>
-                    <h2 class="countdown-card__title">Os jogos começam em</h2>
-                </div>
-
-                <div class="countdown" id="countdown">
-                    <div class="cd-unit">
-                    <div class="cd-unit__box"><span id="cd-days">00</span></div>
-                    <span class="cd-unit__label">Dias</span>
-                    </div>
-                    <span class="cd-sep">:</span>
-                    <div class="cd-unit">
-                    <div class="cd-unit__box"><span id="cd-hours">00</span></div>
-                    <span class="cd-unit__label">Horas</span>
-                    </div>
-                    <span class="cd-sep">:</span>
-                    <div class="cd-unit">
-                    <div class="cd-unit__box"><span id="cd-mins">00</span></div>
-                    <span class="cd-unit__label">Min</span>
-                    </div>
-                    <span class="cd-sep">:</span>
-                    <div class="cd-unit">
-                    <div class="cd-unit__box"><span id="cd-secs">00</span></div>
-                    <span class="cd-unit__label">Seg</span>
-                    </div>
-                </div>
-
-                <div class="countdown-card__footer">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                    <span>19 de Setembro de 2026 · 08:00</span>
-                </div>
-
-                <div class="progress">
-                    <div class="progress__bar" id="progressBar"></div>
-                </div>
-                </div>
-            </div>
             </div>
 
             <!-- indicador de scroll -->

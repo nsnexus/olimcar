@@ -1,5 +1,5 @@
 // public/js/tv.js — Painel de TV (loop de jogos, placares, medalhas e vídeos)
-import { getCollection, getDocument, sortByDateAndTime } from './services/db.js?v=20260917b';
+import { getCollection, getDocument, getTabelaPontuacao, sortByDateAndTime } from './services/db.js?v=20260917b';
 import { calcularRanking } from './pages/ranking.js?v=20260917b';
 import {
     formatarDataBR, paginarPorAltura, corEquipe, nomeCurto,
@@ -62,8 +62,8 @@ function criarFolhas() {
 
 // ---------- RENDER: MEDALHAS ----------
 
-function renderMedalhas(jogos, equipes) {
-    const { ranking, medalhasPorEquipe } = calcularRanking(jogos, equipes);
+function renderMedalhas(jogos, equipes, tabelaPontuacao) {
+    const { ranking, medalhasPorEquipe } = calcularRanking(jogos, equipes, tabelaPontuacao);
 
     if (ranking.length === 0) {
         return `
@@ -94,6 +94,7 @@ function renderMedalhas(jogos, equipes) {
                     <span class="tv-medal-badge gold"><i data-lucide="medal"></i>${medalhas[1]}</span>
                     <span class="tv-medal-badge silver"><i data-lucide="medal"></i>${medalhas[2]}</span>
                     <span class="tv-medal-badge bronze"><i data-lucide="medal"></i>${medalhas[3]}</span>
+                    <span class="tv-medal-badge fourth">4º ${medalhas[4] || 0}</span>
                 </div>
                 <div class="tv-medal-points">${pontos} <span>pts</span></div>
             </div>
@@ -170,10 +171,11 @@ function renderLateralVideoPlacares(placaresHoje) {
 // ---------- MONTAGEM DA ROTAÇÃO ----------
 
 async function montarRotacao() {
-    const [jogosBrutos, equipes, videosCadastrados] = await Promise.all([
+    const [jogosBrutos, equipes, videosCadastrados, tabelaPontuacao] = await Promise.all([
         getCollection('jogos'),
         getCollection('equipes'),
-        getCollection('tv_videos')
+        getCollection('tv_videos'),
+        getTabelaPontuacao()
     ]);
     const VIDEOS = videosCadastrados
         .slice()
@@ -214,7 +216,7 @@ async function montarRotacao() {
         });
     }
 
-    slides.push({ tipo: 'medalhas', html: renderMedalhas(jogos, equipes), duracao: DURACAO_MEDALHAS_MS });
+    slides.push({ tipo: 'medalhas', html: renderMedalhas(jogos, equipes, tabelaPontuacao), duracao: DURACAO_MEDALHAS_MS });
 
     const videoSideEsquerda = renderLateralVideoJogos(jogosHoje);
     const videoSideDireita = renderLateralVideoPlacares(placaresHoje);

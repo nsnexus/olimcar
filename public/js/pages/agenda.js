@@ -117,13 +117,15 @@ async function loadAgenda() {
     try {
         const jogosBrutos = await getCollection('jogos');
         
-        // Filtrar possíveis lixos de cabeçalho (Excel import error)
-        todosJogos = jogosBrutos.filter(j => 
-            j.modalidade_texto && 
+        // Filtrar possíveis lixos de cabeçalho (Excel import error) e jogos já
+        // encerrados — resultado já lançado sai da agenda (fica só em Resultados).
+        todosJogos = jogosBrutos.filter(j =>
+            j.modalidade_texto &&
             j.modalidade_texto.toUpperCase() !== 'MODALIDADE' &&
-            j.data_jogo && 
+            j.data_jogo &&
             j.data_jogo.toUpperCase() !== 'DATA' &&
-            j.data_jogo.trim() !== ''
+            j.data_jogo.trim() !== '' &&
+            j.status !== 'encerrado'
         );
         
         if (todosJogos.length === 0) {

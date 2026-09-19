@@ -18,6 +18,7 @@ import { renderRegulamentoPage } from './pages/regulamento.js?v=20260917b';
 import { renderRegulamentosAdminPage } from './pages/admin/regulamentos.js?v=20260917b';
 import { renderTvVideosAdminPage } from './pages/admin/tv_videos.js?v=20260917b';
 import { renderTvImagensAdminPage } from './pages/admin/tv_imagens.js?v=20260917b';
+import { renderPontuacaoAdminPage } from './pages/admin/pontuacao.js?v=20260917b';
 import { renderMinhasInscricoesPage } from './pages/minhas_inscricoes.js?v=20260917b';
 import { loginUser, logoutUser, currentUser, authResolved } from './auth.js?v=20260917b';
 import { seedInitialData, getCollectionCount } from './services/db.js?v=20260917b';
@@ -55,6 +56,7 @@ const routes = {
     '/admin/regulamentos': renderRegulamentosAdminPage,
     '/admin/tv-videos': renderTvVideosAdminPage,
     '/admin/tv-imagens': renderTvImagensAdminPage,
+    '/admin/pontuacao': renderPontuacaoAdminPage,
     '/sobre': renderSobrePage,
     '/termos': renderTermosPage,
     '/privacidade': () => `
@@ -144,69 +146,6 @@ function router() {
             modalTeaser.addEventListener('click', (e) => {
                 if (e.target === modalTeaser) closeModal();
             });
-        }
-
-        // Lógica do Countdown e Progress Bar
-        const countdownElement = document.getElementById('countdown');
-        if (countdownElement) {
-            const TARGET = new Date('2026-09-19T08:00:00-03:00').getTime();
-            const START = new Date('2026-06-01T00:00:00-03:00').getTime();
-
-            const els = {
-                days: document.getElementById("cd-days"),
-                hours: document.getElementById("cd-hours"),
-                mins: document.getElementById("cd-mins"),
-                secs: document.getElementById("cd-secs"),
-                bar: document.getElementById("progressBar")
-            };
-
-            const pad = (n) => n < 10 ? "0" + n : "" + n;
-
-            const setUnit = (el, value) => {
-                const txt = pad(value);
-                if (el.textContent !== txt) {
-                    el.textContent = txt;
-                    const box = el.parentElement;
-                    box.classList.remove("flip");
-                    void box.offsetWidth;
-                    box.classList.add("flip");
-                }
-            };
-
-            const tick = () => {
-                if (!document.getElementById('countdown')) return; // se saiu da página
-
-                const now = Date.now();
-                const diff = TARGET - now;
-
-                if (diff <= 0) {
-                    setUnit(els.days, 0); setUnit(els.hours, 0);
-                    setUnit(els.mins, 0); setUnit(els.secs, 0);
-                    if (els.bar) els.bar.style.width = "100%";
-                    return;
-                }
-
-                const d = Math.floor(diff / 86400000);
-                const h = Math.floor((diff % 86400000) / 3600000);
-                const m = Math.floor((diff % 3600000) / 60000);
-                const s = Math.floor((diff % 60000) / 1000);
-
-                setUnit(els.days, d);
-                setUnit(els.hours, h);
-                setUnit(els.mins, m);
-                setUnit(els.secs, s);
-
-                if (els.bar) {
-                    const total = TARGET - START;
-                    const done = now - START;
-                    const pct = Math.max(0, Math.min(100, (done / total) * 100));
-                    els.bar.style.width = pct.toFixed(1) + "%";
-                }
-                
-                setTimeout(tick, 1000);
-            };
-
-            tick();
         }
 
         // Folhas flutuantes
