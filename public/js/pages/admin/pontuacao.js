@@ -140,18 +140,22 @@ function renderFormTabelaPontos() {
                         <th style="text-align:center;">2º</th>
                         <th style="text-align:center;">3º</th>
                         <th style="text-align:center;">4º</th>
-                        ${'corrida' in tabelaPontuacaoCache ? '<th style="text-align:center;">Por conclusão</th>' : ''}
+                        <th style="text-align:center;">Por conclusão</th>
+                        <th style="text-align:center;">Meta (kg)</th>
+                        <th style="text-align:center;">Bônus meta</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${Object.entries(CATEGORIAS_PONTUACAO).map(([chave, label]) => {
                         const valores = tabelaPontuacaoCache[chave] || {};
-                        const campo = (pos) => `<td style="text-align:center;"><input type="number" class="form-control input-ponto" data-categoria="${chave}" data-posicao="${pos}" value="${valores[pos] ?? ''}" style="width:70px; text-align:center; padding:0.4rem;"></td>`;
+                        const campo = (posicao, largura = 70) => `<td style="text-align:center;"><input type="number" class="form-control input-ponto" data-categoria="${chave}" data-posicao="${posicao}" value="${valores[posicao] ?? ''}" style="width:${largura}px; text-align:center; padding:0.4rem;"></td>`;
                         return `
                             <tr>
                                 <td style="font-size:0.9rem;">${label}</td>
                                 ${campo(1)}${campo(2)}${campo(3)}${campo(4)}
-                                ${chave === 'corrida' ? `<td style="text-align:center;"><input type="number" class="form-control input-ponto" data-categoria="corrida" data-posicao="conclusao" value="${valores.conclusao ?? ''}" style="width:70px; text-align:center; padding:0.4rem;"></td>` : (('corrida' in tabelaPontuacaoCache) ? '<td></td>' : '')}
+                                ${chave === 'corrida' ? campo('conclusao') : '<td></td>'}
+                                ${chave === 'doacao' ? campo('meta_kg', 85) : '<td></td>'}
+                                ${chave === 'doacao' ? campo('bonus_meta') : '<td></td>'}
                             </tr>
                         `;
                     }).join('')}

@@ -76,6 +76,14 @@ export function renderDashboardPage() {
                         <p style="font-size: 0.78rem; color: var(--color-text-muted); margin: 0.1rem 0 0;">Categoria, colocação e pontos jogo a jogo</p>
                     </div>
                 </div>
+
+                <div class="card" onclick="window.location.hash='/admin/doacao'" style="padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 0.9rem; cursor: pointer;">
+                    <i data-lucide="heart-handshake" style="width: 26px; height: 26px; color: var(--color-danger); flex-shrink: 0;"></i>
+                    <div style="min-width: 0;">
+                        <h3 style="font-size: 0.95rem; margin: 0;">Arrecadação de Alimentos</h3>
+                        <p style="font-size: 0.78rem; color: var(--color-text-muted); margin: 0.1rem 0 0;">Lançar kg por equipe e ver colocação</p>
+                    </div>
+                </div>
             </div>
 
             <!-- NAVEGAÇÃO POR ABAS -->

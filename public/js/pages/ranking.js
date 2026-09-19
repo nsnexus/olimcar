@@ -82,6 +82,17 @@ export function calcularRanking(jogos, equipesDB, tabelaPontuacao = TABELA_PONTU
                     }
                 });
             }
+
+            // Doação: bônus fixo à parte da colocação pra quem bateu a meta
+            // de kg arrecadado (Art. 24, V) — independe de ser 1º ou 4º lugar.
+            if (jogo.categoria === 'doacao' && jogo.kg_arrecadado) {
+                const { meta_kg, bonus_meta } = tabelaPontuacao.doacao;
+                Object.entries(jogo.kg_arrecadado).forEach(([equipe, kg]) => {
+                    if (equipe in pontosPorEquipe && kg >= meta_kg) {
+                        pontosPorEquipe[equipe] += bonus_meta;
+                    }
+                });
+            }
             return;
         }
 
@@ -154,6 +165,17 @@ export function gerarExtratoPontuacao(jogos, equipesDB, tabelaPontuacao = TABELA
                         const bonus = qtd * pontoConclusao;
                         if (existente) existente.pontos += bonus;
                         else linha.colocacoes.push({ posicao: null, equipe, pontos: bonus, obs: `+${bonus}pt por conclusão` });
+                    }
+                });
+            }
+
+            if (jogo.categoria === 'doacao' && jogo.kg_arrecadado) {
+                const { meta_kg, bonus_meta } = tabelaPontuacao.doacao;
+                Object.entries(jogo.kg_arrecadado).forEach(([equipe, kg]) => {
+                    if (kg >= meta_kg) {
+                        const existente = linha.colocacoes.find(c => c.equipe === equipe);
+                        if (existente) existente.pontos += bonus_meta;
+                        else linha.colocacoes.push({ posicao: null, equipe, pontos: bonus_meta, obs: `bateu meta de ${meta_kg}kg` });
                     }
                 });
             }

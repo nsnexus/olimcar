@@ -10,9 +10,9 @@ export const TABELA_PONTUACAO = {
     'individual':    { 1: 25, 2: 15, 3: 10 },
     'recreativa':    { 1: 80, 2: 60, 3: 40, 4: 20 },
     // Regulamento (Art. 24, V): 40/25/15/0 pela colocação na arrecadação,
-    // + 80 pontos à parte pra quem bater a meta de 1 tonelada (bônus fixo,
-    // não modelado ainda — não há tela pra lançar kg arrecadado por equipe).
-    'doacao':        { 1: 40, 2: 25, 3: 15, 4: 0 },
+    // + bônus fixo (meta_kg/bonus_meta) pra quem bater a meta de 1 tonelada,
+    // à parte da colocação — ver admin/doacao.js.
+    'doacao':        { 1: 40, 2: 25, 3: 15, 4: 0, meta_kg: 1000, bonus_meta: 80 },
     'corrida':       { 1: 80, 2: 60, 3: 40, conclusao: 1 } // +1 p/ cada conclusão
 };
 

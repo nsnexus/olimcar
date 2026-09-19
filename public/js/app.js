@@ -19,6 +19,7 @@ import { renderRegulamentosAdminPage } from './pages/admin/regulamentos.js?v=202
 import { renderTvVideosAdminPage } from './pages/admin/tv_videos.js?v=20260917b';
 import { renderTvImagensAdminPage } from './pages/admin/tv_imagens.js?v=20260917b';
 import { renderPontuacaoAdminPage } from './pages/admin/pontuacao.js?v=20260917b';
+import { renderDoacaoAdminPage } from './pages/admin/doacao.js?v=20260917b';
 import { renderMinhasInscricoesPage } from './pages/minhas_inscricoes.js?v=20260917b';
 import { loginUser, logoutUser, currentUser, authResolved } from './auth.js?v=20260917b';
 import { seedInitialData, getCollectionCount } from './services/db.js?v=20260917b';
@@ -57,6 +58,7 @@ const routes = {
     '/admin/tv-videos': renderTvVideosAdminPage,
     '/admin/tv-imagens': renderTvImagensAdminPage,
     '/admin/pontuacao': renderPontuacaoAdminPage,
+    '/admin/doacao': renderDoacaoAdminPage,
     '/sobre': renderSobrePage,
     '/termos': renderTermosPage,
     '/privacidade': () => `
