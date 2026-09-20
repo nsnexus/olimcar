@@ -226,6 +226,7 @@ async function loadRanking() {
         ]);
 
         const { ranking, medalhasPorEquipe, avisos } = calcularRanking(jogos, equipesDB, tabelaPontuacao);
+        const extrato = gerarExtratoPontuacao(jogos, equipesDB, tabelaPontuacao);
 
         if (ranking.length === 0) {
             listaDiv.innerHTML = `<div class="card" style="padding: 3rem; text-align: center; color: var(--color-text-muted);">
@@ -239,7 +240,22 @@ async function loadRanking() {
                 const largura = (pontos / maxPontos) * 100;
                 const position = i + 1;
                 const rankClass = position <= 3 ? `rank-${position}` : '';
-                
+                const idSeguro = equipe.replace(/\s+/g, '-');
+
+                const linhasEquipe = extrato
+                    .flatMap(l => l.colocacoes.filter(c => c.equipe === equipe).map(c => ({ ...c, modalidade: l.modalidade, fase: l.fase })))
+                    .sort((a, b) => (a.posicao ?? 99) - (b.posicao ?? 99));
+
+                const detalheHTML = linhasEquipe.length > 0
+                    ? linhasEquipe.map(l => `
+                        <div style="display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0; border-bottom:1px solid var(--color-border); font-size:0.88rem;">
+                            <strong style="min-width:2em; color:${cor};">${l.posicao ? l.posicao + 'º' : '+'}</strong>
+                            <span style="flex:1; min-width:0;">${l.modalidade}<span style="color:var(--color-text-muted);"> · ${l.fase}</span></span>
+                            <strong style="color:var(--color-primary-600);">+${l.pontos}pt</strong>
+                        </div>
+                    `).join('')
+                    : `<p style="color:var(--color-text-muted); font-size:0.88rem; padding:0.5rem 0;">Nenhum ponto ainda.</p>`;
+
                 return `
                 <div class="ranking-card ${rankClass}" style="animation-delay: ${i * 0.1}s">
                     <div class="ranking-header">
@@ -248,7 +264,7 @@ async function loadRanking() {
                             <span class="team-color-dot" style="background: ${cor};"></span>
                             <span class="team-name">${equipe.replace(/^Equipe\s+/i, '')}</span>
                         </div>
-                        
+
                         <div class="ranking-stats">
                             <div class="medals-container">
                                 <div class="medal-badge medal-gold"><i data-lucide="medal"></i> ${medalhas[1]}</div>
@@ -259,13 +275,32 @@ async function loadRanking() {
                             <div class="ranking-points">${pontos} <span style="font-size: 0.9rem; font-weight:600; color:var(--color-text-muted)">pts</span></div>
                         </div>
                     </div>
-                    
+
                     <div class="ranking-progress-bg">
                         <div class="ranking-progress-fill" style="width: ${largura}%; background: ${cor};"></div>
+                    </div>
+
+                    <button type="button" class="btn btn-outline btn-detalhe-ranking" data-alvo="detalhe-${idSeguro}" style="margin-top: 1rem; font-size: 0.85rem; padding: 0.45rem 0.9rem;">
+                        <i data-lucide="chevron-down"></i> Ver detalhamento
+                    </button>
+                    <div id="detalhe-${idSeguro}" style="display:none; margin-top: 0.75rem;">
+                        ${detalheHTML}
                     </div>
                 </div>
                 `;
             }).join('');
+
+            listaDiv.querySelectorAll('.btn-detalhe-ranking').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const alvo = document.getElementById(btn.dataset.alvo);
+                    const aberto = alvo.style.display !== 'none';
+                    alvo.style.display = aberto ? 'none' : 'block';
+                    btn.innerHTML = aberto
+                        ? '<i data-lucide="chevron-down"></i> Ver detalhamento'
+                        : '<i data-lucide="chevron-up"></i> Esconder detalhamento';
+                    if (window.lucide) window.lucide.createIcons();
+                });
+            });
         }
 
         if (avisos.length > 0) {
