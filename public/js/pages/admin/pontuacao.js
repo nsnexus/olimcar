@@ -53,6 +53,9 @@ export function renderPontuacaoAdminPage() {
             <div id="pontuacao-resumo" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;"></div>
 
             <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                <select id="filtro-modalidade-pont" class="form-control" style="width: auto; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--color-border);">
+                    <option value="">Todas as modalidades</option>
+                </select>
                 <select id="filtro-categoria-pont" class="form-control" style="width: auto; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--color-border);">
                     <option value="">Todas as categorias</option>
                 </select>
@@ -106,6 +109,7 @@ async function carregarPagina() {
 
         recalcular();
 
+        document.getElementById('filtro-modalidade-pont').addEventListener('change', renderTabela);
         document.getElementById('filtro-categoria-pont').addEventListener('change', renderTabela);
         document.getElementById('filtro-so-problemas').addEventListener('change', renderTabela);
 
@@ -124,6 +128,7 @@ function recalcular() {
     const { ranking } = calcularRanking(jogosCache, equipesCache, tabelaPontuacaoCache);
     extratoCache = gerarExtratoPontuacao(jogosCache, equipesCache, tabelaPontuacaoCache);
     renderResumo(ranking);
+    preencherFiltroModalidade();
     preencherFiltroCategoria();
     renderTabela();
 }
@@ -212,6 +217,15 @@ function renderResumo(ranking) {
     `).join('');
 }
 
+function preencherFiltroModalidade() {
+    const select = document.getElementById('filtro-modalidade-pont');
+    const valorAtual = select.value;
+    select.innerHTML = '<option value="">Todas as modalidades</option>';
+    const modalidades = [...new Set(extratoCache.map(l => l.modalidade).filter(Boolean))].sort();
+    modalidades.forEach(m => select.add(new Option(m, m)));
+    select.value = valorAtual;
+}
+
 function preencherFiltroCategoria() {
     const select = document.getElementById('filtro-categoria-pont');
     const valorAtual = select.value;
@@ -223,10 +237,12 @@ function preencherFiltroCategoria() {
 
 function renderTabela() {
     const tbody = document.getElementById('pontuacao-lista');
+    const valModalidade = document.getElementById('filtro-modalidade-pont').value;
     const valCategoria = document.getElementById('filtro-categoria-pont').value;
     const soProblemas = document.getElementById('filtro-so-problemas').checked;
 
     const linhas = extratoCache.filter(l => {
+        if (valModalidade && l.modalidade !== valModalidade) return false;
         if (valCategoria && l.categoriaLabel !== valCategoria) return false;
         if (soProblemas && !l.aviso) return false;
         return true;
