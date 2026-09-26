@@ -48,9 +48,11 @@ export function calcularRanking(jogos, equipesDB, tabelaPontuacao = TABELA_PONTU
 
     const pontosPorEquipe = {};
     const medalhasPorEquipe = {};
+    const desempatePorEquipe = {};
     equipesDB.forEach(eq => {
         pontosPorEquipe[eq.nome] = 0;
         medalhasPorEquipe[eq.nome] = { 1: 0, 2: 0, 3: 0, 4: 0 };
+        desempatePorEquipe[eq.nome] = 0;
     });
 
     let semCategoria = 0;
@@ -82,12 +84,14 @@ export function calcularRanking(jogos, equipesDB, tabelaPontuacao = TABELA_PONTU
                 });
             }
 
-            // Corrida: +1 ponto por atleta que concluiu, além da colocação
+            // Corrida: atletas que concluíram NÃO somam ponto de verdade —
+            // só serve de critério de desempate quando duas equipes empatam
+            // no total (equipe com mais conclusões fica na frente).
             if (jogo.categoria === 'corrida' && jogo.conclusoes) {
-                const pontoConclusao = tabelaPontuacao.corrida.conclusao;
+                const pesoConclusao = tabelaPontuacao.corrida.conclusao;
                 Object.entries(jogo.conclusoes).forEach(([equipe, qtd]) => {
-                    if (equipe in pontosPorEquipe && qtd > 0) {
-                        pontosPorEquipe[equipe] += qtd * pontoConclusao;
+                    if (equipe in desempatePorEquipe && qtd > 0) {
+                        desempatePorEquipe[equipe] += qtd * pesoConclusao;
                     }
                 });
             }
@@ -126,12 +130,18 @@ export function calcularRanking(jogos, equipesDB, tabelaPontuacao = TABELA_PONTU
         }
     });
 
-    const ranking = Object.entries(pontosPorEquipe).sort((a, b) => b[1] - a[1]);
+    // Empate no total de pontos: desempata por quem teve mais atletas
+    // concluindo corridas (desempatePorEquipe) — nunca decide sozinho,
+    // só entra quando os pontos de verdade já empataram.
+    const ranking = Object.entries(pontosPorEquipe).sort((a, b) => {
+        if (b[1] !== a[1]) return b[1] - a[1];
+        return (desempatePorEquipe[b[0]] || 0) - (desempatePorEquipe[a[0]] || 0);
+    });
     const avisos = [];
     if (semCategoria > 0) avisos.push(`${semCategoria} jogo(s) encerrado(s) sem categoria de pontuação definida (edite em Agenda/Jogo para incluir).`);
     if (ignoradosPorFase > 0) avisos.push(`${ignoradosPorFase} confronto(s) fora de FINAL/3º Lugar (ou empatado) não geram pontos, só a colocação final pontua.`);
 
-    return { ranking, medalhasPorEquipe, avisos };
+    return { ranking, medalhasPorEquipe, avisos, desempatePorEquipe };
 }
 
 // Extrato linha-a-linha (1 jogo/prova encerrado = 1 linha) do que virou
@@ -175,18 +185,17 @@ export function gerarExtratoPontuacao(jogos, equipesDB, tabelaPontuacao = TABELA
                     .sort((a, b) => a.posicao - b.posicao);
             }
 
+            // Não soma ponto de verdade — só serve de critério de desempate
+            // (ver calcularRanking). Mostra aqui só pra ficar rastreável.
             if (jogo.categoria === 'corrida' && jogo.conclusoes) {
-                const pontoConclusao = tabelaPontuacao.corrida.conclusao;
                 Object.entries(jogo.conclusoes).forEach(([equipe, qtd]) => {
                     if (qtd > 0) {
                         const existente = linha.colocacoes.find(c => c.equipe === equipe);
-                        const bonus = qtd * pontoConclusao;
-                        const nota = qtd > 1 ? `${qtd} atletas concluíram (+${bonus}pt)` : `1 atleta concluiu (+${bonus}pt)`;
+                        const nota = qtd > 1 ? `${qtd} atletas concluíram (desempate)` : `1 atleta concluiu (desempate)`;
                         if (existente) {
-                            existente.pontos += bonus;
                             existente.obs = existente.obs ? `${existente.obs}; ${nota}` : nota;
                         } else {
-                            linha.colocacoes.push({ posicao: null, equipe, pontos: bonus, obs: nota });
+                            linha.colocacoes.push({ posicao: null, equipe, pontos: 0, obs: nota });
                         }
                     }
                 });

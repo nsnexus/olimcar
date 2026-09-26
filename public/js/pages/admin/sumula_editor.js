@@ -58,7 +58,7 @@ export function renderSumulaEditorPage() {
                         <p id="msg-colocacoes" style="color: var(--color-danger); font-size: 0.85rem; margin-top: 1rem; display: none;">Cada equipe precisa de uma colocação diferente (1º a 4º).</p>
 
                         <div id="bloco-conclusoes" style="display: none; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border);">
-                            <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Quantos atletas de cada equipe concluíram a corrida (+1 ponto cada):</p>
+                            <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Quantos atletas de cada equipe concluíram a corrida (não soma ponto — só desempata se duas equipes empatarem no total):</p>
                             <div id="lista-conclusoes" style="display: flex; flex-direction: column; gap: 0.75rem;">
                                 <!-- Injetado via JS -->
                             </div>
