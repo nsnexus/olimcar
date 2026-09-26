@@ -68,10 +68,19 @@ export function calcularRanking(jogos, equipesDB, tabelaPontuacao = TABELA_PONTU
         if (!jogo.categoria) { semCategoria++; return; }
 
         if (jogo.colocacoes && Object.keys(jogo.colocacoes).length > 0) {
-            // Prova com todas as equipes de uma vez
-            Object.entries(jogo.colocacoes).forEach(([equipe, posicao]) => {
-                somarPonto(equipe, jogo.categoria, posicao);
-            });
+            if (jogo.categoria === 'corrida') {
+                // Corrida: colocacoes é {posicao: equipe} (invertido) — várias
+                // pessoas correm, então a MESMA equipe pode ficar em mais de
+                // uma posição (ex: dois atletas dela chegam 1º e 2º juntos).
+                Object.entries(jogo.colocacoes).forEach(([posicao, equipe]) => {
+                    somarPonto(equipe, jogo.categoria, Number(posicao));
+                });
+            } else {
+                // Demais PROVAs: colocacoes é {equipe: posicao}, uma por equipe
+                Object.entries(jogo.colocacoes).forEach(([equipe, posicao]) => {
+                    somarPonto(equipe, jogo.categoria, posicao);
+                });
+            }
 
             // Corrida: +1 ponto por atleta que concluiu, além da colocação
             if (jogo.categoria === 'corrida' && jogo.conclusoes) {
@@ -152,10 +161,19 @@ export function gerarExtratoPontuacao(jogos, equipesDB, tabelaPontuacao = TABELA
         }
 
         if (jogo.colocacoes && Object.keys(jogo.colocacoes).length > 0) {
-            linha.colocacoes = Object.entries(jogo.colocacoes)
-                .filter(([equipe]) => nomesEquipes.has(equipe))
-                .map(([equipe, posicao]) => ({ posicao, equipe, pontos: pontosDe(jogo.categoria, posicao) ?? 0 }))
-                .sort((a, b) => a.posicao - b.posicao);
+            if (jogo.categoria === 'corrida') {
+                // colocacoes é {posicao: equipe} aqui — mesma equipe pode
+                // repetir em mais de uma posição (várias pessoas correndo).
+                linha.colocacoes = Object.entries(jogo.colocacoes)
+                    .map(([posicao, equipe]) => ({ posicao: Number(posicao), equipe, pontos: pontosDe(jogo.categoria, Number(posicao)) ?? 0 }))
+                    .filter(c => nomesEquipes.has(c.equipe))
+                    .sort((a, b) => a.posicao - b.posicao);
+            } else {
+                linha.colocacoes = Object.entries(jogo.colocacoes)
+                    .filter(([equipe]) => nomesEquipes.has(equipe))
+                    .map(([equipe, posicao]) => ({ posicao, equipe, pontos: pontosDe(jogo.categoria, posicao) ?? 0 }))
+                    .sort((a, b) => a.posicao - b.posicao);
+            }
 
             if (jogo.categoria === 'corrida' && jogo.conclusoes) {
                 const pontoConclusao = tabelaPontuacao.corrida.conclusao;
@@ -163,8 +181,13 @@ export function gerarExtratoPontuacao(jogos, equipesDB, tabelaPontuacao = TABELA
                     if (qtd > 0) {
                         const existente = linha.colocacoes.find(c => c.equipe === equipe);
                         const bonus = qtd * pontoConclusao;
-                        if (existente) existente.pontos += bonus;
-                        else linha.colocacoes.push({ posicao: null, equipe, pontos: bonus, obs: `+${bonus}pt por conclusão` });
+                        const nota = qtd > 1 ? `${qtd} atletas concluíram (+${bonus}pt)` : `1 atleta concluiu (+${bonus}pt)`;
+                        if (existente) {
+                            existente.pontos += bonus;
+                            existente.obs = existente.obs ? `${existente.obs}; ${nota}` : nota;
+                        } else {
+                            linha.colocacoes.push({ posicao: null, equipe, pontos: bonus, obs: nota });
+                        }
                     }
                 });
             }

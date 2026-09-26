@@ -51,7 +51,7 @@ export function renderSumulaEditorPage() {
                     </div>
 
                     <div id="bloco-prova" style="display: none; margin-bottom: 2.5rem; background: var(--color-bg-body); padding: 2rem; border-radius: var(--radius-md);">
-                        <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Prova disputada por todas as equipes ao mesmo tempo. Defina a colocação final de cada uma:</p>
+                        <p id="lbl-prova-instrucao" style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Prova disputada por todas as equipes ao mesmo tempo. Defina a colocação final de cada uma:</p>
                         <div id="lista-colocacoes" style="display: flex; flex-direction: column; gap: 0.75rem;">
                             <!-- Injetado via JS -->
                         </div>
@@ -136,7 +136,17 @@ async function loadSumulaData() {
     if (isMultiEquipe) {
         document.getElementById('bloco-confronto').style.display = 'none';
         document.getElementById('bloco-prova').style.display = 'block';
-        await popularColocacoes(jogoAtual.colocacoes || {});
+
+        const msgColocacoes = document.getElementById('msg-colocacoes');
+        if (isCorrida) {
+            document.getElementById('lbl-prova-instrucao').innerText = 'Corrida com várias pessoas — a mesma equipe pode ficar em mais de uma colocação. Só existe até 3º lugar:';
+            msgColocacoes.innerText = 'Defina quem ficou em 1º, 2º e 3º lugar.';
+            await popularColocacoesCorrida(jogoAtual.colocacoes || {});
+        } else {
+            document.getElementById('lbl-prova-instrucao').innerText = 'Prova disputada por todas as equipes ao mesmo tempo. Defina a colocação final de cada uma:';
+            msgColocacoes.innerText = 'Cada equipe precisa de uma colocação diferente (1º a 4º).';
+            await popularColocacoes(jogoAtual.colocacoes || {});
+        }
 
         document.getElementById('bloco-conclusoes').style.display = isCorrida ? 'block' : 'none';
         if (isCorrida) {
@@ -187,6 +197,41 @@ async function popularColocacoes(colocacoesExistentes) {
             select.value = colocacoesExistentes[equipe];
         }
     });
+}
+
+// Corrida: colocacoes fica {posicao: equipe} (invertido do resto das PROVAs,
+// que é {equipe: posicao}) — só assim a MESMA equipe pode aparecer em mais
+// de uma posição (corredores diferentes da mesma equipe podem chegar em
+// 1º e 2º juntos). Só até 3º lugar (Art. 24, VI não tem 4º).
+async function popularColocacoesCorrida(colocacoesExistentes) {
+    const equipesDB = await getCollection('equipes');
+    const container = document.getElementById('lista-colocacoes');
+    const opcoes = '<option value="">-</option>' + equipesDB.map(eq => `<option value="${eq.nome}">${eq.nome}</option>`).join('');
+
+    container.innerHTML = [1, 2, 3].map(posicao => `
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: var(--color-bg-card); padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
+            <span style="font-weight: 600;">${posicao}º lugar</span>
+            <select class="form-control input-colocacao-corrida" data-posicao="${posicao}" style="width: auto; padding: 0.4rem 0.75rem;">${opcoes}</select>
+        </div>
+    `).join('');
+
+    container.querySelectorAll('.input-colocacao-corrida').forEach(select => {
+        const equipe = colocacoesExistentes[select.dataset.posicao];
+        if (equipe) select.value = equipe;
+    });
+}
+
+function coletarColocacoesCorrida() {
+    const selects = document.querySelectorAll('.input-colocacao-corrida');
+    const colocacoes = {};
+    let todasPreenchidas = true;
+
+    selects.forEach(select => {
+        if (select.value) colocacoes[select.dataset.posicao] = select.value;
+        else todasPreenchidas = false;
+    });
+
+    return { colocacoes, valido: todasPreenchidas };
 }
 
 async function popularConclusoes(conclusoesExistentes) {
@@ -248,7 +293,7 @@ async function salvarSumula() {
     let placarA = 0, placarB = 0, colocacoes = null, conclusoes = null;
 
     if (isMultiEquipe) {
-        const resultado = coletarColocacoes();
+        const resultado = isCorrida ? coletarColocacoesCorrida() : coletarColocacoes();
         if (status === 'encerrado' && !resultado.valido) {
             msgColocacoes.style.display = 'block';
             return;
