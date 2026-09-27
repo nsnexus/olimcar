@@ -145,7 +145,7 @@ function renderFormTabelaPontos() {
                         <th style="text-align:center;">2º</th>
                         <th style="text-align:center;">3º</th>
                         <th style="text-align:center;">4º</th>
-                        <th style="text-align:center;">Peso p/ desempate (conclusão)</th>
+                        <th style="text-align:center;">Por conclusão</th>
                         <th style="text-align:center;">Meta (kg)</th>
                         <th style="text-align:center;">Bônus meta</th>
                     </tr>
